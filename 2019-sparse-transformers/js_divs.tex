@@ -1,0 +1,149 @@
+% This file was created by tikzplotlib v0.8.5.
+\begin{tikzpicture}
+
+\definecolor{color0}{rgb}{0.12156862745098,0.466666666666667,0.705882352941177}
+\definecolor{color1}{rgb}{1,0.498039215686275,0.0549019607843137}
+\definecolor{color2}{rgb}{0.172549019607843,0.627450980392157,0.172549019607843}
+
+\begin{groupplot}[group style={group size=3 by 1}]
+\nextgroupplot[
+width=0.35\columnwidth,
+height=0.35\columnwidth,
+legend cell align={left},
+legend style={
+        nodes={scale=0.6, transform shape}, at={(0.97,2.0)}, anchor=east, draw=white!80.0!black, fill=mygr, fill opacity=0.6, draw opacity=1,text opacity=1},
+tick align=outside,
+tick pos=left,
+x grid style={white!69.01960784313725!black},
+xmin=0.5, xmax=6.5,
+xtick = {1, 2, 3, 4, 5, 6},
+xtick style={color=white},
+y grid style={white!69.01960784313725!black},
+title={Encoder Self-Attention},
+ylabel={Jensen-Shannon Divergence},
+ymin=0.1, ymax=0.7,
+ytick = {0.2, 0.4, 0.6},
+ytick style={color=white}
+]
+\addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
+table {%
+1 0.38571667343747
+2 0.402429158203537
+3 0.440747738282957
+4 0.359233941813858
+5 0.337470844946825
+6 0.339900884621234
+};
+\addlegendentry{softmax}
+\addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
+table {%
+1 0.378367748537659
+2 0.504354104995477
+3 0.573529792473815
+4 0.525266398541884
+5 0.439669581263257
+6 0.421346772557364
+};
+\addlegendentry{1.5-entmax}
+\addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
+table {%
+1 0.427742934860258
+2 0.484287995253192
+3 0.533714455762104
+4 0.449772918584636
+5 0.3935698561848
+6 0.355665944457941
+};
+\addlegendentry{$\alpha$-entmax}
+
+\nextgroupplot[
+width=0.35\columnwidth,
+height=0.35\columnwidth,
+tick align=outside,
+tick pos=left,
+x grid style={white!69.01960784313725!black},
+xlabel={Layers},
+xmin=0.5, xmax=6.5,
+xtick = {1, 2, 3, 4, 5, 6},
+xtick style={color=black},
+y grid style={white!69.01960784313725!black},
+title={Context
+Attention},
+ymin=0.1, ymax=0.7,
+yticklabels={,,},
+ytick style={color=black}
+]
+\addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
+table {%
+1 0.238086067198701
+2 0.262114145607099
+3 0.286737357182762
+4 0.261319755858326
+5 0.198601897219058
+6 0.17615278328718
+};
+\addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
+table {%
+1 0.285387250868347
+2 0.352096398369745
+3 0.341833425320867
+4 0.283077079699057
+5 0.211226204258584
+6 0.184185819249069
+};
+\addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
+table {%
+1 0.187460495247129
+2 0.294132679861246
+3 0.294293609171812
+4 0.258470328787331
+5 0.218625168782075
+6 0.175598814842554
+};
+
+\nextgroupplot[
+width=0.35\columnwidth,
+height=0.35\columnwidth,
+tick align=outside,
+tick pos=left,
+x grid style={white!69.01960784313725!black},
+xmin=0.5, xmax=6.5,
+xtick = {1, 2, 3, 4, 5, 6},
+xtick style={color=black},
+y grid style={white!69.01960784313725!black},
+title={Decoder
+Self-Attention},
+ymin=0.1, ymax=0.7,
+yticklabels={,,},
+ytick style={color=black}
+]
+\addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
+table {%
+1 0.303746353611523
+2 0.22727500438857
+3 0.232217450705055
+4 0.231130781946195
+5 0.243801669190664
+6 0.242023033358886
+};
+\addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
+table {%
+1 0.358063240305097
+2 0.321156816145335
+3 0.260506114332835
+4 0.315001315249084
+5 0.294615208361328
+6 0.298656429345605
+};
+\addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
+table {%
+1 0.347101693399898
+2 0.323811303356006
+3 0.258446188683822
+4 0.228813145638102
+5 0.299868185392644
+6 0.274194779425284
+};
+\end{groupplot}
+
+\end{tikzpicture}

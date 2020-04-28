@@ -1,0 +1,866 @@
+%! TeX program = xelatex
+
+\documentclass[xetex,aspectratio=169,xcolor,professionalfonts,hyperref]{beamer}
+\usepackage[
+    style=authoryear,
+    backend=biber,
+    natbib,
+    uniquename=false,
+    maxcitenames=2,
+    maxbibnames=20,
+    sorting=nty]{biblatex}
+\addbibresource{refs.bib}
+\renewcommand*{\bibfont}{\scriptsize}
+\usepackage{anyfontsize}
+%\usepackage{minted}
+%\usemintedstyle{lovelace}
+%\usemintedstyle{monokai}
+\usepackage{tabularx}
+\usepackage{changepage}
+\input{preamble}
+\input{commands}
+\pgfplotsset{compat=1.16}
+\newcommand\simplex{\triangle}
+\newcommand\HHs{\HH^{\textsc{s}}}
+\newcommand\HHg{\HH^{\textsc{g}}}
+\newcommand\HHta{\HH^{\textsc{t}}_{\alpha}}
+\newcommand\xv{\bs{x}}
+\newcommand{\matr}[1]{\mathbf{#1}}
+\DeclareMathOperator{\softmax}{\mathbf{softmax}}
+\DeclareMathOperator{\sparsemax}{\mathbf{sparsemax}}
+\definecolor{tBleu}{RGB}{118,169,196}
+\definecolor{tDY}{RGB}{217,192,102}
+\title{Adaptively Sparse Transformers}
+%\author{Gonçalo Correia,\quad \textbf{Vlad Niculae},\quad Andr\'{e} Martins}
+\author{Gonçalo Correia, Vlad Niculae, Andr\'{e} F.T. Martins}
+
+% \AtBeginSection[]
+% {
+% \begin{frame}
+%     \frametitle{Table of Contents}
+
+%     \begin{adjustwidth}{5cm}{0.1em}
+%         \tableofcontents[currentsection]
+%     \end{adjustwidth}
+% \end{frame}
+% }
+
+\begin{document}
+
+\begin{frame}
+%\titlepage
+\begin{tikzpicture}[remember picture, overlay]
+
+\node[font={\color{myfg}\usebeamerfont{title}},align=center]
+    at ($(current page.center) + (0, 1.5)$) {\color{myDarkYellow}Adaptively Sparse Transformers};
+
+\node[anchor=north,font={\color{myfg}\usebeamerfont{author}}]
+    at ($(current page.center) + (0, 0.5)$)
+{
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{r l}
+\textbf{Gonçalo Correia} &\small \textcolor{mygr}{Instituto de Telecomunicações, Lisbon} \\
+Vlad Niculae             &\small \textcolor{mygr}{IT} \\
+André Martins            &\small \textcolor{mygr}{IT \& Unbabel}  \\
+\end{tabular}
+};
+
+\node[anchor=south,font={\color{mygr}\footnotesize}]
+    at (current page.south)
+{
+\raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}} \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax}
+\quad
+\raisebox{-0.4mm}[\height][\depth]{\emoji{home}}
+\href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
+};
+\end{tikzpicture}
+\end{frame}
+
+\tikzset{%
+    enc/.style={fill=tPurple!80!mybg},
+    attn/.style={fill=tPeony},
+    dec/.style={fill=tBlue!50!mybg},
+    wvec/.style={
+        inner sep=0,
+        rectangle,
+        rounded corners=2pt,
+        minimum width=5pt,
+        minimum height=18pt},
+    word/.style={
+        color=mygr,
+        font=\itshape
+    },
+    netarrow/.style={->, color=mygr},
+    attnedge/.style={tPeony, thick}
+}
+
+\begin{frame}
+    \frametitle{TL;DL (Too Long; Didn't Listen)}
+
+\begin{itemize}
+    \item[] We replace the softmax function in Transformers with
+    $\alpha$-entmax, creating a model that is able to learn its own
+    sparsity in each attention head.
+\end{itemize}
+
+\end{frame}
+
+\section{Context}
+
+\begin{frame}[t,plain,fragile]%
+    \frametitle{A bit of context... On Seq2Seq}%
+    \cornercite{bahdanau}%
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south east] at (current page.south east)
+            {\scriptsize Slide Credit: Vlad Niculae\strut};
+    \end{tikzpicture}
+    \fontsize{13pt}{15}\selectfont%
+    \begin{columns}[T]
+    \begin{column}{.7\textwidth}%
+    \begin{tikzpicture}[node distance=0pt]
+    %
+    \def\bottom{-7}%
+    \def\top{0}%
+    \foreach[count=\i] \j in {United,Nations,elections,end,today}{
+        \node[word,anchor=south] (w\i) at (1.7*\i+2, \bottom) {\strut \alt<1-11>{\j}{}};
+        \uncover<2->{\node[wvec,enc,above=-2pt of w\i] (embed\i) {};}
+        \uncover<3->{
+            \node[wvec,enc,above=6pt of embed\i] (enc\i) {};
+            \path (embed\i) edge[netarrow] (enc\i);
+        }
+        \uncover<4->{\node[inner sep=0, outer sep=0, above=2pt of enc\i] (src\i){};}
+        \uncover<4->{\draw[fill,attnedge] (src\i) circle[radius=1pt];}
+    }
+    \foreach[count=\i] \j in {Eleições,das,Nações,Unidas}
+    {
+        \pgfmathtruncatemacro\attnslideno{2*\i+2}
+        \pgfmathtruncatemacro\outslideno{2*\i+3}
+        \node[word,anchor=north, visible on=<\outslideno->] (y\i) at (1.7*\i+2, \top) {\strut \alt<1-11>{\j}{}};
+        \node[wvec,dec,below=-2pt of y\i, visible on=<\outslideno->] (out\i) {};
+        \node[wvec,dec,below=6pt of out\i, visible on=<\outslideno->] (dec\i) {};
+        \node[wvec,attn,below=6pt of dec\i,visible on=<\attnslideno->] (attn\i) {};
+        \node[inner sep=0, outer sep=0, below=2pt of attn\i] (trg\i) {};
+        \draw[fill,attnedge,visible on=<\attnslideno->] (trg\i) circle[radius=1pt];
+        \path (attn\i) edge[netarrow,visible on=<\outslideno->] (dec\i);
+        \path (dec\i)  edge[netarrow,visible on=<\outslideno->] (out\i);
+    }
+    \node<4->[wvec,dec,left=14pt of dec1] (dec0) {};
+    \node<4-> [anchor=west] at ([xshift=3pt]dec0.south west) {\scriptsize $\bs{s}_0$};
+    \path<5-> (dec0) edge[netarrow] (dec1);
+    % labels
+    \node<2-> [anchor=west] at ([xshift=3pt]embed2.south west) {\scriptsize $\bs{v}_j$};
+    \node<3-> [anchor=west] at ([xshift=3pt]enc2.south west) {\scriptsize $\bs{h}_j$};
+    \node<4-> [anchor=west] at ([xshift=3pt]attn1.south west) {\scriptsize $\bs{c}_1$};
+    \node<5-> [anchor=west] at ([xshift=3pt]dec1.south west) {\scriptsize $\bs{s}_1$};
+    \node<5-> [anchor=west] at ([xshift=3pt]out1.south west) {\scriptsize $\bs{y}_1$};
+    % encoder bi-LSTM arrows
+    \def\sh{3pt}
+    \uncover<3->{
+    \path ([yshift=\sh]enc1.east)  edge[netarrow] ([yshift=\sh]enc2.west);
+    \path ([yshift=\sh]enc2.east)  edge[netarrow] ([yshift=\sh]enc3.west);
+    \path ([yshift=\sh]enc3.east)  edge[netarrow] ([yshift=\sh]enc4.west);
+    \path ([yshift=\sh]enc4.east)  edge[netarrow] ([yshift=\sh]enc5.west);
+    %
+    \path ([yshift=-\sh]enc2.west) edge[netarrow] ([yshift=-\sh]enc1.east);
+    \path ([yshift=-\sh]enc3.west) edge[netarrow] ([yshift=-\sh]enc2.east);
+    \path ([yshift=-\sh]enc4.west) edge[netarrow] ([yshift=-\sh]enc3.east);
+    \path ([yshift=-\sh]enc5.west) edge[netarrow] ([yshift=-\sh]enc4.east);
+    }
+    %
+    % decoder LSTM arrows
+    \uncover<7->{\path (dec1) edge[netarrow] (dec2);}
+    \uncover<9->{\path (dec2) edge[netarrow] (dec3);}
+    \uncover<11->{\path (dec3) edge[netarrow] (dec4);}
+    % autoregressive arrows
+    \uncover<7->{\path (out1) edge[netarrow] (dec2.north west);}
+    \uncover<9->{\path (out2) edge[netarrow] (dec3.north west);}
+    \uncover<11->{\path (out3) edge[netarrow] (dec4.north west);}
+    
+    % Attention to word 1
+    \uncover<4->{
+    \path (src1) edge[attnedge,opacity=.5] (trg1);
+    \path (src2) edge[attnedge,opacity=.2] (trg1);
+    \path (src3) edge[attnedge,opacity=.8] (trg1);
+    \path (src4) edge[attnedge,opacity=.2] (trg1);
+    \path (src5) edge[attnedge,opacity=.2] (trg1);
+    }
+%
+\uncover<6->{
+\path (src1) edge[attnedge,opacity=.6] (trg2);
+\path (src2) edge[attnedge,opacity=.6] (trg2);
+\path (src3) edge[attnedge,opacity=.4] (trg2);
+\path (src4) edge[attnedge,opacity=.2] (trg2);
+\path (src5) edge[attnedge,opacity=.2] (trg2);
+}
+%
+\uncover<8->{
+\path (src1) edge[attnedge,opacity=.4] (trg3);
+\path (src2) edge[attnedge,opacity=.9] (trg3);
+\path (src3) edge[attnedge,opacity=.2] (trg3);
+\path (src4) edge[attnedge,opacity=.2] (trg3);
+\path (src5) edge[attnedge,opacity=.2] (trg3);
+}
+%
+\uncover<10->{
+\path (src1) edge[attnedge,opacity=.9] (trg4);
+\path (src2) edge[attnedge,opacity=.4] (trg4);
+\path (src3) edge[attnedge,opacity=.2] (trg4);
+\path (src4) edge[attnedge,opacity=.2] (trg4);
+\path (src5) edge[attnedge,opacity=.2] (trg4);
+}
+
+\uncover<2->{\node[align=right,anchor=right, left=20pt of enc1] {Encoder};}
+\uncover<4->{\node[align=right,anchor=right, left=20pt of attn1,yshift=-15pt]
+    {Attention};}
+\uncover<5->{\node[align=right,anchor=right, left=20pt of dec1] {Decoder};}
+\end{tikzpicture}
+\\
+\end{column}
+\begin{column}{.29\textwidth}%
+\centering
+\uncover<11->{
+\textbf{\emph{attention weights}}
+\\computed with \emph{softmax}:
+\\[.5\baselineskip]
+\small
+for some decoder state $\bs{s}_t$,
+compute contextually weighted average of input $\bs{c}_t$:
+\begin{align*}
+z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
+\pi_j &= \operatorname{softmax}_j(\bs{z}) \\
+\bs{c}_t &= \sum_j \pi_j \bs{h}_j
+\end{align*}
+}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{A bit of context... on Transformers}
+
+    \fontsize{12pt}{15}\selectfont
+    \cornercite{transf}
+    \begin{columns}
+    \uncover<1->{
+        \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
+            What if... Attention is all you need? \\
+            \vspace{0.5cm}
+    }
+    \uncover<2->{
+        {\color{myDarkYellow} Key idea:} Instead of Recurrent Neural Networks (RNNs), let's use attention mechanisms!
+        \vspace{0.25cm}
+    }
+        \begin{itemize}
+            \uncover<3->{\item In place of the RNNs, use self-attention}
+            \uncover<4->{\item Do this with multiple heads (i.e. attention mechanisms in parallel)}
+            \uncover<5->{\item ... and do it through several layers}
+        \end{itemize}
+    \end{column}
+
+    \begin{column}{0.4\columnwidth}
+    \vspace{-1.5cm}
+    \begin{center}
+    \includegraphics[width=0.8\columnwidth]{figures/transformer_mybg}
+    \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
+    \end{center}
+    \end{column}
+    \end{columns}
+
+\end{frame}
+
+\section{Introduction}
+\begin{frame}
+    \frametitle{Introduction}
+
+    \fontsize{12pt}{15}\selectfont
+
+    \begin{itemize}
+        \item[] Transformers have been achieving incredible SOTA results in the last couple of years!
+    \end{itemize}
+
+    \bigskip
+
+    \begin{itemize}
+        \uncover<2->{\item[] But they seem overparameterized...}
+        \uncover<3->{\item[] Attention heads aid visualization but they are completely {\color{myDarkYellow} dense}.}
+    \end{itemize}
+
+    % not only that, but every attention head is connected to the
+    % ones in previous layers since every connection is dense! It's
+    % not straightforward to understand which connections are relevant
+    % for a certain prediction or to determine the linguistic role a
+    % head has in the overall architecture.
+
+    \bigskip
+
+    \begin{itemize}
+        \item[]<4-> Our solution is to bet on {\color{tPeony} sparsity}:
+    \end{itemize}
+
+    \begin{quote}
+        {\normalfont
+        \begin{itemize}
+            \only<5>{\item {\color{myDarkYellow} for interpretability}}\only<4>{\item for interpretability} % sparse connections allow to be sure about which model representations were used to make a prediction
+            \only<5>{\item {\color{myDarkYellow} for discovering linguistic structure}}\only<4>{\item for discovering linguistic structure} % we can redesign components based on what we find with sparsity
+            \item<4-> for efficiency
+        \end{itemize}}
+    \end{quote}
+\end{frame}
+
+\begin{frame}
+    \frametitle{
+        \only<7->{{\color{myDarkYellow}Adaptively}} \only<5->{{\color{colorEntmax}Sparse}} \uncover<1->{Transformers}}
+
+\only<1-4>{
+    \fontsize{12pt}{15}\selectfont
+    \cornercite{transf}
+    \begin{columns}
+    \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
+    In each attention head:
+    \begin{equation*}
+    \bar{\matr{V}}  = \softmax\left(\frac{\matr{Q}\matr{K}^\top}{\sqrt{d_k}}\right)\matr{V}.
+    \end{equation*}
+    \uncover<2-4>{Attention in three places:
+    \begin{itemize}
+    \item Self-attention in the encoder\tikz[remember picture]{\node[coordinate] (n1) {};}}
+    \uncover<3-4>{\item Self-attention in the decoder\tikz[remember picture]{\node[coordinate] (n2) {};}}
+    \uncover<4>{\item Contextual attention\tikz[remember picture]{\node[coordinate] (n3) {};}}
+    \end{itemize}
+
+    % \vspace{-0.7cm}
+    % \begin{align*}
+    %     \uncover<2-4>{6 \text{ layers } \times 8 \text{ attention heads} &= 48}
+    %     \\\uncover<3-4>{&+48}\\\only<4>{&+48=144\text{ attention heads}}
+    % \end{align*}
+
+    \end{column}
+    \begin{column}{0.4\columnwidth}
+    \vspace{-1.5cm}
+    \begin{center}
+    \includegraphics[width=0.9\columnwidth]{figures/transformer_mybg}
+    \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
+    \end{center}
+    \end{column}
+    \end{columns}
+
+    \begin{tikzpicture}[remember picture,overlay]   %% use here too
+        \uncover<2>{\path[draw=magenta,ultra thick,->](
+            [xshift=2mm,yshift=1mm]n1.north) to [out=6cm,in=0,distance=-1.5cm] ([xshift=-5.13cm,yshift=2.0cm]t1.north);}
+        \uncover<3>{\path[draw=magenta,ultra thick,->](
+            [xshift=2mm,yshift=1mm]n2.north) to [out=6cm,in=0,distance=-3cm] ([xshift=-2.67cm,yshift=2.0cm]t1.north);}
+        \uncover<4>{\path[draw=magenta,ultra thick,->](
+            [xshift=2mm,yshift=1mm]n3.north) to [out=-6cm,in=0,distance=-2.5cm] ([xshift=-2.67cm,yshift=3.55cm]t1.north);}
+    \end{tikzpicture}
+}
+
+\begin{itemize}
+\item[]\uncover<6->{
+    {\color{colorEntmax} Key idea:} replace softmax in attention heads by a sparse normalizing function! \quad\emoji{palms}
+}
+
+\bigskip
+
+\item[]\uncover<7->{
+    {\color{myDarkYellow} Another key idea:}
+    use a normalizing function that is adaptively sparse via a learnable $\alpha$! \quad\emoji{palms}\enspace\emoji{palms}\enspace\emoji{palms}
+}
+\end{itemize}
+
+% \bigskip
+
+% \begin{itemize}
+% \uncover<4->{\item Recall: $\alpha$ controls propensity to sparsity}
+% \uncover<5->{\item Learn each $\alpha \in [1,2]$ {\bf adaptively}!}
+% \uncover<6->{\item One $\alpha$ for each attention head and each layer}
+% \uncover<7->{\item Heads can be dense or sparse, depending on their roles.}
+% \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Related Work: Other Sparse Transformers}
+    \cornercite{Child2019,Sukhbaatar2019}
+
+    \vspace{-1.5cm}
+    \begin{center}
+    \includegraphics[width=0.7\columnwidth]{figures/comparison_mybg}
+
+    \bigskip
+
+    Our model allows {\color{myDarkYellow} non-contiguous} attention for each head.
+    \end{center}
+
+\end{frame}
+
+\section{Sparse Transformations}
+
+\begin{frame}[plain,t,fragile]%
+    \frametitle{What is softmax?}%
+    \centering \fontsize{12pt}{15}\selectfont
+    Softmax exponentiates and normalizes:\quad
+    $\displaystyle
+    \softmax(\xx_i) \defeq \frac{\exp \left(\xx_i\right)}{\sum_j \exp \left(\xx_j\right)}$
+
+    \uncover<2->{
+    {\color{myDarkYellow} It's fully dense: $\softmax(\vectsymb{z}) > \vect{0}$}}
+
+    \vspace{1cm}
+
+    \uncover<3->{Argmax can be written as:\\
+    \vspace{0.5cm}
+    $\displaystyle
+    \argmaxbf(\vectsymb{z}) \defeq \arg\max_{\vectsymb{p} \in \triangle} \DP{\vectsymb{z}}{\vectsymb{p}}$
+
+    \bigskip
+
+    \begin{itemize}
+    \item<4-> Retrieves a {\bf one-hot vector} for the highest scored index.
+    \item<5-> Sometimes used as hard attention, but not differentiable!
+    \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}{$\Omega$-Regularized Argmax}
+    \cornercite{Niculae2017}
+    \fontsize{12pt}{15}\selectfont
+    \vspace{-0.5cm}
+    \begin{itemize}
+    \item[] For convex $\Omega$, define the {\bf $\Omega$-regularized argmax transformation}:\\
+    \bigskip
+    \begin{center}
+    $\displaystyle
+    \argmaxbf{}_{{\Omega}}(\vectsymb{z}) \defeq \arg\max_{\vectsymb{p} \in \triangle} \DP{\vectsymb{z}}{\vectsymb{p}} {\color{tPeony}- \Omega(\vectsymb{p})}$
+    \end{center}
+    \end{itemize}
+    \bigskip
+    \begin{itemize}
+    \uncover<2->{\item {\color{myDarkYellow} Argmax} corresponds to {\bf no regularization}, $\displaystyle\Omega \equiv 0$}
+    \uncover<3->{\item {\color{myDarkYellow} Softmax} amounts to {\bf entropic regularization}, $\displaystyle\Omega(\vectsymb{p}) = \sum_{i=1}^K p_i \log p_i$}
+    \uncover<4->{\item {\color{myDarkYellow} Sparsemax} amounts to {\bf $\ell_2$-regularization}, $\displaystyle\Omega(\vectsymb{p}) = \frac{1}{2}\|\vectsymb{p}\|^2$.}
+    \end{itemize}
+    \bigskip
+    \begin{itemize}
+    \item[] \uncover<5->{Is there something in-between?}
+    \end{itemize}
+    \uncover<4>{\cornercite[south east]{sparsemax}}
+\end{frame}
+
+\begin{frame}{$\alpha$-Entmax}
+    \cornercite{Peters2019ACL}
+    \vspace{-1cm}
+    \fontsize{12pt}{15}\selectfont
+    \begin{itemize}
+    \item[] Parametrized by {\color{tPeony}$\alpha \ge 0$}:
+    \end{itemize}
+    \bigskip
+    \begin{center}
+    $\displaystyle
+    \Omega_{{\color{tPeony}\alpha}}(\vectsymb{p}) \defeq 
+    \left\{
+    \begin{array}{ll}
+    \frac{1}{\alpha(\alpha-1)} \left(1 - \sum_{i=1}^K p_i^{\alpha}\right) & \text{if $\alpha \ne 1$}\\
+    \sum_{i=1}^K p_i\log p_i & \text{if $\alpha = 1$.}
+    \end{array}
+    \right.$
+    \end{center}
+    \bigskip
+    \begin{itemize}
+        \uncover<2->{\item {\bf Argmax} corresponds to {\color{tPeony}$\alpha \rightarrow \infty$}}
+        \uncover<3->{\item {\bf Softmax} amounts to {\color{tPeony}$\alpha \rightarrow 1$}}
+        \uncover<4->{\item {\bf Sparsemax} amounts to {\color{tPeony}$\alpha = 2$}.}
+    \end{itemize}
+    \bigskip
+    \begin{itemize}
+        \uncover<5->{\item[] {\color{myDarkYellow} Key result:} {\bf can be sparse for $\alpha > 1$}, propensity for sparsity increases with $\alpha$.}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \centering
+    %\small $\pi_\alpha([t, 0])_1$ \\
+    %\includegraphics[width=.85\textwidth]{img/entmax_mappings.pdf}
+    \input{entmax_mappings.tex}
+\end{frame}
+
+\section{Adaptively Sparse Transformers}
+
+\begin{frame}
+    \frametitle{Learning $\alpha$}
+
+    \begin{itemize}
+        \uncover<2->{\item[] {\color{myDarkYellow} Key contribution}: \\\bigskip\quad a closed-form expression for $\pfrac{\aentmax(\x)}{\alpha}$ \quad\emoji{oface}}
+    \end{itemize} 
+
+    \bigskip
+
+    \begin{itemize}
+
+        \uncover<3->{\item[] Requires argmin differentiation $\rightarrow$ see paper for details!}
+
+    \end{itemize}
+
+    \uncover<4->{\overlaybox[0.5]{\texttt{:pip install entmax}\\Check \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax}}}
+
+\end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{Learnable $\alpha$}
+
+%     \begin{center}
+%     \includegraphics[trim=157mm 17mm 0 0, clip, width=0.4\columnwidth]{figures/comparison_mybg}
+%     \end{center}
+
+%     \begin{tikzpicture}[remember picture,overlay]
+%         \uncover<2->{\node[xshift=-1.7cm,yshift=0.45cm] at (current page.east) {{\fontsize{10pt} 1}\enspace\includegraphics[width=0.07\columnwidth]{figures/slider_middle}\enspace 2};}
+%         \uncover<3->{\node[xshift=-1.7cm,yshift=-0.05cm] at (current page.east) {\includegraphics[width=0.07\columnwidth]{figures/slider_left}};}
+%         \uncover<4->{\node[xshift=-1.7cm,yshift=-0.55cm] at (current page.east) {\includegraphics[width=0.07\columnwidth]{figures/slider_right}};}
+%         \uncover<5->{\node[xshift=-1.7cm,yshift=-1.05cm] at (current page.east) {\includegraphics[width=0.07\columnwidth]{figures/slider_middle}};}
+%     \end{tikzpicture}
+
+% \end{frame}
+
+\begin{frame}
+    \frametitle{BLEU Scores}
+
+    \begin{table}[ht]
+        \begin{center}
+        \small
+        \resizebox{0.8\columnwidth}{!}{\begin{tabular}{lrrrr}
+        \toprule
+        activation
+        & \langp{de}{en} & \langp{ja}{en}
+        & \langp{ro}{en} & \only<1>{\langp{en}{de}}\only<2->{{\color{tPeony} \langp{en}{de}}}\\
+        \midrule
+        $\softmaxlight$
+        & 29.79
+        & 21.57
+        & 32.70
+        & 26.02 \\
+        $\aentmax[1.5]$
+        & 29.83
+        & {\color{myDarkYellow} 22.13}
+        & {\color{myDarkYellow} 33.10}
+        & 25.89 \\
+        $\aentmax[\alpha]$
+        & {\color{myDarkYellow} 29.90}
+        & 21.74
+        & 32.89
+        & {\color{myDarkYellow} 26.93} \\
+        \bottomrule
+        \end{tabular}}
+        \end{center}
+    \end{table}
+
+    \bigskip
+
+    \begin{itemize}
+        \uncover<3>{\item[] For analysis for other language pairs, see Appendix A.}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Learned $\alpha$}
+
+    \centering\fontsize{10pt}{15}\selectfont
+    \input{hist_alphas}
+
+    \bigskip
+
+    \fontsize{12pt}{15}\selectfont
+    Bimodal for the encoder, mostly unimodal for the decoder.
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Trajectories of $\alpha$  During Training}
+
+    \centering\fontsize{10pt}{15}\selectfont\vspace{-0.5cm}
+    \input{learning_alpha}
+
+    \bigskip
+
+    \fontsize{12pt}{15}\selectfont\invisible<1>{
+    Some heads choose to start dense before becoming sparse.}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Trajectories of $\alpha$  During Training}
+
+    \centering\fontsize{10pt}{15}\selectfont\vspace{-0.5cm}
+    \input{learning_alpha_selected}
+
+    \bigskip
+
+    \fontsize{12pt}{15}\selectfont
+    Some heads choose to start dense before becoming sparse.
+
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Head Density per Layer}
+
+%     \centering\fontsize{10pt}{15}\selectfont
+%     \input{head_density_per_layer}
+% \end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Head Diversity per Layer}
+
+    \centering\fontsize{10pt}{15}\selectfont
+    \begin{tikzpicture}[scale=0.9]
+
+        \definecolor{color0}{rgb}{0.12156862745098,0.466666666666667,0.705882352941177}
+        \definecolor{color1}{rgb}{1,0.498039215686275,0.0549019607843137}
+        \definecolor{color2}{rgb}{0.172549019607843,0.627450980392157,0.172549019607843}
+        
+        \begin{groupplot}[group style={group size=1 by 1}]
+        \nextgroupplot[
+        legend cell align={left},
+        legend style={
+                nodes={scale=1.1, transform shape}, at={(0.97,0.2)}, anchor=east, draw=white!80.0!black, fill=myfg!30!mybg, fill opacity=0.6, draw opacity=1,text opacity=1},
+        tick align=outside,
+        tick pos=left,
+        x grid style={white!69.01960784313725!black},
+        xmin=0.5, xmax=6.5,
+        xtick = {1, 2, 3, 4, 5, 6},
+        xtick style={color=white},
+        y grid style={white!69.01960784313725!black},
+        ymin=0.1, ymax=0.7,
+        ytick = {0.2, 0.4, 0.6},
+        ylabel={Jensen-Shannon Divergence},
+        ytick style={color=white}
+        ]
+        \addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
+        table {%
+        1 0.38571667343747
+        2 0.402429158203537
+        3 0.440747738282957
+        4 0.359233941813858
+        5 0.337470844946825
+        6 0.339900884621234
+        };
+        \addlegendentry{softmax}
+        \addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
+        table {%
+        1 0.378367748537659
+        2 0.504354104995477
+        3 0.573529792473815
+        4 0.525266398541884
+        5 0.439669581263257
+        6 0.421346772557364
+        };
+        \addlegendentry{1.5-entmax}
+        \addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
+        table {%
+        1 0.427742934860258
+        2 0.484287995253192
+        3 0.533714455762104
+        4 0.449772918584636
+        5 0.3935698561848
+        6 0.355665944457941
+        };
+        \addlegendentry{$\alpha$-entmax}
+    \end{groupplot}
+    \end{tikzpicture}
+    % \input{js_divs}
+
+    \centering\fontsize{12pt}{15}\selectfont
+    \uncover<2>{Specialized heads are important as seen in \citet{specialized}!}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Previous Position Head}
+    \vspace{-0.5cm}
+    \begin{center}
+    \includegraphics[width=0.9\columnwidth]{figures/head_prev_mybg}\\
+    \fontsize{12pt}{15}\selectfont
+    This head role was also found in \citet{specialized}! Learned {\color{myDarkYellow}$\alpha = 1.91$}.
+    \end{center}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Interrogation-Detecting Head}
+    \vspace{-0.5cm}
+    \begin{center}
+    \includegraphics[width=0.9\columnwidth]{figures/head_interro_mybg}\\
+    \fontsize{12pt}{15}\selectfont
+    Learned {\color{myDarkYellow}$\alpha = 1.05$}.
+    \end{center}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Subword-Merging Head}
+    \vspace{-0.7cm}
+    \begin{columns}[T]
+        \small
+        \begin{column}{.33\textwidth}
+        \vspace{-0.1cm}
+        \centering
+        \includegraphics[width=0.9\columnwidth]{figures/bpe4}
+        \end{column}
+        \begin{column}{.33\textwidth}
+        \vspace{-0.2cm}
+        \centering
+        \includegraphics[width=\columnwidth]{figures/bpe3}
+        \end{column}
+        \begin{column}{.33\textwidth}
+        \centering
+        \includegraphics[width=0.9\columnwidth]{figures/bpe2}
+        \end{column}
+        \end{columns}
+
+        \begin{center}
+            \fontsize{12pt}{15}\selectfont
+            Learned {\color{myDarkYellow}$\alpha = 1.91$}.
+        \end{center}
+
+\end{frame}
+
+\section{Conclusions}
+
+\begin{frame}[fragile]
+  \frametitle{Key Takeaways}
+
+    \centering\fontsize{14pt}{14}\selectfont%
+    Introduce {\color{myDarkYellow} adaptive} sparsity\\
+    for Transformers via $\alpha$-entmax with a {\color{myDarkYellow}gradient learnable $\alpha$}.
+    %
+    %
+    \vfill
+    %
+    %
+    \begin{columns}[T]
+    \small
+    \begin{column}{.33\textwidth}
+    \centering
+    \uncover<2->{
+    \textbf{\emph{adaptive sparsity}}\\[.5\baselineskip]
+    \vspace{0.2cm}
+    \includegraphics[trim=157mm 17mm 0 0, clip, width=.7\textwidth]{figures/comparison_mybg}}%
+    \end{column}
+    \begin{column}{.33\textwidth}
+    \centering
+    \uncover<3->{
+    \textbf{\emph{reduced head redundancy}}\\[\baselineskip]}
+    \vspace{-0.2cm}
+    \begin{tikzpicture}[node distance=1.5ex,font=\scriptsize,scale=0.5, visible on=<3->]
+
+        \definecolor{color0}{rgb}{0.12156862745098,0.466666666666667,0.705882352941177}
+        \definecolor{color1}{rgb}{1,0.498039215686275,0.0549019607843137}
+        \definecolor{color2}{rgb}{0.172549019607843,0.627450980392157,0.172549019607843}
+        
+        \begin{groupplot}[group style={group size=1 by 1}]
+        \nextgroupplot[
+        legend cell align={left},
+        legend style={
+                nodes={scale=1.1, transform shape}, at={(0.97,0.2)}, anchor=east, draw=white!80.0!black, fill=myfg!30!mybg},
+        tick align=outside,
+        tick pos=left,
+        x grid style={white!69.01960784313725!black},
+        xmin=0.5, xmax=6.5,
+        xtick = {1, 2, 3, 4, 5, 6},
+        xtick style={color=white},
+        y grid style={white!69.01960784313725!black},
+        ymin=0.1, ymax=0.7,
+        ytick = {0.2, 0.4, 0.6},
+        ytick style={color=white}
+        ]
+        \addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
+        table {%
+        1 0.38571667343747
+        2 0.402429158203537
+        3 0.440747738282957
+        4 0.359233941813858
+        5 0.337470844946825
+        6 0.339900884621234
+        };
+        \addlegendentry{softmax}
+        \addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
+        table {%
+        1 0.378367748537659
+        2 0.504354104995477
+        3 0.573529792473815
+        4 0.525266398541884
+        5 0.439669581263257
+        6 0.421346772557364
+        };
+        \addlegendentry{1.5-entmax}
+        \addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
+        table {%
+        1 0.427742934860258
+        2 0.484287995253192
+        3 0.533714455762104
+        4 0.449772918584636
+        5 0.3935698561848
+        6 0.355665944457941
+        };
+        \addlegendentry{$\alpha$-entmax}
+    \end{groupplot}
+    \end{tikzpicture}
+    \end{column}
+    \begin{column}{.33\textwidth}
+    \centering
+    \uncover<4->{
+    \textbf{\emph{clearer head roles}}\\[\baselineskip]
+    \vspace{-0.2cm}
+    \includegraphics[width=.6\textwidth]{figures/bpe4}}
+    \end{column}
+    \end{columns}
+
+    \vfill
+
+    \centering
+    {\scriptsize
+    \color{mygr}
+    \begin{tabular}{r@{~}l@{\quad}r@{~}l}
+    \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax} &
+    \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
+    \end{tabular}}
+
+\end{frame}
+
+\begin{frame}
+    \centering
+    \vspace{-2cm}
+    \fontsize{30pt}{15}\selectfont
+    Thank you!
+
+    \bigskip
+
+    \fontsize{20pt}{15}\selectfont
+    Questions?
+
+    \overlaybox[0.7]{\texttt{:pip install entmax}\\Check \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax}}
+\end{frame}
+
+{
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=mygr}
+\setbeamercolor{frametitle}{fg=mybg}
+\usebeamercolor[fg]{frametitle}
+\usebeamercolor[fg]{normal text}
+\begin{frame}
+\frametitle{Acknowledgements}
+\centering
+\small
+\includegraphics[width=.2\textwidth]{img/erc.png}\\
+This work was supported by the European Research
+Council (ERC StG DeepSPIN 758969) and by the
+Fundação para a Ciência e Tecnologia through contract UID/EEA/50008/2019 and
+CMUPERI/TIC/0046/2014 (GoLocal).
+\end{frame}
+}
+
+\begin{frame}[t,allowframebreaks]
+\frametitle{References}
+\printbibliography
+\end{frame}
+
+\end{document}
+

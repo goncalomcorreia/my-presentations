@@ -201,6 +201,23 @@
 \draw[elem,fill=vecfg!50!vecbg] (-1-\vecwidth, \vecheight*0) rectangle (-1, \vecheight*1);
 }
 
+\newcommand{\drawnumscores}{%
+\node[mygr,anchor=south east] at (-2, \vecheight*4) {\small $2$};
+\node[mygr,anchor=south east] at (-2, \vecheight*3) {\small $4$};
+\node[mygr,anchor=south east] at (-2, \vecheight*2) {\small $-1$};
+\node[mygr,anchor=south east] at (-2, \vecheight*1) {\small $1$};
+\node[mygr,anchor=south east] at (-2, \vecheight*0) {\small $-3$};
+}
+
+\newcommand{\drawnummax}{%
+\node[mygr,anchor=south west] at (2, \vecheight*4) {\small $0$};
+\node[mygr,anchor=south west] at (2, \vecheight*3) {\small $1$};
+\node[mygr,anchor=south west] at (2, \vecheight*2) {\small $0$};
+\node[mygr,anchor=south west] at (2, \vecheight*1) {\small $0$};
+\node[mygr,anchor=south west] at (2, \vecheight*0) {\small $0$};
+}
+
+
 \newcommand{\drawargmax}{%
 \node[anchor=south] at (1+.5*\vecwidth, \vecheight*5+.1) {$\p$};
 \draw[elem,fill=vecfg! 0!vecbg]  (1, \vecheight*4) rectangle (1+\vecwidth, \vecheight*5);

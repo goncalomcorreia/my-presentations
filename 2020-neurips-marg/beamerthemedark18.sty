@@ -49,4 +49,10 @@
     {\scriptsize\citep[#1]{#2}\strut};
 \end{tikzpicture}}
 
+\newcommand{\cornerciteme}[2][north east]{%
+\begin{tikzpicture}[remember picture,overlay]%
+\node[anchor=#1] at (current page.#1)%
+{\scriptsize\textcolor{mygr}{\realcitep*{#2}}\strut};%
+\end{tikzpicture}}
+
 \mode<all>

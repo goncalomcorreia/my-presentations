@@ -253,8 +253,8 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \bigskip
 
     \begin{itemize}
-        \uncover<2->{\item[] One option: SFE (aka REINFORCE)---unbiased but high variance}
-        \uncover<3->{\item[] Another option: Gumbel-Softmax---continuous relaxation, biased estimation}
+        \uncover<2->{\item[] One option: SFE (aka REINFORCE) $\rightarrow$ unbiased but high variance}
+        \uncover<3->{\item[] Another option: Gumbel-Softmax $\rightarrow$ continuous relaxation, biased estimation}
     \end{itemize}
 
     \bigskip
@@ -419,16 +419,15 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
 \end{frame}
 
 \begin{frame}
-    \frametitle{Semi-Supervised VAE}\cornerciteme{sparsemarg}
+    \frametitle{Semi-Supervised VAE}%\cornerciteme{sparsemarg}
 
     \newcommand*\parcolor{myfg}
     \newcommand*\clfcolor{myfg}
     \newcommand*\colParseZero{mybg}
     \newcommand*\colParseNonz{mybg}
-    \only<1->{
     \renewcommand*\parcolor{tPeony}
     \renewcommand*\clfcolor{tYellow}
-    }
+
     \begin{align*}
         \mathcal{L}_{x}(\theta) &=
             \tikzmark{sum}\sum_{z \in \mathcal{Z}}
@@ -439,10 +438,9 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \end{align*}
 
     \vspace{\baselineskip}
-    \small
     \begin{itemize}
-    \item<2-> Semi-Supervised VAE on MNIST: $z$ is a possible digit
-    \item<3-> Train this with 10\% labeled data
+    \item<1-> Semi-Supervised VAE on MNIST: $z$ is one of 10 categories
+    \item<4-> Train this with 10\% labeled data
     \end{itemize}
     \begin{tikzpicture}[%
         remember picture,
@@ -450,22 +448,22 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
         expl/.style={font=\small}]
     \uncover<2->{
         \node[expl,anchor=north east] (explpar)
-            at ($(current page.north east) - (.5, 1.5)$)
+            at ($(current page.north east) - (.5, 2.0)$)
             {Gaussian VAE};
-        \path (explpar.west) edge[->,very thick,bend right] ([yshift=1.5ex]{pic cs:clfp});
+        \path (explpar.west) edge[->,very thick,bend right] ([yshift=2.0ex]{pic cs:clfp});
     }
     %
     \uncover<3->{
         \node[expl,anchor=north west,align=left] (explsum)
-            at ($(current page.west) + (.5, -1.5)$)
+            at ($(current page.west) + (.5, 1.5)$)
             {sum over \\ the 10 digits};
         \path (explsum.east) edge[->,very thick,bend left] ([yshift=2.5ex]{pic cs:sum});
     }
     \uncover<2->{
         \node[expl,anchor=north east,align=right] (explscore)
-            at ($(current page.north east) - (.5, 4)$)
-            {discrete inference network};
-        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-.5ex]{pic cs:parp});
+            at ($(current page.north east) - (.5, 3.5)$)
+            {classification network};
+        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-1.0ex]{pic cs:parp});
     }
     \end{tikzpicture}
 \end{frame}
@@ -494,14 +492,14 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
         \multicolumn{3}{l}{\emph{Marginalization}} \\
             Dense
             & $96.93${\tiny\color{gray}$\pm .001$}  & $10$  \\
-            Sparse {\small \color{gray}{(proposed)}}
-            & $96.87${\tiny\color{gray}$\pm .001$}  & $1.01${\tiny\color{gray}$\pm 0.01$}  \\
+            \only<2->{\textcolor{tPeony}{Sparse}
+            & $96.87${\tiny\color{gray}$\pm .001$}  & $1.01${\tiny\color{gray}$\pm 0.01$}}  \\
             \bottomrule
             \end{tabular}
     \end{column}
     \begin{column}{.47\textwidth}
-        \fontsize{10pt}{10}\selectfont\centering%
-        \onslide<4->{
+        \centering%
+        \onslide<3->{
         \input{ssvae_elbo}
         }
     \end{column}
@@ -515,22 +513,21 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \newcommand*\clfcolor{myfg}
     \newcommand*\colParseZero{mybg}
     \newcommand*\colParseNonz{mybg}
-    \only<1->{
     \renewcommand*\parcolor{tPeony}
     \renewcommand*\clfcolor{tYellow}
-    }
+
     \begin{align*}
-        p(y\mid x) &= \tikzmark{sum}\sum_{h \in \mathcal{H}}
-        \textcolor{\clfcolor}{p\tikzmark{clfp}_{\uncover<1->{\clfp}}(y \mid h, x)}~%
-        \textcolor{\parcolor}{p\tikzmark{parp}_{\uncover<1->{\parp}}(h \mid x)}%
-     \\
-            &= \mathbb{E}_{h \sim \textcolor{\parcolor}{p_{\parp}(h \mid x)}}~%
-            \textcolor{\clfcolor}{p_{\clfp}(y\mid h, x)}
+        \mathcal{L}_{x}(\theta) &=
+            \tikzmark{sum}\sum_{z \in \mathcal{Z}}
+            \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
+            \textcolor{\clfcolor}{\ell(x, z)\tikzmark{clfp}}\\
+            &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
+            \textcolor{\clfcolor}{\ell(x, z)}
     \end{align*}
     \vspace{\baselineskip}
-    \small
     \begin{itemize}
-    \item<2-> Emergent communication: $h$ is a word from a big vocabulary.
+    \item<2-> receiver picks image from a set $\mathcal{V}$ based on message
+    \item<3-> images come from ImageNet
     \end{itemize}
     \begin{tikzpicture}[%
         remember picture,
@@ -539,21 +536,21 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \uncover<2->{
         \node[expl,anchor=north east] (explpar)
             at ($(current page.north east) - (.5, 1.5)$)
-            {receiver};
-        \path (explpar.west) edge[->,very thick,bend right] ([yshift=1.5ex]{pic cs:clfp});
+            {sender};
+        \path (explpar.west) edge[->,very thick,bend right] ([yshift=3.0ex]{pic cs:parp});
     }
     %
     \uncover<3->{
         \node[expl,anchor=north west,align=left] (explsum)
-            at ($(current page.north west) + (.5, -1.5)$)
-            {sum over \\ all possible messages};
-        \path (explsum.east) edge[->,very thick,bend left] ([yshift=2.5ex]{pic cs:sum});
+            at ($(current page.west) + (.5, 1.5)$)
+            {sum over \\ all possible messages \\ in the vocabulary};
+        \path (explsum.east) edge[->,very thick,bend left] ([yshift=3.5ex]{pic cs:sum});
     }
     \uncover<2->{
         \node[expl,anchor=north east,align=right] (explscore)
-            at ($(current page.north east) - (.5, 4)$)
-            {sender};
-        \path (explscore.west) edge[->,very thick,bend left] ([yshift=-.5ex]{pic cs:parp});
+            at ($(current page.north east) - (.5, 3)$)
+            {receiver};
+        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-0.2ex, xshift=2.5ex]{pic cs:clfp});
     }
     \end{tikzpicture}
 \end{frame}
@@ -571,6 +568,7 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \midrule
     {\emph{Monte Carlo}} & & & \\
     SFE  & $33.05$&{\tiny\color{gray}$\pm 2.84$}  & $1$  \\
+    SFE$+$  & $44.32$&{\tiny\color{gray}$\pm 2.72$}  & $2$  \\
     NVIL  & $37.04$&{\tiny\color{gray}$\pm 1.61$}  & $1$  \\
     Gumbel     & $23.51$&{\tiny\color{gray}$\pm 16.19$}  & $1$  \\
     ST Gumbel  & $27.42$&{\tiny\color{gray}$\pm 13.36$}  & $1$  \\
@@ -592,7 +590,7 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \end{columns}
 \end{frame}
     
-\begin{frame}{Limitations}\cornerciteme{sparsemarg}
+\begin{frame}{Limitations}%\cornerciteme{sparsemarg}
     {\small
     \begin{itemize}
     \item Mostly (and eventually) very sparse. \\ \quad
@@ -601,6 +599,7 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \end{itemize}}
 
     \uncover<2->{
+    \vspace{-0.5cm}
     \fontsize{12pt}{15}\selectfont
     \center{One solution: \textcolor{tPeony}{top-k sparsemax}}
     \vspace{-0.3cm}
@@ -614,9 +613,9 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \begin{itemize}
     \item Non-convex but easy: sparsemax over the k highest scores \citep{kyrillidis2013sparse}.
     \item Top-k oracle available for some structured problems.
-    \item Certificate: if at least one of the top-k $h$ gets $p(h)=0$,
+    \item Certificate: if at least one of the top-k $z$ gets $p(z)=0$,
     \textcolor{tPeony}{\textbf{k-sparsemax = sparsemax}}!
-    \\ \quad thus, for latent variables: biased early on, but it goes away.
+    \\ \quad thus, biased early on, but it goes away.
     \end{itemize}}
 \end{frame}
 
@@ -629,20 +628,20 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \setlength{\tabcolsep}{2pt}%
     \renewcommand{\arraystretch}{2}%
     \begin{tabular}{r r l}
-    \onslide<5->{%
+    \onslide<3->{%
     \colorbul{colorArgmax} &
     \textbf{argmax} &
-    $\displaystyle \argmax_{\p \in \triangle} \p ^\top s$ \\
+    $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s}$ \\
     }
-    \onslide<8->{%
+    \onslide<5->{%
     \colorbul{colorSoftmax} &
     \textbf{softmax} &
-    $\displaystyle \argmax_{\p \in \triangle} \p ^\top s + \HH(\p)$ \\
+    $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s} + \HH(\p)$ \\
     }
-    \onslide<13->{%
+    \onslide<7->{%
     \colorbul{colorSparsemax} &
     \textbf{sparsemax} &
-    $\displaystyle \argmax_{\p \in \triangle} \p ^\top s - \nicefrac{1}{2} \|\p\|^2$
+    $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s} - \nicefrac{1}{2} \|\p\|^2$
     }%
     \end{tabular}%
     }
@@ -653,13 +652,13 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \coordinate (softmax)   at (barycentric cs:L1=.3,L2=.2,L3=.5);
     \coordinate (sparsemax) at (barycentric cs:L1=.3,L2=0,L3=.7);
     
-    \onslide<5->{
+    \onslide<3->{
     \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
     }
-    \onslide<8->{
+    \onslide<5->{
     \draw[point,fill=colorSoftmax] (softmax) circle[radius=5pt];
     }
-    \onslide<13->{
+    \onslide<7->{
     \draw[point,fill=colorSparsemax] (sparsemax) circle[radius=5pt];
     }
     \end{tikzpicture}}\end{column}
@@ -670,19 +669,19 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \setlength{\tabcolsep}{2pt}%
     \renewcommand{\arraystretch}{2}%
     \begin{tabular}{r l l@{\quad}}
-    \onslide<6->{%
+    \onslide<4->{%
     \textbf{MAP} &
-    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \pr$ &
+    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t}$ &
     \colorbul{colorArgmax} \\
     }%
-    \onslide<9->{%
+    \onslide<6->{%
     \textbf{marginals} &
-    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \pr + \widetilde{\HH}(\mg)$ &
+    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t} + \widetilde{\HH}(\mg)$ &
     \colorbul{colorSoftmax} \\
     }%
-    \onslide<14->{%
+    \onslide<8->{%
     \textbf{SparseMAP} &
-    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \pr - \nicefrac{1}{2} \|\mg\|^2$ &
+    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t} - \nicefrac{1}{2} \|\mg\|^2$ &
     \colorbul{colorSparsemax}
     }%
     \end{tabular}%
@@ -709,385 +708,190 @@ André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicaçõ
     \coordinate (argmax)    at (L3);
     \coordinate (softmax)   at (barycentric cs:L1=.25,L2=.25,L3=.45);
     \coordinate (sparsemax) at (barycentric cs:L1=.4,L3=.6);
-    \onslide<6->{
+    \onslide<4->{
         \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
         \node[above right=of argmax] {\cartoon[.5]{1/4,2/5}};
     }
-    \onslide<9->{
+    \onslide<6->{
         \draw[point,fill=colorSoftmax] (softmax) circle[radius=5pt];
         \node[below right=of softmax] {\cartoonDense[.5]{}};
     }
-    \onslide<14->{
+    \onslide<8->{
         \draw[point,fill=colorSparsemax] (sparsemax) circle[radius=5pt];
         \node[left=of sparsemax] {\cartoonSparse[.5]{}};
     }
     \end{tikzpicture}}\end{column}
     \end{columns}
     \begin{tikzpicture}[font=\footnotesize,remember picture,overlay]
-        \node<14>[anchor=north east] at (current page.north east) {
+        \node<8>[anchor=north east] at (current page.north east) {
             \textcolor{mygr}{\realcitep*{sparsemap}}};
     \end{tikzpicture}
-    \uncover<2-4>{\overlaybox[.33]{
+    \uncover<2>{\overlaybox[.33]{
     $\begin{aligned}
-        \Mp &\defeq \conv \big\{ \bs{a}_h : h \in \mathcal{H} \big\} \\
-        \uncover<3-4>{&= \big\{ \bs{A}\p : \p \in \triangle \big\}} \\
-        \uncover<4>{&= \big\{ \mathbb{E}_{H\sim\p}~\bs{a}_H : \p \in \triangle \big\}}
+        \Mp &\defeq \conv \big\{ \bs{a}_z : z \in \mathcal{Z} \big\} \\
+        &= \big\{ \bs{A}\p : \p \in \triangle \big\} \\
+        &= \big\{ \mathbb{E}_{Z\sim\p}~\bs{a}_Z : \p \in \triangle \big\}
     \end{aligned}$
     }}
 \end{frame}
 
 \begin{frame}
     \frametitle{Bit-vector VAE}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Key takeaways}
-
-
-    \begin{tikzpicture}[remember picture, overlay]
-    \node[anchor=south,font={\color{mygr}\footnotesize}]
-    at (current page.south)
-    {
-    \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}} \href{https://github.com/deep-spin/sparse-marginalization-lvm}{\tt github.com/deep-spin/sparse-marginalization-lvm}
-    \quad
-    \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}
-    \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
-    };
+    \newcommand*\parcolor{myfg}
+    \newcommand*\clfcolor{myfg}
+    \newcommand*\colParseZero{mybg}
+    \newcommand*\colParseNonz{mybg}
+    \renewcommand*\parcolor{tPeony}
+    \renewcommand*\clfcolor{tYellow}
+    \begin{align*}
+        \mathcal{L}_{x}(\theta) &=
+            \tikzmark{sum}\sum_{z \in \mathcal{Z}}
+            \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
+            \textcolor{\clfcolor}{\ell\tikzmark{clfp}(x, z)}\\
+            &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
+            \textcolor{\clfcolor}{\ell(x, z)}
+    \end{align*}
+    \begin{itemize}
+        \item<2-> VAE where $z$ is a collection of $D$ bits
+        \item<3-> Minimize the negative ELBO
+        \end{itemize}
+    \begin{tikzpicture}[%
+        remember picture,
+        overlay,
+        expl/.style={font=\small}]
+    \uncover<2->{
+        \node[expl,anchor=north east] (explpar)
+            at ($(current page.north east) - (.5, 2.0)$)
+            {generative network};
+        \path (explpar.west) edge[->,very thick,bend right] ([yshift=2.0ex]{pic cs:clfp});
+    }
+    %
+    \uncover<4->{
+        \node[expl,anchor=north west,align=left] (explsum)
+            at ($(current page.west) + (.5, 1.5)$)
+            {sum over \\ an exponetially large \\ set of structures};
+        \path (explsum.east) edge[->,very thick,bend left] ([yshift=2.5ex]{pic cs:sum});
+    }
+    \uncover<2->{
+        \node[expl,anchor=north east,align=right] (explscore)
+            at ($(current page.north east) - (.5, 3.5)$)
+            {inference network};
+        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-1.0ex]{pic cs:parp});
+    }
     \end{tikzpicture}
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{
-%         \only<7->{{\color{myDarkYellow}Adaptively}} \only<5->{{\color{colorEntmax}Sparse}} \uncover<1->{Transformers}}
+\begin{frame}{Bit-vector VAE}%
+    \begin{columns}[T]
+    \begin{column}{.53\textwidth}
+    \centering\small%
+    \begin{tabular}{lrr}
+        \toprule
+        Method & $D=32$ & $D=128$\\
+        \midrule
+    \multicolumn{3}{l}{\emph{Monte Carlo}} \\
+        SFE & $3.74$ & $3.77$  \\
+        SFE$+$ & $3.61$ & $3.59$  \\
+        NVIL & $3.65$ & $3.60$ \\
+        Gumbel & $3.57$ & $3.49$  \\
+    \midrule
+    \multicolumn{3}{l}{\emph{Marginalization}} \\
+    \color{tVividBlue}{Top-$k$ sparsemax} & $3.62$ & $3.61$  \\
+    \color{tVividBlue}{SparseMAP} & $3.72$ & $3.67$  \\
+    \color{tVividBlue}{SparseMAP (w/ budget)} & $3.64$ & $3.66$  \\
+        \bottomrule
+    \end{tabular}
+    \end{column}
+    \begin{column}{.47\textwidth}
+    \centering%
+    \only<1-2>{
+        \vspace{-0.5cm}
+        \uncover<2>{\input{distortion-rate}}
+        }
+    \only<3>{
+        \input{spars_32}
+        }
+    \only<4>{
+        \input{spars_128}
+        }
+    \end{column}
+    \end{columns}
+\end{frame}
 
-% \only<1-4>{
-%     \fontsize{12pt}{15}\selectfont
-%     \cornercite{transf}
-%     \begin{columns}
-%     \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
-%     In each attention head:
-%     \begin{equation*}
-%     \bar{\matr{V}}  = \softmax\left(\frac{\matr{Q}\matr{K}^\top}{\sqrt{d_k}}\right)\matr{V}.
-%     \end{equation*}
-%     \uncover<2-4>{Attention in three places:
-%     \begin{itemize}
-%     \item Self-attention in the encoder\tikz[remember picture]{\node[coordinate] (n1) {};}}
-%     \uncover<3-4>{\item Self-attention in the decoder\tikz[remember picture]{\node[coordinate] (n2) {};}}
-%     \uncover<4>{\item Contextual attention\tikz[remember picture]{\node[coordinate] (n3) {};}}
-%     \end{itemize}
+\begin{frame}
+    \frametitle{Key Takeaways}
 
-%     % \vspace{-0.7cm}
-%     % \begin{align*}
-%     %     \uncover<2-4>{6 \text{ layers } \times 8 \text{ attention heads} &= 48}
-%     %     \\\uncover<3-4>{&+48}\\\only<4>{&+48=144\text{ attention heads}}
-%     % \end{align*}
+    \centering\fontsize{14pt}{14}\selectfont%
+    We introduce a new method\\
+    to train latent variable models.
+    %
+    %
+    \vfill
+    %
+    %
+    \begin{columns}[T]
+    \small
+    \begin{column}{.33\textwidth}
+    \centering
+    \uncover<2->{
+    \textbf{\emph{discrete and structured}}\\[.5\baselineskip]
+        \begin{figure}[ht]
+        \begin{tikzpicture}
+            % DISCRETE
+            \draw[draw=tPink,fill=tPink] (1.4,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.2}};
+            \draw[draw=tSlateBlue,fill=tSlateBlue] (2,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.6}};
+            \draw[draw=tGreen,fill=tGreen] (2.6,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.1}};
 
-%     \end{column}
-%     \begin{column}{0.4\columnwidth}
-%     \vspace{-1.5cm}
-%     \begin{center}
-%     \includegraphics[width=0.9\columnwidth]{figures/transformer_mybg}
-%     \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
-%     \end{center}
-%     \end{column}
-%     \end{columns}
+            % STRUCTURE
+            \draw[draw=tSlateBlue,fill=tSlateBlue] (1.4,1) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+            \draw[draw=tGreen,fill=tGreen] (2,1) circle (0.2);
+            \draw[draw=tPink,fill=tPink] (2.6,1) circle (0.2)
+                node[anchor=west, xshift=2mm] {$]$}
+                node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.4}};
 
-%     \begin{tikzpicture}[remember picture,overlay]   %% use here too
-%         \uncover<2>{\path[draw=magenta,ultra thick,->](
-%             [xshift=2mm,yshift=1mm]n1.north) to [out=6cm,in=0,distance=-1.5cm] ([xshift=-5.13cm,yshift=2.0cm]t1.north);}
-%         \uncover<3>{\path[draw=magenta,ultra thick,->](
-%             [xshift=2mm,yshift=1mm]n2.north) to [out=6cm,in=0,distance=-3cm] ([xshift=-2.67cm,yshift=2.0cm]t1.north);}
-%         \uncover<4>{\path[draw=magenta,ultra thick,->](
-%             [xshift=2mm,yshift=1mm]n3.north) to [out=-6cm,in=0,distance=-2.5cm] ([xshift=-2.67cm,yshift=3.55cm]t1.north);}
-%     \end{tikzpicture}
-% }
+            \draw[draw=tPink,fill=tPink] (1.4,0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+            \draw[draw=tSlateBlue,fill=tSlateBlue] (2,0.5) circle (0.2) node[anchor=north, yshift=-4mm] {\large \bf $\ldots$};
+            \draw[draw=tGreen,fill=tGreen] (2.6,0.5) circle (0.2)
+                node[anchor=west, xshift=2mm] {$]$}
+                node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.05}};
 
-% \begin{itemize}
-% \item[]\uncover<6->{
-%     {\color{colorEntmax} Key idea:} replace softmax in attention heads by a sparse normalizing function! \quad\emoji{palms}
-% }
+            \draw[draw=tGreen,fill=tGreen] (1.4,-0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+            \draw[draw=tSlateBlue,fill=tSlateBlue] (2,-0.5) circle (0.2);
+            \draw[draw=tPink,fill=tPink] (2.6,-0.5) circle (0.2)
+                node[anchor=west, xshift=2mm] {$]$}
+                node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.3}};
+        \end{tikzpicture}
+        \end{figure}}%
+    \end{column}
+    \begin{column}{.33\textwidth}
+    \centering
+    \uncover<3->{
+    \textbf{\emph{deterministic, yet efficient}}\\[\baselineskip]
+    \vspace{-0.5cm}
+    \fontsize{10pt}{10}\selectfont
+    \begin{align*}
+        \mathcal{L}_{x}(\theta) &= \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) \\&+ \cancel{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)} \\&+ \ldots +
+        \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) \\&+ \ldots + \cancel{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}
+    \end{align*}}
+    \end{column}
+    \begin{column}{.33\textwidth}
+    \centering
+    \uncover<4->{
+    \textbf{\emph{adaptive, as needed}}\\[\baselineskip]
+    \input{results_emergent_small}}
+    \end{column}
+    \end{columns}
 
-% \bigskip
+    \vfill
 
-% \item[]\uncover<7->{
-%     {\color{myDarkYellow} Another key idea:}
-%     use a normalizing function that is adaptively sparse via a learnable $\alpha$! \quad\emoji{palms}\enspace\emoji{palms}\enspace\emoji{palms}
-% }
-% \end{itemize}
-
-% % \bigskip
-
-% % \begin{itemize}
-% % \uncover<4->{\item Recall: $\alpha$ controls propensity to sparsity}
-% % \uncover<5->{\item Learn each $\alpha \in [1,2]$ {\bf adaptively}!}
-% % \uncover<6->{\item One $\alpha$ for each attention head and each layer}
-% % \uncover<7->{\item Heads can be dense or sparse, depending on their roles.}
-% % \end{itemize}
-
-% \end{frame}
-
-% \begin{frame}[fragile]
-%     \frametitle{Related Work: Other Sparse Transformers}
-%     \cornercite{Child2019,Sukhbaatar2019}
-
-%     \vspace{-1.5cm}
-%     \begin{center}
-%     \includegraphics[width=0.7\columnwidth]{figures/comparison_mybg}
-
-%     \bigskip
-
-%     Our model allows {\color{myDarkYellow} non-contiguous} attention for each head.
-%     \end{center}
-
-% \end{frame}
-
-% \section{Sparse Transformations}
-
-% \begin{frame}[plain,t,fragile]%
-%     \frametitle{What is softmax?}%
-%     \centering \fontsize{12pt}{15}\selectfont
-%     Softmax exponentiates and normalizes:\quad
-%     $\displaystyle
-%     \softmax(\xx_i) \defeq \frac{\exp \left(\xx_i\right)}{\sum_j \exp \left(\xx_j\right)}$
-
-%     \uncover<2->{
-%     {\color{myDarkYellow} It's fully dense: $\softmax(\vectsymb{z}) > \vect{0}$}}
-
-%     \vspace{1cm}
-
-%     \uncover<3->{Argmax can be written as:\\
-%     \vspace{0.5cm}
-%     $\displaystyle
-%     \argmaxbf(\vectsymb{z}) \defeq \arg\max_{\vectsymb{p} \in \triangle} \DP{\vectsymb{z}}{\vectsymb{p}}$
-
-%     \bigskip
-
-%     \begin{itemize}
-%     \item<4-> Retrieves a {\bf one-hot vector} for the highest scored index.
-%     \item<5-> Sometimes used as hard attention, but not differentiable!
-%     \end{itemize}
-%     }
-% \end{frame}
-
-% \begin{frame}{$\Omega$-Regularized Argmax}
-%     \cornercite{Niculae2017}
-%     \fontsize{12pt}{15}\selectfont
-%     \vspace{-0.5cm}
-%     \begin{itemize}
-%     \item[] For convex $\Omega$, define the {\bf $\Omega$-regularized argmax transformation}:\\
-%     \bigskip
-%     \begin{center}
-%     $\displaystyle
-%     \argmaxbf{}_{{\Omega}}(\vectsymb{z}) \defeq \arg\max_{\vectsymb{p} \in \triangle} \DP{\vectsymb{z}}{\vectsymb{p}} {\color{tPeony}- \Omega(\vectsymb{p})}$
-%     \end{center}
-%     \end{itemize}
-%     \bigskip
-%     \begin{itemize}
-%     \uncover<2->{\item {\color{myDarkYellow} Argmax} corresponds to {\bf no regularization}, $\displaystyle\Omega \equiv 0$}
-%     \uncover<3->{\item {\color{myDarkYellow} Softmax} amounts to {\bf entropic regularization}, $\displaystyle\Omega(\vectsymb{p}) = \sum_{i=1}^K p_i \log p_i$}
-%     \uncover<4->{\item {\color{myDarkYellow} Sparsemax} amounts to {\bf $\ell_2$-regularization}, $\displaystyle\Omega(\vectsymb{p}) = \frac{1}{2}\|\vectsymb{p}\|^2$.}
-%     \end{itemize}
-%     \bigskip
-%     \begin{itemize}
-%     \item[] \uncover<5->{Is there something in-between?}
-%     \end{itemize}
-%     \uncover<4>{\cornercite[south east]{sparsemax}}
-% \end{frame}
-
-% \begin{frame}{$\alpha$-Entmax}
-%     \cornercite{Peters2019ACL}
-%     \vspace{-1cm}
-%     \fontsize{12pt}{15}\selectfont
-%     \begin{itemize}
-%     \item[] Parametrized by {\color{tPeony}$\alpha \ge 0$}:
-%     \end{itemize}
-%     \bigskip
-%     \begin{center}
-%     $\displaystyle
-%     \Omega_{{\color{tPeony}\alpha}}(\vectsymb{p}) \defeq 
-%     \left\{
-%     \begin{array}{ll}
-%     \frac{1}{\alpha(\alpha-1)} \left(1 - \sum_{i=1}^K p_i^{\alpha}\right) & \text{if $\alpha \ne 1$}\\
-%     \sum_{i=1}^K p_i\log p_i & \text{if $\alpha = 1$.}
-%     \end{array}
-%     \right.$
-%     \end{center}
-%     \bigskip
-%     \begin{itemize}
-%         \uncover<2->{\item {\bf Argmax} corresponds to {\color{tPeony}$\alpha \rightarrow \infty$}}
-%         \uncover<3->{\item {\bf Softmax} amounts to {\color{tPeony}$\alpha \rightarrow 1$}}
-%         \uncover<4->{\item {\bf Sparsemax} amounts to {\color{tPeony}$\alpha = 2$}.}
-%     \end{itemize}
-%     \bigskip
-%     \begin{itemize}
-%         \uncover<5->{\item[] {\color{myDarkYellow} Key result:} {\bf can be sparse for $\alpha > 1$}, propensity for sparsity increases with $\alpha$.}
-%     \end{itemize}
-
-% \end{frame}
-
-% \section{Efficient Marginalization of Discrete and Structured Latent Variables via Sparsity}
-
-% \begin{frame}
-%     \frametitle{Learning $\alpha$}
-
-%     \begin{itemize}
-%         \uncover<2->{\item[] {\color{myDarkYellow} Key contribution}: \\\bigskip\quad a closed-form expression for $\pfrac{\aentmax(\x)}{\alpha}$ \quad\emoji{oface}}
-%     \end{itemize} 
-
-%     \bigskip
-
-%     \begin{itemize}
-
-%         \uncover<3->{\item[] Requires argmin differentiation $\rightarrow$ see paper for details!}
-
-%     \end{itemize}
-
-%     \uncover<4->{\overlaybox[0.5]{\texttt{:pip install entmax}\\Check \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax}}}
-
-% \end{frame}
-
-% \begin{frame}
-%     \frametitle{BLEU Scores}
-
-%     \begin{table}[ht]
-%         \begin{center}
-%         \small
-%         \resizebox{0.8\columnwidth}{!}{\begin{tabular}{lrrrr}
-%         \toprule
-%         activation
-%         & \langp{de}{en} & \langp{ja}{en}
-%         & \langp{ro}{en} & \only<1>{\langp{en}{de}}\only<2->{{\color{tPeony} \langp{en}{de}}}\\
-%         \midrule
-%         $\softmaxlight$
-%         & 29.79
-%         & 21.57
-%         & 32.70
-%         & 26.02 \\
-%         $\aentmax[1.5]$
-%         & 29.83
-%         & {\color{myDarkYellow} 22.13}
-%         & {\color{myDarkYellow} 33.10}
-%         & 25.89 \\
-%         $\aentmax[\alpha]$
-%         & {\color{myDarkYellow} 29.90}
-%         & 21.74
-%         & 32.89
-%         & {\color{myDarkYellow} 26.93} \\
-%         \bottomrule
-%         \end{tabular}}
-%         \end{center}
-%     \end{table}
-
-%     \bigskip
-
-%     \begin{itemize}
-%         \uncover<3>{\item[] For analysis for other language pairs, see Appendix A.}
-%     \end{itemize}
-
-% \end{frame}
-
-% \section{Conclusions}
-
-% \begin{frame}[fragile]
-%   \frametitle{Key Takeaways}
-
-%     \centering\fontsize{14pt}{14}\selectfont%
-%     Introduce {\color{myDarkYellow} adaptive} sparsity\\
-%     for Transformers via $\alpha$-entmax with a {\color{myDarkYellow}gradient learnable $\alpha$}.
-%     %
-%     %
-%     \vfill
-%     %
-%     %
-%     \begin{columns}[T]
-%     \small
-%     \begin{column}{.33\textwidth}
-%     \centering
-%     \uncover<2->{
-%     \textbf{\emph{adaptive sparsity}}\\[.5\baselineskip]
-%     \vspace{0.2cm}
-%     \includegraphics[trim=157mm 17mm 0 0, clip, width=.7\textwidth]{figures/comparison_mybg}}%
-%     \end{column}
-%     \begin{column}{.33\textwidth}
-%     \centering
-%     \uncover<3->{
-%     \textbf{\emph{reduced head redundancy}}\\[\baselineskip]}
-%     \vspace{-0.2cm}
-%     \begin{tikzpicture}[node distance=1.5ex,font=\scriptsize,scale=0.5, visible on=<3->]
-
-%         \definecolor{color0}{rgb}{0.12156862745098,0.466666666666667,0.705882352941177}
-%         \definecolor{color1}{rgb}{1,0.498039215686275,0.0549019607843137}
-%         \definecolor{color2}{rgb}{0.172549019607843,0.627450980392157,0.172549019607843}
-        
-%         \begin{groupplot}[group style={group size=1 by 1}]
-%         \nextgroupplot[
-%         legend cell align={left},
-%         legend style={
-%                 nodes={scale=1.1, transform shape}, at={(0.97,0.2)}, anchor=east, draw=white!80.0!black, fill=myfg!30!mybg},
-%         tick align=outside,
-%         tick pos=left,
-%         x grid style={white!69.01960784313725!black},
-%         xmin=0.5, xmax=6.5,
-%         xtick = {1, 2, 3, 4, 5, 6},
-%         xtick style={color=white},
-%         y grid style={white!69.01960784313725!black},
-%         ymin=0.1, ymax=0.7,
-%         ytick = {0.2, 0.4, 0.6},
-%         ytick style={color=white}
-%         ]
-%         \addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
-%         table {%
-%         1 0.38571667343747
-%         2 0.402429158203537
-%         3 0.440747738282957
-%         4 0.359233941813858
-%         5 0.337470844946825
-%         6 0.339900884621234
-%         };
-%         \addlegendentry{softmax}
-%         \addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
-%         table {%
-%         1 0.378367748537659
-%         2 0.504354104995477
-%         3 0.573529792473815
-%         4 0.525266398541884
-%         5 0.439669581263257
-%         6 0.421346772557364
-%         };
-%         \addlegendentry{1.5-entmax}
-%         \addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
-%         table {%
-%         1 0.427742934860258
-%         2 0.484287995253192
-%         3 0.533714455762104
-%         4 0.449772918584636
-%         5 0.3935698561848
-%         6 0.355665944457941
-%         };
-%         \addlegendentry{$\alpha$-entmax}
-%     \end{groupplot}
-%     \end{tikzpicture}
-%     \end{column}
-%     \begin{column}{.33\textwidth}
-%     \centering
-%     \uncover<4->{
-%     \textbf{\emph{clearer head roles}}\\[\baselineskip]
-%     \vspace{-0.2cm}
-%     \includegraphics[width=.6\textwidth]{figures/bpe4}}
-%     \end{column}
-%     \end{columns}
-
-%     \vfill
-
-%     \centering
-%     {\scriptsize
-%     \color{mygr}
-%     \begin{tabular}{r@{~}l@{\quad}r@{~}l}
-%     \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax} &
-%     \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
-%     \end{tabular}}
-
-% \end{frame}
+    \centering
+    {\scriptsize
+    \color{mygr}
+    \begin{tabular}{r@{~}l@{\quad}r@{~}l}
+    \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/sparse-marginalization-lvm}{\tt github.com/deep-spin/sparse-marginalization-lvm} &
+    \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
+    \end{tabular}}
+\end{frame}
 
 % \begin{frame}
 %     \centering

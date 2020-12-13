@@ -1,0 +1,934 @@
+%! TeX program = xelatex
+
+\documentclass[xetex,aspectratio=169,xcolor,professionalfonts,hyperref]{beamer}
+\usepackage[
+    style=authoryear,
+    backend=biber,
+    natbib,
+    uniquename=false,
+    maxcitenames=2,
+    maxbibnames=20,
+    sorting=nty]{biblatex}
+\addbibresource{refs.bib}
+\renewcommand*{\bibfont}{\scriptsize}
+\usepackage{anyfontsize}
+\usepackage{tabularx}
+\usepackage{changepage}
+\input{preamble}
+\input{commands}
+\captionsetup[figure]{labelformat=empty}
+\pgfplotsset{compat=1.16}
+\newcommand\simplex{\triangle}
+\newcommand\HHs{\HH^{\textsc{s}}}
+\newcommand\HHg{\HH^{\textsc{g}}}
+\newcommand\HHta{\HH^{\textsc{t}}_{\alpha}}
+\newcommand\xv{\bs{x}}
+\newcommand{\matr}[1]{\mathbf{#1}}
+
+\newcommand{\simpledep}[2]{%
+\begin{dependency}[edge style={tPeony,very thick},hide label,arc edge]%
+\begin{deptext}[column sep=.3cm]#1\end{deptext}%
+#2%
+\end{dependency}}
+
+\DeclareMathOperator{\softmax}{\mathbf{softmax}}
+\DeclareMathOperator{\sparsemax}{\mathbf{sparsemax}}
+\definecolor{tBleu}{RGB}{118,169,196}
+\definecolor{tDY}{RGB}{217,192,102}
+\title{Efficient Marginalization of Discrete and Structured Latent Variables via Sparsity}
+\author{Gonçalo Correia, Vlad Niculae, Andr\'{e} F.T. Martins}
+
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+% \AtBeginSection[]
+% {
+% \begin{frame}
+%     \frametitle{Table of Contents}
+
+%     \begin{adjustwidth}{5cm}{0.1em}
+%         \tableofcontents[currentsection]
+%     \end{adjustwidth}
+% \end{frame}
+% }
+
+\begin{document}
+
+\begin{frame}
+%\titlepage
+\begin{tikzpicture}[remember picture, overlay]
+
+\node[font={\color{myfg}\usebeamerfont{title}},align=center]
+    at ($(current page.center) + (0, 2.5)$) {\color{myDarkYellow} Efficient Marginalization};
+\node[font={\color{myfg}\usebeamerfont{title}},align=center]
+    at ($(current page.center) + (0, 1.8)$) {\color{myDarkYellow} of Discrete and Structured Latent Variables};
+\node[font={\color{myfg}\usebeamerfont{title}},align=center]
+    at ($(current page.center) + (0, 1.0)$) {\color{myDarkYellow} via Sparsity};
+\node[anchor=north,font={\color{myfg}\usebeamerfont{author}}]
+    at ($(current page.center) + (0, 0.5)$)
+{
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{r l}
+\textbf{Gonçalo Correia} &\small \textcolor{mygr}{Instituto de Telecomunicações, Lisbon} \\
+Vlad Niculae             &\small \textcolor{mygr}{IvI, University of Amsterdam} \\
+Wilker Aziz             &\small \textcolor{mygr}{ILLC, University of Amsterdam} \\
+André Martins            &\small \textcolor{mygr}{Instituto de Telecomunicações \& LUMLIS \& Unbabel}  \\
+\end{tabular}
+};
+
+\node[anchor=south,font={\color{mygr}\footnotesize}]
+    at (current page.south)
+{
+\raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}} \href{https://github.com/deep-spin/sparse-marginalization-lvm}{\tt github.com/deep-spin/sparse-marginalization-lvm}
+\quad
+\raisebox{-0.4mm}[\height][\depth]{\emoji{home}}
+\href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
+};
+\end{tikzpicture}
+\end{frame}
+
+\tikzset{%
+    enc/.style={fill=tPurple!80!mybg},
+    attn/.style={fill=tPeony},
+    dec/.style={fill=tBlue!50!mybg},
+    wvec/.style={
+        inner sep=0,
+        rectangle,
+        rounded corners=2pt,
+        minimum width=5pt,
+        minimum height=18pt},
+    word/.style={
+        color=mygr,
+        font=\itshape
+    },
+    netarrow/.style={->, color=mygr},
+    attnedge/.style={tPeony, thick}
+}
+
+\section{Context}
+
+\begin{frame}
+    \frametitle{Latent Variable Models}
+
+    \begin{itemize}
+        \uncover<1->{\item[] Latent variable $z$ can be }\uncover<2->{{\color{tGreen} continuous}}\uncover<3->{, {\color{tPeony} discrete}}\uncover<4->{, or {\color{tVividBlue} structured}}
+    \end{itemize}
+    
+    \only<1-2>{\uncover<2>{
+    \begin{figure}[hb]
+        \centering
+        \begin{subfigure}[b]{0.24\columnwidth}
+            \centering
+            \includegraphics[width=\columnwidth]{figures/face1.png}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.24\columnwidth}
+            \centering
+            \includegraphics[width=\columnwidth]{figures/face2.png}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.24\columnwidth}
+            \centering
+            \includegraphics[width=\columnwidth]{figures/face3.png}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.24\columnwidth}
+            \centering
+            \includegraphics[width=\columnwidth]{figures/face4.png}
+        \end{subfigure}
+        \caption{Source: \cite{faces}}
+        \label{fig:rotation}
+    \end{figure}
+    }}
+
+    \only<3>{
+    \begin{figure}[hb]
+        \centering
+            \includegraphics[width=0.5\columnwidth]{figures/eyes.png}
+            \caption{Source: \href{https://valleyeyecareaz.com/how-is-your-eye-color-determined/}{valleyeyecareaz.com}}
+        \label{fig:eyes}
+    \end{figure}
+    }
+
+    \only<4>{
+    \begin{figure}[hb]
+        \centering
+            \includegraphics[width=0.6\columnwidth]{figures/celeba_bg.pdf}
+            \caption{Source: \cite{liu2015faceattributes}}
+        \label{fig:eyes}
+    \end{figure}
+    }
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Training Discrete or Structured Latent Variable Models}
+    \fontsize{12pt}{15}\selectfont
+
+    \begin{columns}
+    \hspace{2mm}\vspace{-1cm}\begin{column}{0.7\columnwidth}\vspace{-1cm}
+    \begin{itemize}
+        \uncover<1->{\item[] Latent variable $z$ can be }\uncover<2->{{\color{tPeony} discrete}}\uncover<3->{ or {\color{tVividBlue} structured}}
+    \end{itemize}
+
+    \begin{itemize}
+        \uncover<4->{\item[] $\pi(z | x, \theta)$: distribution over possible $z$}
+    \end{itemize}
+
+    % besides this, there's also
+    \begin{itemize}
+        \uncover<7->{\item[] $\ell(x, z; \theta)$: downstream loss: ELBO, Log-Likelihood, (...)}
+    \end{itemize}
+
+    \end{column}
+
+    \begin{column}{0.25\columnwidth}
+            \vspace{-0.5cm}
+            \begin{center}
+                \begin{figure}[ht]
+                \begin{tikzpicture}
+                    % DISCRETE
+                    \uncover<2->{\draw[draw=tPink,fill=tPink] (1.4,2) circle (0.2) node[anchor=south, yshift=2mm] {{\visible<5->{\color{tPeony} \small 0.2}}};}
+                    \uncover<2->{\draw[draw=tSlateBlue,fill=tSlateBlue] (2,2) circle (0.2) node[anchor=south, yshift=2mm] {{\visible<5->{\color{tPeony} \small 0.6}}};}
+                    \uncover<2->{\draw[draw=tGreen,fill=tGreen] (2.6,2) circle (0.2) node[anchor=south, yshift=2mm] {{\visible<5->{\color{tPeony} \small 0.1}}};}
+
+                    % STRUCTURE
+                    \uncover<3->{\draw[draw=tSlateBlue,fill=tSlateBlue] (1.4,1) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};}
+                    \uncover<3->{\draw[draw=tGreen,fill=tGreen] (2,1) circle (0.2);}
+                    \uncover<3->{\draw[draw=tPink,fill=tPink] (2.6,1) circle (0.2)
+                        node[anchor=west, xshift=2mm] {$]$}
+                        node[anchor=west, xshift=5mm] {{\visible<6->{\color{tVividBlue} \small 0.4}}};}
+
+                    \uncover<3->{\draw[draw=tPink,fill=tPink] (1.4,0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};}
+                    \uncover<3->{\draw[draw=tSlateBlue,fill=tSlateBlue] (2,0.5) circle (0.2) node[anchor=north, yshift=-4mm] {\large \bf $\ldots$};}
+                    \uncover<3->{\draw[draw=tGreen,fill=tGreen] (2.6,0.5) circle (0.2)
+                        node[anchor=west, xshift=2mm] {$]$}
+                        node[anchor=west, xshift=5mm] {{\visible<6->{\color{tVividBlue} \small 0.05}}};}
+
+                    \uncover<3->{\draw[draw=tGreen,fill=tGreen] (1.4,-0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};}
+                    \uncover<3->{\draw[draw=tSlateBlue,fill=tSlateBlue] (2,-0.5) circle (0.2);}
+                    \uncover<3->{\draw[draw=tPink,fill=tPink] (2.6,-0.5) circle (0.2)
+                        node[anchor=west, xshift=2mm] {$]$}
+                        node[anchor=west, xshift=5mm] {{\visible<6->{\color{tVividBlue} \small 0.3}}};}
+                \end{tikzpicture}
+                \end{figure}
+            \end{center}
+    \end{column}
+    \end{columns}
+
+    \vspace{-0.5cm}
+
+    \begin{itemize}
+        \uncover<8->{\item[] To train, we need to compute the following expectation:}
+    \end{itemize}
+
+    \begin{equation*}\label{eq:fit}
+        \uncover<9->{\mathcal{L}_{x}(\theta) =
+        \sum_{z \in \mathcal Z}
+        \pi(z | x, \theta)
+        ~\ell(x, z; \theta)}
+    \end{equation*}
+
+    \begin{itemize}
+        \uncover<10->
+        {\item[] If $\mathcal Z$ is
+        \only<10>{{\color{tPeony} large}, this sum can get very expensive due to $\ell(x, z; \theta)$!\quad\emoji{oface}}
+        \only<11->{{\color{tVividBlue} combinatorial}, this can be intractable to compute!\quad\emoji{oface}\enspace\emoji{oface}\enspace\emoji{oface}}}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Current Solutions}
+    \fontsize{12pt}{15}\selectfont
+
+    \begin{itemize}
+        \item[] If $\mathcal Z$ is large, exact gradient computation is prohibitive
+    \end{itemize}
+
+    \bigskip
+
+    \begin{itemize}
+        \uncover<2->{\item[] One option: SFE (aka REINFORCE) $\rightarrow$ unbiased but high variance}
+        \uncover<3->{\item[] Another option: Gumbel-Softmax $\rightarrow$ continuous relaxation, biased estimation}
+    \end{itemize}
+
+    \bigskip
+
+    \begin{itemize}
+        \uncover<4->{\item[] New option: {\color{tPeony} use sparsity}!\quad\emoji{palms}}
+    \end{itemize}
+
+    \begin{itemize}
+        \uncover<5->{\item[] no need for sampling $\rightarrow$ no variance}
+        \uncover<6->{\item[] no relaxation into the continuous space}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Taking a step back...}
+    \fontsize{12pt}{15}\selectfont
+    \begin{itemize}
+        \item[] Does the expectation over possible $z$ need to be expensive?
+    \end{itemize}
+
+    \begin{align*}\label{eq:fit}
+        \uncover<2->{\mathcal{L}_{x}(\theta) &=
+        \sum_{z \in \mathcal Z}
+        \pi(z | x, \theta)~\ell(x, z; \theta) \\&=
+        \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) + \pi(z_2 | x, \theta)~\ell(x, z_2; \theta) + \ldots \\&+ \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) + \ldots + \pi(z_N | x, \theta)~\ell(x, z_N; \theta)
+        }
+    \end{align*}
+
+    % \begin{itemize}
+    %     \uncover<3->{\item[] If components of $\pi(z | x, \theta)$ were exactly $0$, we could skip lots of computations!}
+    % \end{itemize}
+
+    \begin{itemize}
+        \uncover<3->{\item[] Usually we normalize $\pi$ with $\text{softmax} \propto \exp(s) \Rightarrow \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)>0$}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Sparse normalizers}
+    \fontsize{12pt}{10}\selectfont
+    \cornercite[north east]{sparsemax, sparsemap}
+    \begin{itemize}
+        \item[] We use {\color{tPeony} sparsemax}, {\color{tVividBlue} top-$k$ sparsemax} and {\color{tVividBlue} SparseMAP} to allow efficient marginalization
+    \end{itemize}
+
+    \begin{itemize}
+        \uncover<2->{\item[] These functions are able to assign {\bf probabilities of exactly zero}!}
+    \end{itemize}
+
+    \begin{align*}
+        \uncover<3->{\mathcal{L}_{x}(\theta) &=
+        \sum_{z \in \mathcal Z}
+        \pi(z | x, \theta)~\ell(x, z; \theta) \\&=
+        \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) + \alt<3>{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)}{\cancel{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)}} + \ldots \\&+
+        \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) + \ldots + \alt<3>{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}{\cancel{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}}
+        }
+    \end{align*}
+
+    \begin{itemize}
+        \uncover<4->{\item[] No need for computing $\ell(x, z; \theta)$ for all $z \in \mathcal Z$!}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[label=blub]
+    \frametitle{Discrete, unstructured case: sparsemax}
+    \begin{columns}
+    \begin{column}{.58\textwidth}
+    \centering
+    \vspace{-.3cm}
+    \[ \mapo(s) = \argmax_{\p\in\triangle} \p^\top s - \Omega(\p) \]
+    \vspace{-.3cm}
+    {
+    \fontsize{12.5pt}{13}\selectfont%
+    \def\vph{\vphantom{$\sum_j$}}
+    \renewcommand{\arraystretch}{2}
+    \begin{tabular}{r@{~}r@{:~~}r@{$\,=\,$}l}
+    \onslide<2->{
+    \colorbul{colorArgmax} &
+    argmax    & $\Omega(\p)$ & \vph $0$
+    \textcolor{mygr}{\emph{(no smoothing)}} \\}
+    \onslide<3->{
+    \colorbul{colorSoftmax} &
+    softmax   & $\Omega(\p)$ & $\sum_j p_j \log p_j$ \\}
+    \onslide<4->{
+    \colorbul{colorSparsemax} &
+    sparsemax & $\Omega(\p)$ & \vph $\nicefrac{1}{2} \|\p\|^2_2$ \\}
+    \end{tabular}%
+    }
+    \end{column}%
+    %
+    %
+    \begin{column}{.42\textwidth}
+    \centering
+    % BEGIN softmax 2d plot
+    \begin{tikzpicture}[scale=.9]
+        \draw[axisline,->] (3, 3) -- (3, 5.5) node[left] {$p_1$};
+        \draw[axisline,->] (3, 3) -- (7, 3) node[right]{$\theta_1$};
+    
+        \node[axislabel,left] at (3, 3) {$0$};
+        \node[axislabel,left] at (3, 5) {$1$};
+    
+        \draw[axisline] ($(3,3) + (-\ticksize, 0)$) -- ($(3,3) + (+\ticksize, 0)$);
+        \draw[axisline] ($(3,4) + (-\ticksize, 0)$) -- ($(3,4) + (+\ticksize, 0)$);
+        \draw[axisline] ($(3,5) + (-\ticksize, 0)$) -- ($(3,5) + (+\ticksize, 0)$);
+    
+        \draw[axisline] ($(3,3) + (0, -\ticksize)$) -- ($(3,3) + (0, +\ticksize)$);
+        \draw[axisline] ($(4,3) + (0, -\ticksize)$) -- ($(4,3) + (0, +\ticksize)$);
+        \draw[axisline] ($(5,3) + (0, -\ticksize)$) -- ($(5,3) + (0, +\ticksize)$);
+        \draw[axisline] ($(6,3) + (0, -\ticksize)$) -- ($(6,3) + (0, +\ticksize)$);
+    
+        \node[axislabel,below] at (4, 3) {$-1$};
+        \node[axislabel,below] at (5, 3) {$0$};
+        \node[axislabel,below] at (6, 3) {$1$};
+    
+        \onslide<2->{
+            \draw[ultra thick,colorArgmax] (3, 3) -- (5,3) ;
+            \draw[ultra thick,colorArgmax] (5, 5) -- (7,5) ;
+        }
+        \onslide<3->{
+            \draw (3, 3.1)
+            edge[colorSoftmax,ultra thick,out=360,in=180,looseness=1.5] (7, 4.9);
+        }
+        \onslide<4->{
+            \draw[ultra thick,colorSparsemax,dashed]
+            (3, 3) -- (4,3) -- (6,5) -- (7, 5) ;
+        }
+    \end{tikzpicture}%
+    % END softmax 2d plot
+    \\[-0.1cm]
+    % BEGIN Simplex barycentric
+    \begin{tikzpicture}
+    \setupsimplexbary{}
+    \coordinate (argmax)    at (barycentric cs:L1=0,L2=0,L3=1);
+    \coordinate (softmax)   at (barycentric cs:L1=.3,L2=.2,L3=.5);
+    \coordinate (sparsemax) at (barycentric cs:L1=.3,L2=0,L3=.7);
+    
+    \onslide<2->{
+    \node[label=west:{\small $[0,0,1]$}] at (argmax) {};
+    \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
+    }
+    \onslide<3->{
+    \node[label=south:{\small $[.3,.2,.5]$}] at (softmax) {};
+    \draw[point,fill=colorSoftmax] (softmax) circle[radius=5pt];
+    }
+    \onslide<4->{
+    \node[label=west:{\small $[.3,0,.7]$}] at (sparsemax) {};
+    \draw[point,fill=colorSparsemax] (sparsemax) circle[radius=5pt];
+    }
+    \end{tikzpicture}%
+    %% END Simplex Barycentric
+    \vspace{-.5cm}%
+    \end{column}%
+    \end{columns}%
+        
+    \begin{tikzpicture}[font=\footnotesize,remember picture,overlay]
+        \node[anchor=north east] at (current page.north east) {
+            \citep{sparseattn}};
+        \node<4>[anchor=south west] at (current page.south west) {
+            \citep{sparsemax}};
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Semi-Supervised VAE}%\cornerciteme{sparsemarg}
+
+    \newcommand*\parcolor{myfg}
+    \newcommand*\clfcolor{myfg}
+    \newcommand*\colParseZero{mybg}
+    \newcommand*\colParseNonz{mybg}
+    \renewcommand*\parcolor{tPeony}
+    \renewcommand*\clfcolor{tYellow}
+
+    \begin{align*}
+        \mathcal{L}_{x}(\theta) &=
+            \tikzmark{sum}\sum_{z \in \mathcal{Z}}
+            \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
+            \textcolor{\clfcolor}{\ell\tikzmark{clfp}(x, z)}\\
+            &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
+            \textcolor{\clfcolor}{\ell(x, z)}
+    \end{align*}
+
+    \vspace{\baselineskip}
+    \begin{itemize}
+    \item<1-> Semi-Supervised VAE on MNIST: $z$ is one of 10 categories
+    \item<4-> Train this with 10\% labeled data
+    \end{itemize}
+    \begin{tikzpicture}[%
+        remember picture,
+        overlay,
+        expl/.style={font=\small}]
+    \uncover<2->{
+        \node[expl,anchor=north east] (explpar)
+            at ($(current page.north east) - (.5, 2.0)$)
+            {Gaussian VAE};
+        \path (explpar.west) edge[->,very thick,bend right] ([yshift=2.0ex]{pic cs:clfp});
+    }
+    %
+    \uncover<3->{
+        \node[expl,anchor=north west,align=left] (explsum)
+            at ($(current page.west) + (.5, 1.5)$)
+            {sum over \\ the 10 digits};
+        \path (explsum.east) edge[->,very thick,bend left] ([yshift=2.5ex]{pic cs:sum});
+    }
+    \uncover<2->{
+        \node[expl,anchor=north east,align=right] (explscore)
+            at ($(current page.north east) - (.5, 3.5)$)
+            {classification network};
+        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-1.0ex]{pic cs:parp});
+    }
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Semi-Supervised VAE}
+    \begin{columns}[T]
+    \begin{column}{.53\textwidth}
+        \centering\small%
+        \begin{tabular}{lrr}
+            \toprule
+            Method &
+            Accuracy (\%)
+            & Dec. calls\\
+            \midrule
+        \multicolumn{3}{l}{\emph{Monte Carlo}} \\
+            SFE
+            & $94.75${\tiny\color{gray}$\pm .002$} & $1$ \\
+            SFE$+$
+            & $96.53${\tiny\color{gray}$\pm .001$}  & $2$  \\
+            NVIL
+            & $96.01${\tiny\color{gray}$\pm .002$}  & $1$  \\
+            Gumbel
+            & $95.46${\tiny\color{gray}$\pm .001$}  & $1$  \\
+            \midrule
+        \multicolumn{3}{l}{\emph{Marginalization}} \\
+            Dense
+            & $96.93${\tiny\color{gray}$\pm .001$}  & $10$  \\
+            \only<2->{\textcolor{tPeony}{Sparse}
+            & $96.87${\tiny\color{gray}$\pm .001$}  & $1.01${\tiny\color{gray}$\pm 0.01$}}  \\
+            \bottomrule
+            \end{tabular}
+    \end{column}
+    \begin{column}{.47\textwidth}
+        \centering%
+        \onslide<3->{
+        \input{ssvae_elbo}
+        }
+    \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Emergent communication}
+
+    \newcommand*\parcolor{myfg}
+    \newcommand*\clfcolor{myfg}
+    \newcommand*\colParseZero{mybg}
+    \newcommand*\colParseNonz{mybg}
+    \renewcommand*\parcolor{tPeony}
+    \renewcommand*\clfcolor{tYellow}
+
+    \begin{align*}
+        \mathcal{L}_{x}(\theta) &=
+            \tikzmark{sum}\sum_{z \in \mathcal{Z}}
+            \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
+            \textcolor{\clfcolor}{\ell(x, z)\tikzmark{clfp}}\\
+            &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
+            \textcolor{\clfcolor}{\ell(x, z)}
+    \end{align*}
+    \vspace{\baselineskip}
+    \begin{itemize}
+    \item<2-> receiver picks image from a set $\mathcal{V}$ based on message
+    \item<3-> images come from ImageNet
+    \end{itemize}
+    \begin{tikzpicture}[%
+        remember picture,
+        overlay,
+        expl/.style={font=\small}]
+    \uncover<2->{
+        \node[expl,anchor=north east] (explpar)
+            at ($(current page.north east) - (.5, 1.5)$)
+            {sender};
+        \path (explpar.west) edge[->,very thick,bend right] ([yshift=3.0ex]{pic cs:parp});
+    }
+    %
+    \uncover<3->{
+        \node[expl,anchor=north west,align=left] (explsum)
+            at ($(current page.west) + (.5, 1.5)$)
+            {sum over \\ all possible messages \\ in the vocabulary};
+        \path (explsum.east) edge[->,very thick,bend left] ([yshift=3.5ex]{pic cs:sum});
+    }
+    \uncover<2->{
+        \node[expl,anchor=north east,align=right] (explscore)
+            at ($(current page.north east) - (.5, 3)$)
+            {receiver};
+        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-0.2ex, xshift=2.5ex]{pic cs:clfp});
+    }
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Emergent Communication}\cornercite{Lazaridou2017,sparsemarg}%
+    \framesubtitle{
+    \textcolor{mygr}{... but make it harder: $|\mathcal{Z}|=256$, $|\mathcal{V}|=16$}
+    }
+    \begin{columns}[T]
+    \begin{column}{.55\textwidth}
+    \centering\small%
+    \begin{tabular}{lr@{~}lr}
+    \toprule
+    Method & \multicolumn{2}{c}{success (\%)}  & Dec. calls  \\
+    \midrule
+    {\emph{Monte Carlo}} & & & \\
+    SFE  & $33.05$&{\tiny\color{gray}$\pm 2.84$}  & $1$  \\
+    SFE$+$  & $44.32$&{\tiny\color{gray}$\pm 2.72$}  & $2$  \\
+    NVIL  & $37.04$&{\tiny\color{gray}$\pm 1.61$}  & $1$  \\
+    Gumbel     & $23.51$&{\tiny\color{gray}$\pm 16.19$}  & $1$  \\
+    ST Gumbel  & $27.42$&{\tiny\color{gray}$\pm 13.36$}  & $1$  \\
+    \midrule
+    \emph{Marginalization} & & & \\
+    \only<2->{Dense & $93.37$&{\tiny\color{gray}$\pm 0.42$}&$256$}\\
+    \only<3->{\textcolor{tPeony}{Sparse} &
+        $93.35$&{\tiny\color{gray}$\pm 0.50$} &
+        $3.13${\tiny\color{gray}$\pm 0.48$}} \\
+    \bottomrule
+    \end{tabular}
+    \end{column}
+    \begin{column}{.45\textwidth}
+    \centering%
+    \onslide<4->{
+    \input{results_emergent}
+    }
+    \end{column}
+    \end{columns}
+\end{frame}
+    
+\begin{frame}{Limitations}%\cornerciteme{sparsemarg}
+    {\small
+    \begin{itemize}
+    \item Mostly (and eventually) very sparse. \\ \quad
+    But fully dense worst case.
+    \item For the same reason, sparsemax cannot handle structured $z$.
+    \end{itemize}}
+
+    \uncover<2->{
+    \vspace{-0.5cm}
+    \fontsize{12pt}{15}\selectfont
+    \center{One solution: \textcolor{tPeony}{top-k sparsemax}}
+    \vspace{-0.3cm}
+    \begin{equation*}
+     k\operatorname{-sparsemax}(s)
+    = \displaystyle\argmin_{\p \in \triangle, \|\p\|_0 \leq k} \| \p - s \|_2^2
+    \end{equation*}
+    }
+    \uncover<3->{%
+    \small
+    \begin{itemize}
+    \item Non-convex but easy: sparsemax over the k highest scores \citep{kyrillidis2013sparse}.
+    \item Top-k oracle available for some structured problems.
+    \item Certificate: if at least one of the top-k $z$ gets $p(z)=0$,
+    \textcolor{tPeony}{\textbf{k-sparsemax = sparsemax}}!
+    \\ \quad thus, biased early on, but it goes away.
+    \end{itemize}}
+\end{frame}
+
+\begin{frame}%
+    \begin{columns}%
+    \begin{column}{.45\textwidth}\centering%
+    \vbox to .9\textheight{%
+    {%
+    \fontsize{12.5pt}{13}\selectfont%
+    \setlength{\tabcolsep}{2pt}%
+    \renewcommand{\arraystretch}{2}%
+    \begin{tabular}{r r l}
+    \onslide<3->{%
+    \colorbul{colorArgmax} &
+    \textbf{argmax} &
+    $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s}$ \\
+    }
+    \onslide<5->{%
+    \colorbul{colorSoftmax} &
+    \textbf{softmax} &
+    $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s} + \HH(\p)$ \\
+    }
+    \onslide<7->{%
+    \colorbul{colorSparsemax} &
+    \textbf{sparsemax} &
+    $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s} - \nicefrac{1}{2} \|\p\|^2$
+    }%
+    \end{tabular}%
+    }
+    \vfill
+    \begin{tikzpicture}
+    \setupsimplexbary[2.5]{}
+    \coordinate (argmax)    at (barycentric cs:L1=0,L2=0,L3=1);
+    \coordinate (softmax)   at (barycentric cs:L1=.3,L2=.2,L3=.5);
+    \coordinate (sparsemax) at (barycentric cs:L1=.3,L2=0,L3=.7);
+    
+    \onslide<3->{
+    \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
+    }
+    \onslide<5->{
+    \draw[point,fill=colorSoftmax] (softmax) circle[radius=5pt];
+    }
+    \onslide<7->{
+    \draw[point,fill=colorSparsemax] (sparsemax) circle[radius=5pt];
+    }
+    \end{tikzpicture}}\end{column}
+    \begin{column}{.54\textwidth}\centering
+    \vbox to .9\textheight{%
+    {%
+    \fontsize{12.5pt}{13}\selectfont%
+    \setlength{\tabcolsep}{2pt}%
+    \renewcommand{\arraystretch}{2}%
+    \begin{tabular}{r l l@{\quad}}
+    \onslide<4->{%
+    \textbf{MAP} &
+    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t}$ &
+    \colorbul{colorArgmax} \\
+    }%
+    \onslide<6->{%
+    \textbf{marginals} &
+    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t} + \widetilde{\HH}(\mg)$ &
+    \colorbul{colorSoftmax} \\
+    }%
+    \onslide<8->{%
+    \textbf{SparseMAP} &
+    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t} - \nicefrac{1}{2} \|\mg\|^2$ &
+    \colorbul{colorSparsemax}
+    }%
+    \end{tabular}%
+    }
+    \vfill
+    \begin{tikzpicture}[node distance=0pt]%
+    \uncover<1->{
+    \node[
+        ultra thick,
+        draw=tYellow,
+        fill=tYellow,
+        fill opacity=.15,
+        minimum size=2.5cm,
+        regular polygon, regular polygon sides=6] (mp) {};
+    \node[label=east:{\small$\Mp$}] at (mp.corner 5) {};
+    \foreach \i in {1, ..., 6}%
+    {
+        \draw[tYellow,fill] (mp.corner \i) circle[radius=3pt];
+    }
+    }
+    \coordinate (L1) at (mp.corner 3);
+    \coordinate (L2) at (mp.corner 5);
+    \coordinate (L3) at (mp.corner 2);
+    \coordinate (argmax)    at (L3);
+    \coordinate (softmax)   at (barycentric cs:L1=.25,L2=.25,L3=.45);
+    \coordinate (sparsemax) at (barycentric cs:L1=.4,L3=.6);
+    \onslide<4->{
+        \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
+        \node[above right=of argmax] {\cartoon[.5]{1/4,2/5}};
+    }
+    \onslide<6->{
+        \draw[point,fill=colorSoftmax] (softmax) circle[radius=5pt];
+        \node[below right=of softmax] {\cartoonDense[.5]{}};
+    }
+    \onslide<8->{
+        \draw[point,fill=colorSparsemax] (sparsemax) circle[radius=5pt];
+        \node[left=of sparsemax] {\cartoonSparse[.5]{}};
+    }
+    \end{tikzpicture}}\end{column}
+    \end{columns}
+    \begin{tikzpicture}[font=\footnotesize,remember picture,overlay]
+        \node<8>[anchor=north east] at (current page.north east) {
+            \textcolor{mygr}{\realcitep*{sparsemap}}};
+    \end{tikzpicture}
+    \uncover<2>{\overlaybox[.33]{
+    $\begin{aligned}
+        \Mp &\defeq \conv \big\{ \bs{a}_z : z \in \mathcal{Z} \big\} \\
+        &= \big\{ \bs{A}\p : \p \in \triangle \big\} \\
+        &= \big\{ \mathbb{E}_{Z\sim\p}~\bs{a}_Z : \p \in \triangle \big\}
+    \end{aligned}$
+    }}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Bit-vector VAE}
+    \newcommand*\parcolor{myfg}
+    \newcommand*\clfcolor{myfg}
+    \newcommand*\colParseZero{mybg}
+    \newcommand*\colParseNonz{mybg}
+    \renewcommand*\parcolor{tPeony}
+    \renewcommand*\clfcolor{tYellow}
+    \begin{align*}
+        \mathcal{L}_{x}(\theta) &=
+            \tikzmark{sum}\sum_{z \in \mathcal{Z}}
+            \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
+            \textcolor{\clfcolor}{\ell\tikzmark{clfp}(x, z)}\\
+            &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
+            \textcolor{\clfcolor}{\ell(x, z)}
+    \end{align*}
+    \begin{itemize}
+        \item<2-> VAE where $z$ is a collection of $D$ bits
+        \item<3-> Minimize the negative ELBO
+        \end{itemize}
+    \begin{tikzpicture}[%
+        remember picture,
+        overlay,
+        expl/.style={font=\small}]
+    \uncover<2->{
+        \node[expl,anchor=north east] (explpar)
+            at ($(current page.north east) - (.5, 2.0)$)
+            {generative network};
+        \path (explpar.west) edge[->,very thick,bend right] ([yshift=2.0ex]{pic cs:clfp});
+    }
+    %
+    \uncover<4->{
+        \node[expl,anchor=north west,align=left] (explsum)
+            at ($(current page.west) + (.5, 1.5)$)
+            {sum over \\ an exponetially large \\ set of structures};
+        \path (explsum.east) edge[->,very thick,bend left] ([yshift=2.5ex]{pic cs:sum});
+    }
+    \uncover<2->{
+        \node[expl,anchor=north east,align=right] (explscore)
+            at ($(current page.north east) - (.5, 3.5)$)
+            {inference network};
+        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-1.0ex]{pic cs:parp});
+    }
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Bit-vector VAE}%
+    \begin{columns}[T]
+    \begin{column}{.53\textwidth}
+    \centering\small%
+    \begin{tabular}{lrr}
+        \toprule
+        Method & $D=32$ & $D=128$\\
+        \midrule
+    \multicolumn{3}{l}{\emph{Monte Carlo}} \\
+        SFE & $3.74$ & $3.77$  \\
+        SFE$+$ & $3.61$ & $3.59$  \\
+        NVIL & $3.65$ & $3.60$ \\
+        Gumbel & $3.57$ & $3.49$  \\
+    \midrule
+    \multicolumn{3}{l}{\emph{Marginalization}} \\
+    \color{tVividBlue}{Top-$k$ sparsemax} & $3.62$ & $3.61$  \\
+    \color{tVividBlue}{SparseMAP} & $3.72$ & $3.67$  \\
+    \color{tVividBlue}{SparseMAP (w/ budget)} & $3.64$ & $3.66$  \\
+        \bottomrule
+    \end{tabular}
+    \end{column}
+    \begin{column}{.47\textwidth}
+    \centering%
+    \only<1-2>{
+        \vspace{-0.5cm}
+        \uncover<2>{\input{distortion-rate}}
+        }
+    \only<3>{
+        \input{spars_32}
+        }
+    \only<4>{
+        \input{spars_128}
+        }
+    \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Key Takeaways}
+
+    \centering\fontsize{14pt}{14}\selectfont%
+    We introduce a new method\\
+    to train latent variable models.
+    %
+    %
+    \vfill
+    %
+    %
+    \begin{columns}[T]
+    \small
+    \begin{column}{.33\textwidth}
+    \centering
+    \uncover<2->{
+    \textbf{\emph{discrete and structured}}\\[.5\baselineskip]
+        \begin{figure}[ht]
+        \begin{tikzpicture}
+            % DISCRETE
+            \draw[draw=tPink,fill=tPink] (1.4,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.2}};
+            \draw[draw=tSlateBlue,fill=tSlateBlue] (2,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.6}};
+            \draw[draw=tGreen,fill=tGreen] (2.6,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.1}};
+
+            % STRUCTURE
+            \draw[draw=tSlateBlue,fill=tSlateBlue] (1.4,1) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+            \draw[draw=tGreen,fill=tGreen] (2,1) circle (0.2);
+            \draw[draw=tPink,fill=tPink] (2.6,1) circle (0.2)
+                node[anchor=west, xshift=2mm] {$]$}
+                node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.4}};
+
+            \draw[draw=tPink,fill=tPink] (1.4,0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+            \draw[draw=tSlateBlue,fill=tSlateBlue] (2,0.5) circle (0.2) node[anchor=north, yshift=-4mm] {\large \bf $\ldots$};
+            \draw[draw=tGreen,fill=tGreen] (2.6,0.5) circle (0.2)
+                node[anchor=west, xshift=2mm] {$]$}
+                node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.05}};
+
+            \draw[draw=tGreen,fill=tGreen] (1.4,-0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+            \draw[draw=tSlateBlue,fill=tSlateBlue] (2,-0.5) circle (0.2);
+            \draw[draw=tPink,fill=tPink] (2.6,-0.5) circle (0.2)
+                node[anchor=west, xshift=2mm] {$]$}
+                node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.3}};
+        \end{tikzpicture}
+        \end{figure}}%
+    \end{column}
+    \begin{column}{.33\textwidth}
+    \centering
+    \uncover<3->{
+    \textbf{\emph{deterministic, yet efficient}}\\[\baselineskip]
+    \vspace{-0.5cm}
+    \fontsize{10pt}{10}\selectfont
+    \begin{align*}
+        \mathcal{L}_{x}(\theta) &= \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) \\&+ \cancel{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)} \\&+ \ldots +
+        \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) \\&+ \ldots + \cancel{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}
+    \end{align*}}
+    \end{column}
+    \begin{column}{.33\textwidth}
+    \centering
+    \uncover<4->{
+    \textbf{\emph{adaptive, as needed}}\\[\baselineskip]
+    \input{results_emergent_small}}
+    \end{column}
+    \end{columns}
+
+    \vfill
+
+    \centering
+    {\scriptsize
+    \color{mygr}
+    \begin{tabular}{r@{~}l@{\quad}r@{~}l}
+    \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/sparse-marginalization-lvm}{\tt github.com/deep-spin/sparse-marginalization-lvm} &
+    \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
+    \end{tabular}}
+\end{frame}
+
+% \begin{frame}
+%     \centering
+%     \vspace{-2cm}
+%     \fontsize{30pt}{15}\selectfont
+%     Thank you!
+
+%     \bigskip
+
+%     \fontsize{20pt}{15}\selectfont
+%     Questions?
+
+%     \overlaybox[0.7]{\texttt{:pip install entmax}\\Check \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax}}
+% \end{frame}
+
+% {
+% \setbeamercolor{background canvas}{bg=white}
+% \setbeamercolor{normal text}{fg=mygr}
+% \setbeamercolor{frametitle}{fg=mybg}
+% \usebeamercolor[fg]{frametitle}
+% \usebeamercolor[fg]{normal text}
+% \begin{frame}
+% \frametitle{Acknowledgements}
+% \centering
+% \small
+% \includegraphics[width=.2\textwidth]{img/erc.png}\\
+% This work was supported by the European Research
+% Council (ERC StG DeepSPIN 758969) and by the
+% Fundação para a Ciência e Tecnologia through contract UID/EEA/50008/2019 and
+% CMUPERI/TIC/0046/2014 (GoLocal).
+% \end{frame}
+% }
+
+\begin{frame}[t,allowframebreaks]
+\frametitle{References}
+\printbibliography
+\end{frame}
+
+\end{document}
+

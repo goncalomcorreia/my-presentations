@@ -1,0 +1,67 @@
+% This file was created by tikzplotlib v0.9.4.
+\fontsize{8pt}{8}\selectfont%
+\begin{tikzpicture}
+
+\definecolor{color0}{rgb}{0.894117647058824,0.101960784313725,0.109803921568627}
+\definecolor{color1}{rgb}{1,0.498039215686275,0}
+\definecolor{color2}{rgb}{0.596078431372549,0.305882352941176,0.63921568627451}
+\definecolor{color3}{rgb}{0.870588235294118,0.870588235294118,0}
+\definecolor{color4}{rgb}{0.301960784313725,0.686274509803922,0.290196078431373}
+\definecolor{color5}{rgb}{0.968627450980392,0.505882352941176,0.749019607843137}
+\definecolor{color6}{rgb}{0.215686274509804,0.494117647058824,0.72156862745098}
+
+\begin{axis}[
+scale=.75,
+legend cell align={left},
+legend style={fill opacity=0.1, draw opacity=1, text opacity=1},
+scaled y ticks=manual:{}{\pgfmathparse{#1}},
+tick align=outside,
+tick pos=left,
+title={\(\displaystyle D=128\)},
+x grid style={white!69.0196078431373!black},
+xlabel={Rate (nats)},
+xmin=52.10048, xmax=90.46672,
+xtick style={color=black},
+y grid style={white!69.0196078431373!black},
+ylabel={Distortion (nats)},
+ymin=1872.58708, ymax=2087.76292,
+ytick style={color=black}
+]
+\addplot [semithick, color0, mark=*, mark size=5, mark options={solid}, only marks]
+table {%
+55.9455 2077.9822
+};
+\addlegendentry{SFE}
+\addplot [semithick, color1, mark=pentagon*, mark size=5, mark options={solid}, only marks]
+table {%
+65.0176 1935.8961
+};
+\addlegendentry{SFE$+$}
+\addplot [semithick, color2, mark=square*, mark size=5, mark options={solid}, only marks]
+table {%
+53.8444 1960.8422
+};
+\addlegendentry{NVIL}
+\addplot [semithick, color3, mark=+, mark size=5, mark options={solid}, only marks]
+table {%
+88.7228 1882.3678
+};
+\addlegendentry{Gumbel}
+\addplot [semithick, color4, mark=triangle*, mark size=5, mark options={solid,rotate=270}, only marks]
+table {%
+86.6325 1892.5322
+};
+\addlegendentry{sparsemax$_k$}
+\addplot [semithick, color5, mark=triangle*, mark size=5, mark options={solid,rotate=180}, only marks]
+table {%
+88.4082 1909.4969
+};
+\addlegendentry{SparseMAP}
+\addplot [semithick, color6, mark=triangle*, mark size=5, mark options={solid}, only marks]
+table {%
+88.42 1907.007
+};
+\addlegendentry{SparseMAP +budget}
+\end{axis}
+
+\end{tikzpicture}

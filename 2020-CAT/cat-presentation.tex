@@ -110,7 +110,7 @@ Committee: André Martins, Mário Figueiredo, Vlad Niculae, Wilker Aziz
     attnedge/.style={tPeony, thick}
 }
 
-\section{Introduction}
+% \section{Introduction}
 
 \begin{frame}
     \frametitle{Neural networks: big, uninterpretable, and powerful black-boxes?}
@@ -131,26 +131,21 @@ Committee: André Martins, Mário Figueiredo, Vlad Niculae, Wilker Aziz
 
 \begin{frame}
     \frametitle{Latent variables in machine translation}
-    
-    \begin{itemize}
-        \item[] What about in MT?
-    \end{itemize}
-    \vspace{1cm}
+    \cornercite{brown1993mathematics}
     \centering
-    \includegraphics[width=0.5\columnwidth]{figures/alignment_struct.png}
+    \includegraphics[width=0.5\columnwidth]{figures/alignments.pdf}
 \end{frame}
 
 \begin{frame}
     \frametitle{Latent variables in NMT}
     \centering
-    \fontsize{13pt}{15}\selectfont%
+    \fontsize{15pt}{15}\selectfont%
     \begin{itemize}
-        \uncover<1->{\item[] Advances in optimization $\rightarrow$ ditch latent
+        \uncover<1->{\item Advances in optimization $\rightarrow$ ditch latent
         variables}
-        \uncover<2->{\item[] Good for high-resource language, fails
+        \uncover<2->{\item Good for high-resource language, fails
         in low-resource settings}
-        \uncover<3->{\item[] Recent work uses variational inference to have latent variables in NMT}
-        \uncover<4->{\item[] but mostly only continuous latent variables}
+        \uncover<3->{\item Recent work uses variational inference to have latent variables in NMT}
     \end{itemize}
 \end{frame}
 
@@ -265,7 +260,7 @@ Committee: André Martins, Mário Figueiredo, Vlad Niculae, Wilker Aziz
 \end{column}
 \begin{column}{.29\textwidth}%
 \centering
-\uncover<11->{
+\uncover<4->{
 \textbf{\emph{attention weights}}
 \\computed with \emph{softmax}:
 \\[.5\baselineskip]
@@ -286,7 +281,8 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \frametitle{A bit of context... on Transformers}
 
     \fontsize{12pt}{15}\selectfont
-    \cornercite{transf}
+    \only<1-5>{\cornercite{transf}}
+    \only<6>{\cornercite{devlin2018bert}}
     \begin{columns}
     \uncover<1->{
         \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
@@ -301,6 +297,7 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
             \uncover<3->{\item In place of the RNNs, use self-attention}
             \uncover<4->{\item Do this with multiple heads (i.e. attention mechanisms in parallel)}
             \uncover<5->{\item ... and do it through several layers}
+            \uncover<6->{\item Inspiration for big general-purpose models like BERT!}
         \end{itemize}
     \end{column}
 
@@ -316,81 +313,26 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 \end{frame}
 
 \begin{frame}
-    \frametitle{Latent variables in NMT}
-    \centering
-    \fontsize{13pt}{15}\selectfont%
+    \frametitle{Outline}
+    \fontsize{15pt}{15}\selectfont%
+    \only<2>{\cornercite{myape2019}}
+    \only<3>{\cornercite{mytransf2019}}
+    \only<4>{\cornercite{myneurips2020}}
     \begin{itemize}
-        \uncover<1->{\item[] Attention can be seen as learning a soft structure}
-        \uncover<2->{\item attention between the src and tgt is similar to the alignments we've seen before}
-    \end{itemize}
-
-    \vspace{1cm}
-    \centering
-    \uncover<2->{\includegraphics[width=0.5\columnwidth]{figures/alignment_struct.png}}
-
-    \vspace{1cm}
-    \begin{itemize}
-        \uncover<3->{\item[] Spoiler: we will see that many attention heads have very specific and simple roles...}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Latent Structure in NMT inspired by APE}
-    \centering
-    \fontsize{13pt}{15}\selectfont%
-    \begin{itemize}
-        \uncover<1->{\item[] Automatic Post-Editing takes a machine translation along with the source sentence}
-        \uncover<2->{\item[]$\rightarrow$ corrects the translation by looking at both sentences}
-    \end{itemize}
-
-    \vspace{1cm}
-    \centering
-    \uncover<2->{\includegraphics[width=0.5\columnwidth]{figures/alignment_struct.png}}
-
-    \vspace{1cm}
-    \begin{itemize}
-        \uncover<3->{\item[] This task is easier than doing MT from scratch}
-        \uncover<4->{\item[] Can we do APE integrated into the MT pipeline?}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Idea: create a latent, draft translation}
-    \centering
-    \fontsize{13pt}{15}\selectfont%
-    \begin{itemize}
-        \uncover<1->{\item[] With a memory of phrase alignments between source and target, we can do APE {\it inside} the NMT system.}
-    \end{itemize}
-
-    \vspace{1cm}
-    \centering
-    \uncover<2->{\includegraphics[width=0.5\columnwidth]{figures/alignment_struct.png}}
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Our contributions}
-    \fontsize{13pt}{15}\selectfont%
-    \begin{itemize}
-        \uncover<1->{\item state of the art for APE via BERT}
-        \uncover<2->{\item find that many heads in the Transformer have simple {\it structure} that could be hard-coded}
-        \uncover<3->{\item introduce an efficient method to train discrete and structured latent variables}
-        \uncover<4->{\item bring latent structure into NMT via draft editing and latent summaries}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Our applications}
-
-    \begin{itemize}
-        \item Automatic Post-Editing
-        \item models with discrete or structured latent variables
-        \item low-resource NMT
-        \item document-level NMT
+        \uncover<2->{\item Automatic Post-Editing (APE) using BERT (ACL 2019)}
+        \uncover<3->{\item Letting Transformer learn how sparse it wants its attention (EMNLP 2019)}
+        \uncover<4->{\item General strategy for efficient training discrete latent variables (NeurIPS 2020)}
+        \uncover<5->{\item Future work: powerful structured latent variable models for NMT}
     \end{itemize}
 \end{frame}
 
 \section{A Simple and Effective Approach to Automatic Post-Editing with Transfer Learning}
+
+\begin{frame}
+    \frametitle{What is APE?}
+    \centering
+    \includegraphics[width=0.8\columnwidth]{figures/ape.pdf}
+\end{frame}
 
 \begin{frame}
     \frametitle{BERT for APE}
@@ -415,44 +357,44 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \begin{column}{0.4\columnwidth}
     \vspace{-1.5cm}
     \begin{center}
-    \includegraphics[width=0.8\columnwidth]{figures/diagram_8-dashed.pdf}
+    \includegraphics[width=0.8\columnwidth]{figures/bertape.pdf}
     \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
     \end{center}
     \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}\frametitle{Parameter sharing analysis}
-    \begin{table}[htbp]
-        \centering
-        \begin{tabular}{lcc}
-        \toprule
-         & TER$\downarrow$ & BLEU$\uparrow$ \\
-        MT Baseline & 24.76 & 62.11 \\
-        Transformer & 27.80 & 60.76 \\
-        \midrule
-        Transformer decoder & 20.33 & 69.31 \\
-        Pre-trained BERT & 20.83 & 69.11 \\
-        \hspace{1ex}\textcolor{gray}{\textit{with}}
-        CA $\leftarrow$ SA & 18.91 & 71.81 \\
-        \textover[r]
-        {\hspace{1ex}\textcolor{gray}{\textit{and}}}{\hspace{1ex}\textit{with}}
-        \textover[r]
-        {SA $\leftrightarrow$}
-        {CA $\leftarrow$} Encoder SA & \textbf{18.44} & \textbf{72.25} \\
-        \textover[r]
-        {\hspace{1ex}\textcolor{gray}{\textit{and}}}{\hspace{1ex}\textit{with}}
-        \textover[r]
-        {CA $\leftrightarrow$}{CA $\leftarrow$} SA & 18.75 & 71.83 \\
-        \textover[r]
-        {\hspace{1ex}\textcolor{gray}{\textit{and}}}{\hspace{1ex}\textit{with}}
-        \textover[r]
-        {FF $\leftrightarrow$}{CA $\leftarrow$} Encoder FF & 19.04 & 71.53 \\
-        \bottomrule
-        \end{tabular}
-            \label{tab:ablation_smt}
-    \end{table}
-\end{frame}
+% \begin{frame}\frametitle{Parameter sharing analysis}
+%     \begin{table}[htbp]
+%         \centering
+%         \begin{tabular}{lcc}
+%         \toprule
+%          & TER$\downarrow$ & BLEU$\uparrow$ \\
+%         MT Baseline & 24.76 & 62.11 \\
+%         Transformer & 27.80 & 60.76 \\
+%         \midrule
+%         Transformer decoder & 20.33 & 69.31 \\
+%         Pre-trained BERT & 20.83 & 69.11 \\
+%         \hspace{1ex}\textcolor{gray}{\textit{with}}
+%         CA $\leftarrow$ SA & 18.91 & 71.81 \\
+%         \textover[r]
+%         {\hspace{1ex}\textcolor{gray}{\textit{and}}}{\hspace{1ex}\textit{with}}
+%         \textover[r]
+%         {SA $\leftrightarrow$}
+%         {CA $\leftarrow$} Encoder SA & \textbf{18.44} & \textbf{72.25} \\
+%         \textover[r]
+%         {\hspace{1ex}\textcolor{gray}{\textit{and}}}{\hspace{1ex}\textit{with}}
+%         \textover[r]
+%         {CA $\leftrightarrow$}{CA $\leftarrow$} SA & 18.75 & 71.83 \\
+%         \textover[r]
+%         {\hspace{1ex}\textcolor{gray}{\textit{and}}}{\hspace{1ex}\textit{with}}
+%         \textover[r]
+%         {FF $\leftrightarrow$}{CA $\leftarrow$} Encoder FF & 19.04 & 71.53 \\
+%         \bottomrule
+%         \end{tabular}
+%             \label{tab:ablation_smt}
+%     \end{table}
+% \end{frame}
 
 \section{Adaptively Sparse Transformers}
 
@@ -540,71 +482,47 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
 \end{frame}
 
-\begin{frame}[fragile]
-    \frametitle{Related Work: Other Sparse Transformers}
-    \cornercite{Child2019,Sukhbaatar2019}
-
-    \vspace{-1.5cm}
-    \begin{center}
-    \includegraphics[width=0.7\columnwidth]{figures/comparison_mybg}
-
-    \bigskip
-
-    Our model allows {\color{myDarkYellow} non-contiguous} attention for each head.
-    \end{center}
-
-\end{frame}
-
 \begin{frame}[plain,t,fragile]%
     \frametitle{What is softmax?}%
     \centering \fontsize{12pt}{15}\selectfont
-    Softmax exponentiates and normalizes:\quad
+    Softmax exponentiates and normalizes:
+    
+    \begin{center}
     $\displaystyle
     \softmax(\xx_i) \defeq \frac{\exp \left(\xx_i\right)}{\sum_j \exp \left(\xx_j\right)}$
+    \end{center}
+    
+    \bigskip
 
     \uncover<2->{
     {\color{myDarkYellow} It's fully dense: $\softmax(\vectsymb{z}) > \vect{0}$}}
 
-    \vspace{1cm}
-
-    \uncover<3->{Argmax can be written as:\\
-    \vspace{0.5cm}
-    $\displaystyle
-    \argmaxbf(\vectsymb{z}) \defeq \arg\max_{\vectsymb{p} \in \triangle} \DP{\vectsymb{z}}{\vectsymb{p}}$
-
-    \bigskip
-
-    \begin{itemize}
-    \item<4-> Retrieves a {\bf one-hot vector} for the highest scored index.
-    \item<5-> Sometimes used as hard attention, but not differentiable!
-    \end{itemize}
-    }
 \end{frame}
 
-\begin{frame}{$\Omega$-Regularized Argmax}
-    \cornercite{Niculae2017}
-    \fontsize{12pt}{15}\selectfont
-    \vspace{-0.5cm}
-    \begin{itemize}
-    \item[] For convex $\Omega$, define the {\bf $\Omega$-regularized argmax transformation}:\\
-    \bigskip
-    \begin{center}
-    $\displaystyle
-    \argmaxbf{}_{{\Omega}}(\vectsymb{z}) \defeq \arg\max_{\vectsymb{p} \in \triangle} \DP{\vectsymb{z}}{\vectsymb{p}} {\color{tPeony}- \Omega(\vectsymb{p})}$
-    \end{center}
-    \end{itemize}
-    \bigskip
-    \begin{itemize}
-    \uncover<2->{\item {\color{myDarkYellow} Argmax} corresponds to {\bf no regularization}, $\displaystyle\Omega \equiv 0$}
-    \uncover<3->{\item {\color{myDarkYellow} Softmax} amounts to {\bf entropic regularization}, $\displaystyle\Omega(\vectsymb{p}) = \sum_{i=1}^K p_i \log p_i$}
-    \uncover<4->{\item {\color{myDarkYellow} Sparsemax} amounts to {\bf $\ell_2$-regularization}, $\displaystyle\Omega(\vectsymb{p}) = \frac{1}{2}\|\vectsymb{p}\|^2$.}
-    \end{itemize}
-    \bigskip
-    \begin{itemize}
-    \item[] \uncover<5->{Is there something in-between?}
-    \end{itemize}
-    \uncover<4>{\cornercite[south east]{sparsemax}}
-\end{frame}
+% \begin{frame}{$\Omega$-Regularized Argmax}
+%     \cornercite{Niculae2017}
+%     \fontsize{12pt}{15}\selectfont
+%     \vspace{-0.5cm}
+%     \begin{itemize}
+%     \item[] For convex $\Omega$, define the {\bf $\Omega$-regularized argmax transformation}:\\
+%     \bigskip
+%     \begin{center}
+%     $\displaystyle
+%     \argmaxbf{}_{{\Omega}}(\vectsymb{z}) \defeq \arg\max_{\vectsymb{p} \in \triangle} \DP{\vectsymb{z}}{\vectsymb{p}} {\color{tPeony}- \Omega(\vectsymb{p})}$
+%     \end{center}
+%     \end{itemize}
+%     \bigskip
+%     \begin{itemize}
+%     \uncover<2->{\item {\color{myDarkYellow} Argmax} corresponds to {\bf no regularization}, $\displaystyle\Omega \equiv 0$}
+%     \uncover<3->{\item {\color{myDarkYellow} Softmax} amounts to {\bf entropic regularization}, $\displaystyle\Omega(\vectsymb{p}) = \sum_{i=1}^K p_i \log p_i$}
+%     \uncover<4->{\item {\color{myDarkYellow} Sparsemax} amounts to {\bf $\ell_2$-regularization}, $\displaystyle\Omega(\vectsymb{p}) = \frac{1}{2}\|\vectsymb{p}\|^2$.}
+%     \end{itemize}
+%     \bigskip
+%     \begin{itemize}
+%     \item[] \uncover<5->{Is there something in-between?}
+%     \end{itemize}
+%     \uncover<4>{\cornercite[south east]{sparsemax}}
+% \end{frame}
 
 \begin{frame}{$\alpha$-Entmax}
     \cornercite{Peters2019ACL}
@@ -614,17 +532,17 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \item[] Parametrized by {\color{tPeony}$\alpha \ge 0$}:
     \end{itemize}
     \bigskip
-    \begin{center}
-    $\displaystyle
-    \Omega_{{\color{tPeony}\alpha}}(\vectsymb{p}) \defeq 
-    \left\{
-    \begin{array}{ll}
-    \frac{1}{\alpha(\alpha-1)} \left(1 - \sum_{i=1}^K p_i^{\alpha}\right) & \text{if $\alpha \ne 1$}\\
-    \sum_{i=1}^K p_i\log p_i & \text{if $\alpha = 1$.}
-    \end{array}
-    \right.$
-    \end{center}
-    \bigskip
+    % \begin{center}
+    % $\displaystyle
+    % \Omega_{{\color{tPeony}\alpha}}(\vectsymb{p}) \defeq 
+    % \left\{
+    % \begin{array}{ll}
+    % \frac{1}{\alpha(\alpha-1)} \left(1 - \sum_{i=1}^K p_i^{\alpha}\right) & \text{if $\alpha \ne 1$}\\
+    % \sum_{i=1}^K p_i\log p_i & \text{if $\alpha = 1$.}
+    % \end{array}
+    % \right.$
+    % \end{center}
+    % \bigskip
     \begin{itemize}
         \uncover<2->{\item {\bf Argmax} corresponds to {\color{tPeony}$\alpha \rightarrow \infty$}}
         \uncover<3->{\item {\bf Softmax} amounts to {\color{tPeony}$\alpha \rightarrow 1$}}
@@ -648,54 +566,6 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \begin{itemize}
         \uncover<2->{\item[] {\color{myDarkYellow} Key contribution}: \\\bigskip\quad a closed-form expression for $\pfrac{\aentmax(\x)}{\alpha}$ \quad\emoji{oface}}
     \end{itemize} 
-
-    \bigskip
-
-    \begin{itemize}
-
-        \uncover<3->{\item[] Requires argmin differentiation $\rightarrow$ see paper for details!}
-
-    \end{itemize}
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{BLEU Scores}
-
-    \begin{table}[ht]
-        \begin{center}
-        \small
-        \resizebox{0.8\columnwidth}{!}{\begin{tabular}{lrrrr}
-        \toprule
-        activation
-        & \langp{de}{en} & \langp{ja}{en}
-        & \langp{ro}{en} & \only<1>{\langp{en}{de}}\only<2->{{\color{tPeony} \langp{en}{de}}}\\
-        \midrule
-        $\softmaxlight$
-        & 29.79
-        & 21.57
-        & 32.70
-        & 26.02 \\
-        $\aentmax[1.5]$
-        & 29.83
-        & {\color{myDarkYellow} 22.13}
-        & {\color{myDarkYellow} 33.10}
-        & 25.89 \\
-        $\aentmax[\alpha]$
-        & {\color{myDarkYellow} 29.90}
-        & 21.74
-        & 32.89
-        & {\color{myDarkYellow} 26.93} \\
-        \bottomrule
-        \end{tabular}}
-        \end{center}
-    \end{table}
-
-    \bigskip
-
-    \begin{itemize}
-        \uncover<3>{\item[] For analysis for other language pairs, see Appendix A.}
-    \end{itemize}
 
 \end{frame}
 
@@ -758,10 +628,6 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
         \addlegendentry{$\alpha$-entmax}
     \end{groupplot}
     \end{tikzpicture}
-    % \input{js_divs}
-
-    \centering\fontsize{12pt}{15}\selectfont
-    \uncover<2>{Specialized heads are important as seen in \citet{specialized}!}
 
 \end{frame}
 
@@ -776,44 +642,44 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
 \end{frame}
 
-\begin{frame}
-    \frametitle{Interrogation-Detecting Head}
-    \vspace{-0.5cm}
-    \begin{center}
-    \includegraphics[width=0.9\columnwidth]{figures/head_interro_mybg}\\
-    \fontsize{12pt}{15}\selectfont
-    Learned {\color{myDarkYellow}$\alpha = 1.05$}.
-    \end{center}
+% \begin{frame}
+%     \frametitle{Interrogation-Detecting Head}
+%     \vspace{-0.5cm}
+%     \begin{center}
+%     \includegraphics[width=0.9\columnwidth]{figures/head_interro_mybg}\\
+%     \fontsize{12pt}{15}\selectfont
+%     Learned {\color{myDarkYellow}$\alpha = 1.05$}.
+%     \end{center}
 
-\end{frame}
+% \end{frame}
 
-\begin{frame}
-    \frametitle{Subword-Merging Head}
-    \vspace{-0.7cm}
-    \begin{columns}[T]
-        \small
-        \begin{column}{.33\textwidth}
-        \vspace{-0.1cm}
-        \centering
-        \includegraphics[width=0.9\columnwidth]{figures/bpe4}
-        \end{column}
-        \begin{column}{.33\textwidth}
-        \vspace{-0.2cm}
-        \centering
-        \includegraphics[width=\columnwidth]{figures/bpe3}
-        \end{column}
-        \begin{column}{.33\textwidth}
-        \centering
-        \includegraphics[width=0.9\columnwidth]{figures/bpe2}
-        \end{column}
-        \end{columns}
+% \begin{frame}
+%     \frametitle{Subword-Merging Head}
+%     \vspace{-0.7cm}
+%     \begin{columns}[T]
+%         \small
+%         \begin{column}{.33\textwidth}
+%         \vspace{-0.1cm}
+%         \centering
+%         \includegraphics[width=0.9\columnwidth]{figures/bpe4}
+%         \end{column}
+%         \begin{column}{.33\textwidth}
+%         \vspace{-0.2cm}
+%         \centering
+%         \includegraphics[width=\columnwidth]{figures/bpe3}
+%         \end{column}
+%         \begin{column}{.33\textwidth}
+%         \centering
+%         \includegraphics[width=0.9\columnwidth]{figures/bpe2}
+%         \end{column}
+%         \end{columns}
 
-        \begin{center}
-            \fontsize{12pt}{15}\selectfont
-            Learned {\color{myDarkYellow}$\alpha = 1.91$}.
-        \end{center}
+%         \begin{center}
+%             \fontsize{12pt}{15}\selectfont
+%             Learned {\color{myDarkYellow}$\alpha = 1.91$}.
+%         \end{center}
 
-\end{frame}
+% \end{frame}
 
 \begin{frame}[fragile]
     \frametitle{Key Takeaways}
@@ -904,15 +770,15 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
       \end{column}
       \end{columns}
   
-      \vfill
+    %   \vfill
   
-      \centering
-      {\scriptsize
-      \color{mygr}
-      \begin{tabular}{r@{~}l@{\quad}r@{~}l}
-      \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax} &
-      \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
-      \end{tabular}}
+    %   \centering
+    %   {\scriptsize
+    %   \color{mygr}
+    %   \begin{tabular}{r@{~}l@{\quad}r@{~}l}
+    %   \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax} &
+    %   \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
+    %   \end{tabular}}
   
   \end{frame}
 
@@ -1126,482 +992,520 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \end{itemize}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Semi-Supervised VAE}%\cornerciteme{sparsemarg}
+% \begin{frame}
+%     \frametitle{Semi-Supervised VAE}%\cornerciteme{sparsemarg}
 
-    \newcommand*\parcolor{myfg}
-    \newcommand*\clfcolor{myfg}
-    \newcommand*\colParseZero{mybg}
-    \newcommand*\colParseNonz{mybg}
-    \renewcommand*\parcolor{tPeony}
-    \renewcommand*\clfcolor{tYellow}
+%     \newcommand*\parcolor{myfg}
+%     \newcommand*\clfcolor{myfg}
+%     \newcommand*\colParseZero{mybg}
+%     \newcommand*\colParseNonz{mybg}
+%     \renewcommand*\parcolor{tPeony}
+%     \renewcommand*\clfcolor{tYellow}
 
-    \begin{align*}
-        \mathcal{L}_{x}(\theta) &=
-            \tikzmark{sum}\sum_{z \in \mathcal{Z}}
-            \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
-            \textcolor{\clfcolor}{\ell\tikzmark{clfp}(x, z)}\\
-            &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
-            \textcolor{\clfcolor}{\ell(x, z)}
-    \end{align*}
+%     \begin{align*}
+%         \mathcal{L}_{x}(\theta) &=
+%             \tikzmark{sum}\sum_{z \in \mathcal{Z}}
+%             \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
+%             \textcolor{\clfcolor}{\ell\tikzmark{clfp}(x, z)}\\
+%             &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
+%             \textcolor{\clfcolor}{\ell(x, z)}
+%     \end{align*}
 
-    \vspace{\baselineskip}
-    \begin{itemize}
-    \item<1-> Semi-Supervised VAE on MNIST: $z$ is one of 10 categories
-    \item<4-> Train this with 10\% labeled data
-    \end{itemize}
-    \begin{tikzpicture}[%
-        remember picture,
-        overlay,
-        expl/.style={font=\small}]
-    \uncover<2->{
-        \node[expl,anchor=north east] (explpar)
-            at ($(current page.north east) - (.5, 2.0)$)
-            {Gaussian VAE};
-        \path (explpar.west) edge[->,very thick,bend right] ([yshift=2.0ex]{pic cs:clfp});
-    }
-    %
-    \uncover<3->{
-        \node[expl,anchor=north west,align=left] (explsum)
-            at ($(current page.west) + (.5, 1.5)$)
-            {sum over \\ the 10 digits};
-        \path (explsum.east) edge[->,very thick,bend left] ([yshift=2.5ex]{pic cs:sum});
-    }
-    \uncover<2->{
-        \node[expl,anchor=north east,align=right] (explscore)
-            at ($(current page.north east) - (.5, 3.5)$)
-            {classification network};
-        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-1.0ex]{pic cs:parp});
-    }
-    \end{tikzpicture}
-\end{frame}
+%     \vspace{\baselineskip}
+%     \begin{itemize}
+%     \item<1-> Semi-Supervised VAE on MNIST: $z$ is one of 10 categories
+%     \item<4-> Train this with 10\% labeled data
+%     \end{itemize}
+%     \begin{tikzpicture}[%
+%         remember picture,
+%         overlay,
+%         expl/.style={font=\small}]
+%     \uncover<2->{
+%         \node[expl,anchor=north east] (explpar)
+%             at ($(current page.north east) - (.5, 2.0)$)
+%             {Gaussian VAE};
+%         \path (explpar.west) edge[->,very thick,bend right] ([yshift=2.0ex]{pic cs:clfp});
+%     }
+%     %
+%     \uncover<3->{
+%         \node[expl,anchor=north west,align=left] (explsum)
+%             at ($(current page.west) + (.5, 1.5)$)
+%             {sum over \\ the 10 digits};
+%         \path (explsum.east) edge[->,very thick,bend left] ([yshift=2.5ex]{pic cs:sum});
+%     }
+%     \uncover<2->{
+%         \node[expl,anchor=north east,align=right] (explscore)
+%             at ($(current page.north east) - (.5, 3.5)$)
+%             {classification network};
+%         \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-1.0ex]{pic cs:parp});
+%     }
+%     \end{tikzpicture}
+% \end{frame}
 
-\begin{frame}
-    \frametitle{Semi-Supervised VAE}
-    \begin{columns}[T]
-    \begin{column}{.53\textwidth}
-        \centering\small%
-        \begin{tabular}{lrr}
-            \toprule
-            Method &
-            Accuracy (\%)
-            & Dec. calls\\
-            \midrule
-        \multicolumn{3}{l}{\emph{Monte Carlo}} \\
-            SFE
-            & $94.75${\tiny\color{gray}$\pm .002$} & $1$ \\
-            SFE$+$
-            & $96.53${\tiny\color{gray}$\pm .001$}  & $2$  \\
-            NVIL
-            & $96.01${\tiny\color{gray}$\pm .002$}  & $1$  \\
-            Gumbel
-            & $95.46${\tiny\color{gray}$\pm .001$}  & $1$  \\
-            \midrule
-        \multicolumn{3}{l}{\emph{Marginalization}} \\
-            Dense
-            & $96.93${\tiny\color{gray}$\pm .001$}  & $10$  \\
-            \only<2->{\textcolor{tPeony}{Sparse}
-            & $96.87${\tiny\color{gray}$\pm .001$}  & $1.01${\tiny\color{gray}$\pm 0.01$}}  \\
-            \bottomrule
-            \end{tabular}
-    \end{column}
-    \begin{column}{.47\textwidth}
-        \centering%
-        \onslide<3->{
-        \input{ssvae_elbo}
-        }
-    \end{column}
-    \end{columns}
-\end{frame}
+% \begin{frame}
+%     \frametitle{Semi-Supervised VAE}
+%     \begin{columns}[T]
+%     \begin{column}{.53\textwidth}
+%         \centering\small%
+%         \begin{tabular}{lrr}
+%             \toprule
+%             Method &
+%             Accuracy (\%)
+%             & Dec. calls\\
+%             \midrule
+%         \multicolumn{3}{l}{\emph{Monte Carlo}} \\
+%             SFE
+%             & $94.75${\tiny\color{gray}$\pm .002$} & $1$ \\
+%             SFE$+$
+%             & $96.53${\tiny\color{gray}$\pm .001$}  & $2$  \\
+%             NVIL
+%             & $96.01${\tiny\color{gray}$\pm .002$}  & $1$  \\
+%             Gumbel
+%             & $95.46${\tiny\color{gray}$\pm .001$}  & $1$  \\
+%             \midrule
+%         \multicolumn{3}{l}{\emph{Marginalization}} \\
+%             Dense
+%             & $96.93${\tiny\color{gray}$\pm .001$}  & $10$  \\
+%             \only<2->{\textcolor{tPeony}{Sparse}
+%             & $96.87${\tiny\color{gray}$\pm .001$}  & $1.01${\tiny\color{gray}$\pm 0.01$}}  \\
+%             \bottomrule
+%             \end{tabular}
+%     \end{column}
+%     \begin{column}{.47\textwidth}
+%         \centering%
+%         \onslide<3->{
+%         \input{ssvae_elbo}
+%         }
+%     \end{column}
+%     \end{columns}
+% \end{frame}
 
-\begin{frame}
-    \frametitle{Emergent communication}
+% \begin{frame}
+%     \frametitle{Emergent communication}
 
-    \newcommand*\parcolor{myfg}
-    \newcommand*\clfcolor{myfg}
-    \newcommand*\colParseZero{mybg}
-    \newcommand*\colParseNonz{mybg}
-    \renewcommand*\parcolor{tPeony}
-    \renewcommand*\clfcolor{tYellow}
+%     \newcommand*\parcolor{myfg}
+%     \newcommand*\clfcolor{myfg}
+%     \newcommand*\colParseZero{mybg}
+%     \newcommand*\colParseNonz{mybg}
+%     \renewcommand*\parcolor{tPeony}
+%     \renewcommand*\clfcolor{tYellow}
 
-    \begin{align*}
-        \mathcal{L}_{x}(\theta) &=
-            \tikzmark{sum}\sum_{z \in \mathcal{Z}}
-            \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
-            \textcolor{\clfcolor}{\ell(x, z)\tikzmark{clfp}}\\
-            &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
-            \textcolor{\clfcolor}{\ell(x, z)}
-    \end{align*}
-    \vspace{\baselineskip}
-    \begin{itemize}
-    \item<2-> receiver picks image from a set $\mathcal{V}$ based on message
-    \item<3-> images come from ImageNet
-    \end{itemize}
-    \begin{tikzpicture}[%
-        remember picture,
-        overlay,
-        expl/.style={font=\small}]
-    \uncover<2->{
-        \node[expl,anchor=north east] (explpar)
-            at ($(current page.north east) - (.5, 1.5)$)
-            {sender};
-        \path (explpar.west) edge[->,very thick,bend right] ([yshift=3.0ex]{pic cs:parp});
-    }
-    %
-    \uncover<3->{
-        \node[expl,anchor=north west,align=left] (explsum)
-            at ($(current page.west) + (.5, 1.5)$)
-            {sum over \\ all possible messages \\ in the vocabulary};
-        \path (explsum.east) edge[->,very thick,bend left] ([yshift=3.5ex]{pic cs:sum});
-    }
-    \uncover<2->{
-        \node[expl,anchor=north east,align=right] (explscore)
-            at ($(current page.north east) - (.5, 3)$)
-            {receiver};
-        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-0.2ex, xshift=2.5ex]{pic cs:clfp});
-    }
-    \end{tikzpicture}
-\end{frame}
+%     \begin{align*}
+%         \mathcal{L}_{x}(\theta) &=
+%             \tikzmark{sum}\sum_{z \in \mathcal{Z}}
+%             \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
+%             \textcolor{\clfcolor}{\ell(x, z)\tikzmark{clfp}}\\
+%             &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
+%             \textcolor{\clfcolor}{\ell(x, z)}
+%     \end{align*}
+%     \vspace{\baselineskip}
+%     \begin{itemize}
+%     \item<2-> receiver picks image from a set $\mathcal{V}$ based on message
+%     \item<3-> images come from ImageNet
+%     \end{itemize}
+%     \begin{tikzpicture}[%
+%         remember picture,
+%         overlay,
+%         expl/.style={font=\small}]
+%     \uncover<2->{
+%         \node[expl,anchor=north east] (explpar)
+%             at ($(current page.north east) - (.5, 1.5)$)
+%             {sender};
+%         \path (explpar.west) edge[->,very thick,bend right] ([yshift=3.0ex]{pic cs:parp});
+%     }
+%     %
+%     \uncover<3->{
+%         \node[expl,anchor=north west,align=left] (explsum)
+%             at ($(current page.west) + (.5, 1.5)$)
+%             {sum over \\ all possible messages \\ in the vocabulary};
+%         \path (explsum.east) edge[->,very thick,bend left] ([yshift=3.5ex]{pic cs:sum});
+%     }
+%     \uncover<2->{
+%         \node[expl,anchor=north east,align=right] (explscore)
+%             at ($(current page.north east) - (.5, 3)$)
+%             {receiver};
+%         \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-0.2ex, xshift=2.5ex]{pic cs:clfp});
+%     }
+%     \end{tikzpicture}
+% \end{frame}
 
-\begin{frame}{Emergent Communication}\cornercite{Lazaridou2017,sparsemarg}%
-    \framesubtitle{
-    \textcolor{mygr}{... but make it harder: $|\mathcal{Z}|=256$, $|\mathcal{V}|=16$}
-    }
-    \begin{columns}[T]
-    \begin{column}{.55\textwidth}
-    \centering\small%
-    \begin{tabular}{lr@{~}lr}
-    \toprule
-    Method & \multicolumn{2}{c}{success (\%)}  & Dec. calls  \\
-    \midrule
-    {\emph{Monte Carlo}} & & & \\
-    SFE  & $33.05$&{\tiny\color{gray}$\pm 2.84$}  & $1$  \\
-    SFE$+$  & $44.32$&{\tiny\color{gray}$\pm 2.72$}  & $2$  \\
-    NVIL  & $37.04$&{\tiny\color{gray}$\pm 1.61$}  & $1$  \\
-    Gumbel     & $23.51$&{\tiny\color{gray}$\pm 16.19$}  & $1$  \\
-    ST Gumbel  & $27.42$&{\tiny\color{gray}$\pm 13.36$}  & $1$  \\
-    \midrule
-    \emph{Marginalization} & & & \\
-    \only<2->{Dense & $93.37$&{\tiny\color{gray}$\pm 0.42$}&$256$}\\
-    \only<3->{\textcolor{tPeony}{Sparse} &
-        $93.35$&{\tiny\color{gray}$\pm 0.50$} &
-        $3.13${\tiny\color{gray}$\pm 0.48$}} \\
-    \bottomrule
-    \end{tabular}
-    \end{column}
-    \begin{column}{.45\textwidth}
-    \centering%
-    \onslide<4->{
-    \input{results_emergent}
-    }
-    \end{column}
-    \end{columns}
-\end{frame}
+% \begin{frame}{Emergent Communication}\cornercite{Lazaridou2017,sparsemarg}%
+%     \framesubtitle{
+%     \textcolor{mygr}{... but make it harder: $|\mathcal{Z}|=256$, $|\mathcal{V}|=16$}
+%     }
+%     \begin{columns}[T]
+%     \begin{column}{.55\textwidth}
+%     \centering\small%
+%     \begin{tabular}{lr@{~}lr}
+%     \toprule
+%     Method & \multicolumn{2}{c}{success (\%)}  & Dec. calls  \\
+%     \midrule
+%     {\emph{Monte Carlo}} & & & \\
+%     SFE  & $33.05$&{\tiny\color{gray}$\pm 2.84$}  & $1$  \\
+%     SFE$+$  & $44.32$&{\tiny\color{gray}$\pm 2.72$}  & $2$  \\
+%     NVIL  & $37.04$&{\tiny\color{gray}$\pm 1.61$}  & $1$  \\
+%     Gumbel     & $23.51$&{\tiny\color{gray}$\pm 16.19$}  & $1$  \\
+%     ST Gumbel  & $27.42$&{\tiny\color{gray}$\pm 13.36$}  & $1$  \\
+%     \midrule
+%     \emph{Marginalization} & & & \\
+%     \only<2->{Dense & $93.37$&{\tiny\color{gray}$\pm 0.42$}&$256$}\\
+%     \only<3->{\textcolor{tPeony}{Sparse} &
+%         $93.35$&{\tiny\color{gray}$\pm 0.50$} &
+%         $3.13${\tiny\color{gray}$\pm 0.48$}} \\
+%     \bottomrule
+%     \end{tabular}
+%     \end{column}
+%     \begin{column}{.45\textwidth}
+%     \centering%
+%     \onslide<4->{
+%     \input{results_emergent}
+%     }
+%     \end{column}
+%     \end{columns}
+% \end{frame}
     
-\begin{frame}{Limitations}%\cornerciteme{sparsemarg}
-    {\small
-    \begin{itemize}
-    \item Mostly (and eventually) very sparse. \\ \quad
-    But fully dense worst case.
-    \item For the same reason, sparsemax cannot handle structured $z$.
-    \end{itemize}}
-
-    \uncover<2->{
-    \vspace{-0.5cm}
-    \fontsize{12pt}{15}\selectfont
-    \center{One solution: \textcolor{tPeony}{top-k sparsemax}}
-    \vspace{-0.3cm}
-    \begin{equation*}
-     k\operatorname{-sparsemax}(s)
-    = \displaystyle\argmin_{\p \in \triangle, \|\p\|_0 \leq k} \| \p - s \|_2^2
-    \end{equation*}
-    }
-    \uncover<3->{%
-    \small
-    \begin{itemize}
-    \item Non-convex but easy: sparsemax over the k highest scores \citep{kyrillidis2013sparse}.
-    \item Top-k oracle available for some structured problems.
-    \item Certificate: if at least one of the top-k $z$ gets $p(z)=0$,
-    \textcolor{tPeony}{\textbf{k-sparsemax = sparsemax}}!
-    \\ \quad thus, biased early on, but it goes away.
-    \end{itemize}}
-\end{frame}
-
-\begin{frame}%
-    \begin{columns}%
-    \begin{column}{.45\textwidth}\centering%
-    \vbox to .9\textheight{%
-    {%
-    \fontsize{12.5pt}{13}\selectfont%
-    \setlength{\tabcolsep}{2pt}%
-    \renewcommand{\arraystretch}{2}%
-    \begin{tabular}{r r l}
-    \onslide<3->{%
-    \colorbul{colorArgmax} &
-    \textbf{argmax} &
-    $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s}$ \\
-    }
-    \onslide<5->{%
-    \colorbul{colorSoftmax} &
-    \textbf{softmax} &
-    $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s} + \HH(\p)$ \\
-    }
-    \onslide<7->{%
-    \colorbul{colorSparsemax} &
-    \textbf{sparsemax} &
-    $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s} - \nicefrac{1}{2} \|\p\|^2$
-    }%
-    \end{tabular}%
-    }
-    \vfill
-    \begin{tikzpicture}
-    \setupsimplexbary[2.5]{}
-    \coordinate (argmax)    at (barycentric cs:L1=0,L2=0,L3=1);
-    \coordinate (softmax)   at (barycentric cs:L1=.3,L2=.2,L3=.5);
-    \coordinate (sparsemax) at (barycentric cs:L1=.3,L2=0,L3=.7);
-    
-    \onslide<3->{
-    \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
-    }
-    \onslide<5->{
-    \draw[point,fill=colorSoftmax] (softmax) circle[radius=5pt];
-    }
-    \onslide<7->{
-    \draw[point,fill=colorSparsemax] (sparsemax) circle[radius=5pt];
-    }
-    \end{tikzpicture}}\end{column}
-    \begin{column}{.54\textwidth}\centering
-    \vbox to .9\textheight{%
-    {%
-    \fontsize{12.5pt}{13}\selectfont%
-    \setlength{\tabcolsep}{2pt}%
-    \renewcommand{\arraystretch}{2}%
-    \begin{tabular}{r l l@{\quad}}
-    \onslide<4->{%
-    \textbf{MAP} &
-    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t}$ &
-    \colorbul{colorArgmax} \\
-    }%
-    \onslide<6->{%
-    \textbf{marginals} &
-    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t} + \widetilde{\HH}(\mg)$ &
-    \colorbul{colorSoftmax} \\
-    }%
-    \onslide<8->{%
-    \textbf{SparseMAP} &
-    $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t} - \nicefrac{1}{2} \|\mg\|^2$ &
-    \colorbul{colorSparsemax}
-    }%
-    \end{tabular}%
-    }
-    \vfill
-    \begin{tikzpicture}[node distance=0pt]%
-    \uncover<1->{
-    \node[
-        ultra thick,
-        draw=tYellow,
-        fill=tYellow,
-        fill opacity=.15,
-        minimum size=2.5cm,
-        regular polygon, regular polygon sides=6] (mp) {};
-    \node[label=east:{\small$\Mp$}] at (mp.corner 5) {};
-    \foreach \i in {1, ..., 6}%
-    {
-        \draw[tYellow,fill] (mp.corner \i) circle[radius=3pt];
-    }
-    }
-    \coordinate (L1) at (mp.corner 3);
-    \coordinate (L2) at (mp.corner 5);
-    \coordinate (L3) at (mp.corner 2);
-    \coordinate (argmax)    at (L3);
-    \coordinate (softmax)   at (barycentric cs:L1=.25,L2=.25,L3=.45);
-    \coordinate (sparsemax) at (barycentric cs:L1=.4,L3=.6);
-    \onslide<4->{
-        \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
-        \node[above right=of argmax] {\cartoon[.5]{1/4,2/5}};
-    }
-    \onslide<6->{
-        \draw[point,fill=colorSoftmax] (softmax) circle[radius=5pt];
-        \node[below right=of softmax] {\cartoonDense[.5]{}};
-    }
-    \onslide<8->{
-        \draw[point,fill=colorSparsemax] (sparsemax) circle[radius=5pt];
-        \node[left=of sparsemax] {\cartoonSparse[.5]{}};
-    }
-    \end{tikzpicture}}\end{column}
-    \end{columns}
-    \begin{tikzpicture}[font=\footnotesize,remember picture,overlay]
-        \node<8>[anchor=north east] at (current page.north east) {
-            \textcolor{mygr}{\realcitep*{sparsemap}}};
-    \end{tikzpicture}
-    \uncover<2>{\overlaybox[.33]{
-    $\begin{aligned}
-        \Mp &\defeq \conv \big\{ \bs{a}_z : z \in \mathcal{Z} \big\} \\
-        &= \big\{ \bs{A}\p : \p \in \triangle \big\} \\
-        &= \big\{ \mathbb{E}_{Z\sim\p}~\bs{a}_Z : \p \in \triangle \big\}
-    \end{aligned}$
-    }}
-\end{frame}
-
 \begin{frame}
-    \frametitle{Bit-vector VAE}
-    \newcommand*\parcolor{myfg}
-    \newcommand*\clfcolor{myfg}
-    \newcommand*\colParseZero{mybg}
-    \newcommand*\colParseNonz{mybg}
-    \renewcommand*\parcolor{tPeony}
-    \renewcommand*\clfcolor{tYellow}
-    \begin{align*}
-        \mathcal{L}_{x}(\theta) &=
-            \tikzmark{sum}\sum_{z \in \mathcal{Z}}
-            \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
-            \textcolor{\clfcolor}{\ell\tikzmark{clfp}(x, z)}\\
-            &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
-            \textcolor{\clfcolor}{\ell(x, z)}
-    \end{align*}
+    \frametitle{Results}
+    \fontsize{14pt}{15}\selectfont
     \begin{itemize}
-        \item<2-> VAE where $z$ is a collection of $D$ bits
-        \item<3-> Minimize the negative ELBO
+        \uncover<1->{\item[] We test our methods for models with discrete latent variables,}
+        \begin{itemize}
+            \uncover<2->{\item Semi-Supervised VAE}
+            \uncover<3->{\item Emergent communication}
         \end{itemize}
-    \begin{tikzpicture}[%
-        remember picture,
-        overlay,
-        expl/.style={font=\small}]
-    \uncover<2->{
-        \node[expl,anchor=north east] (explpar)
-            at ($(current page.north east) - (.5, 2.0)$)
-            {generative network};
-        \path (explpar.west) edge[->,very thick,bend right] ([yshift=2.0ex]{pic cs:clfp});
-    }
-    %
-    \uncover<4->{
-        \node[expl,anchor=north west,align=left] (explsum)
-            at ($(current page.west) + (.5, 1.5)$)
-            {sum over \\ an exponetially large \\ set of structures};
-        \path (explsum.east) edge[->,very thick,bend left] ([yshift=2.5ex]{pic cs:sum});
-    }
-    \uncover<2->{
-        \node[expl,anchor=north east,align=right] (explscore)
-            at ($(current page.north east) - (.5, 3.5)$)
-            {inference network};
-        \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-1.0ex]{pic cs:parp});
-    }
-    \end{tikzpicture}
+        \uncover<4->{\item[] but also in models with an exponentially large set of $\mathcal Z$,}
+        \begin{itemize}
+            \uncover<5->{\item Bit-vector VAE}
+        \end{itemize}
+    \end{itemize}
+
+    \begin{itemize}
+        \uncover<6->{\item[] Our methods are top-performers and efficient!}
+    \end{itemize}
 \end{frame}
 
-\begin{frame}{Bit-vector VAE}%
-    \begin{columns}[T]
-    \begin{column}{.53\textwidth}
-    \centering\small%
-    \begin{tabular}{lrr}
-        \toprule
-        Method & $D=32$ & $D=128$\\
-        \midrule
-    \multicolumn{3}{l}{\emph{Monte Carlo}} \\
-        SFE & $3.74$ & $3.77$  \\
-        SFE$+$ & $3.61$ & $3.59$  \\
-        NVIL & $3.65$ & $3.60$ \\
-        Gumbel & $3.57$ & $3.49$  \\
-    \midrule
-    \multicolumn{3}{l}{\emph{Marginalization}} \\
-    \color{tVividBlue}{Top-$k$ sparsemax} & $3.62$ & $3.61$  \\
-    \color{tVividBlue}{SparseMAP} & $3.72$ & $3.67$  \\
-    \color{tVividBlue}{SparseMAP (w/ budget)} & $3.64$ & $3.66$  \\
-        \bottomrule
-    \end{tabular}
-    \end{column}
-    \begin{column}{.47\textwidth}
-    \centering%
-    \only<1-2>{
-        \vspace{-0.5cm}
-        \uncover<2>{\input{distortion-rate}}
-        }
-    \only<3>{
-        \input{spars_32}
-        }
-    \only<4>{
-        \input{spars_128}
-        }
-    \end{column}
-    \end{columns}
-\end{frame}
+% \begin{frame}%
+%     \begin{columns}%
+%     \begin{column}{.45\textwidth}\centering%
+%     \vbox to .9\textheight{%
+%     {%
+%     \fontsize{12.5pt}{13}\selectfont%
+%     \setlength{\tabcolsep}{2pt}%
+%     \renewcommand{\arraystretch}{2}%
+%     \begin{tabular}{r r l}
+%     \onslide<3->{%
+%     \colorbul{colorArgmax} &
+%     \textbf{argmax} &
+%     $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s}$ \\
+%     }
+%     \onslide<5->{%
+%     \colorbul{colorSoftmax} &
+%     \textbf{softmax} &
+%     $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s} + \HH(\p)$ \\
+%     }
+%     \onslide<7->{%
+%     \colorbul{colorSparsemax} &
+%     \textbf{sparsemax} &
+%     $\displaystyle \argmax_{\p \in \triangle} \p ^\top \bs{s} - \nicefrac{1}{2} \|\p\|^2$
+%     }%
+%     \end{tabular}%
+%     }
+%     \vfill
+%     \begin{tikzpicture}
+%     \setupsimplexbary[2.5]{}
+%     \coordinate (argmax)    at (barycentric cs:L1=0,L2=0,L3=1);
+%     \coordinate (softmax)   at (barycentric cs:L1=.3,L2=.2,L3=.5);
+%     \coordinate (sparsemax) at (barycentric cs:L1=.3,L2=0,L3=.7);
+    
+%     \onslide<3->{
+%     \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
+%     }
+%     \onslide<5->{
+%     \draw[point,fill=colorSoftmax] (softmax) circle[radius=5pt];
+%     }
+%     \onslide<7->{
+%     \draw[point,fill=colorSparsemax] (sparsemax) circle[radius=5pt];
+%     }
+%     \end{tikzpicture}}\end{column}
+%     \begin{column}{.54\textwidth}\centering
+%     \vbox to .9\textheight{%
+%     {%
+%     \fontsize{12.5pt}{13}\selectfont%
+%     \setlength{\tabcolsep}{2pt}%
+%     \renewcommand{\arraystretch}{2}%
+%     \begin{tabular}{r l l@{\quad}}
+%     \onslide<4->{%
+%     \textbf{MAP} &
+%     $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t}$ &
+%     \colorbul{colorArgmax} \\
+%     }%
+%     \onslide<6->{%
+%     \textbf{marginals} &
+%     $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t} + \widetilde{\HH}(\mg)$ &
+%     \colorbul{colorSoftmax} \\
+%     }%
+%     \onslide<8->{%
+%     \textbf{SparseMAP} &
+%     $\displaystyle \argmax_{\mg \in \Mp} \mg ^\top \bs{t} - \nicefrac{1}{2} \|\mg\|^2$ &
+%     \colorbul{colorSparsemax}
+%     }%
+%     \end{tabular}%
+%     }
+%     \vfill
+%     \begin{tikzpicture}[node distance=0pt]%
+%     \uncover<1->{
+%     \node[
+%         ultra thick,
+%         draw=tYellow,
+%         fill=tYellow,
+%         fill opacity=.15,
+%         minimum size=2.5cm,
+%         regular polygon, regular polygon sides=6] (mp) {};
+%     \node[label=east:{\small$\Mp$}] at (mp.corner 5) {};
+%     \foreach \i in {1, ..., 6}%
+%     {
+%         \draw[tYellow,fill] (mp.corner \i) circle[radius=3pt];
+%     }
+%     }
+%     \coordinate (L1) at (mp.corner 3);
+%     \coordinate (L2) at (mp.corner 5);
+%     \coordinate (L3) at (mp.corner 2);
+%     \coordinate (argmax)    at (L3);
+%     \coordinate (softmax)   at (barycentric cs:L1=.25,L2=.25,L3=.45);
+%     \coordinate (sparsemax) at (barycentric cs:L1=.4,L3=.6);
+%     \onslide<4->{
+%         \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
+%         \node[above right=of argmax] {\cartoon[.5]{1/4,2/5}};
+%     }
+%     \onslide<6->{
+%         \draw[point,fill=colorSoftmax] (softmax) circle[radius=5pt];
+%         \node[below right=of softmax] {\cartoonDense[.5]{}};
+%     }
+%     \onslide<8->{
+%         \draw[point,fill=colorSparsemax] (sparsemax) circle[radius=5pt];
+%         \node[left=of sparsemax] {\cartoonSparse[.5]{}};
+%     }
+%     \end{tikzpicture}}\end{column}
+%     \end{columns}
+%     \begin{tikzpicture}[font=\footnotesize,remember picture,overlay]
+%         \node<8>[anchor=north east] at (current page.north east) {
+%             \textcolor{mygr}{\realcitep*{sparsemap}}};
+%     \end{tikzpicture}
+%     \uncover<2>{\overlaybox[.33]{
+%     $\begin{aligned}
+%         \Mp &\defeq \conv \big\{ \bs{a}_z : z \in \mathcal{Z} \big\} \\
+%         &= \big\{ \bs{A}\p : \p \in \triangle \big\} \\
+%         &= \big\{ \mathbb{E}_{Z\sim\p}~\bs{a}_Z : \p \in \triangle \big\}
+%     \end{aligned}$
+%     }}
+% \end{frame}
 
-\begin{frame}
-    \frametitle{Key Takeaways}
+% \begin{frame}
+%     \frametitle{Bit-vector VAE}
+%     \newcommand*\parcolor{myfg}
+%     \newcommand*\clfcolor{myfg}
+%     \newcommand*\colParseZero{mybg}
+%     \newcommand*\colParseNonz{mybg}
+%     \renewcommand*\parcolor{tPeony}
+%     \renewcommand*\clfcolor{tYellow}
+%     \begin{align*}
+%         \mathcal{L}_{x}(\theta) &=
+%             \tikzmark{sum}\sum_{z \in \mathcal{Z}}
+%             \textcolor{\parcolor}{\pi\tikzmark{parp}(z | x)}~
+%             \textcolor{\clfcolor}{\ell\tikzmark{clfp}(x, z)}\\
+%             &= \mathbb{E}_{z \sim \textcolor{\parcolor}{\pi(z | x)}}~%
+%             \textcolor{\clfcolor}{\ell(x, z)}
+%     \end{align*}
+%     \begin{itemize}
+%         \item<2-> VAE where $z$ is a collection of $D$ bits
+%         \item<3-> Minimize the negative ELBO
+%         \end{itemize}
+%     \begin{tikzpicture}[%
+%         remember picture,
+%         overlay,
+%         expl/.style={font=\small}]
+%     \uncover<2->{
+%         \node[expl,anchor=north east] (explpar)
+%             at ($(current page.north east) - (.5, 2.0)$)
+%             {generative network};
+%         \path (explpar.west) edge[->,very thick,bend right] ([yshift=2.0ex]{pic cs:clfp});
+%     }
+%     %
+%     \uncover<4->{
+%         \node[expl,anchor=north west,align=left] (explsum)
+%             at ($(current page.west) + (.5, 1.5)$)
+%             {sum over \\ an exponetially large \\ set of structures};
+%         \path (explsum.east) edge[->,very thick,bend left] ([yshift=2.5ex]{pic cs:sum});
+%     }
+%     \uncover<2->{
+%         \node[expl,anchor=north east,align=right] (explscore)
+%             at ($(current page.north east) - (.5, 3.5)$)
+%             {inference network};
+%         \path (explscore.south west) edge[->,very thick,bend left] ([yshift=-1.0ex]{pic cs:parp});
+%     }
+%     \end{tikzpicture}
+% \end{frame}
 
-    \centering\fontsize{14pt}{14}\selectfont%
-    We introduce a new method\\
-    to train latent variable models.
-    %
-    %
-    \vfill
-    %
-    %
-    \begin{columns}[T]
-    \small
-    \begin{column}{.33\textwidth}
-    \centering
-    \uncover<2->{
-    \textbf{\emph{discrete and structured}}\\[.5\baselineskip]
-        \begin{figure}[ht]
-        \begin{tikzpicture}
-            % DISCRETE
-            \draw[draw=tPink,fill=tPink] (1.4,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.2}};
-            \draw[draw=tSlateBlue,fill=tSlateBlue] (2,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.6}};
-            \draw[draw=tGreen,fill=tGreen] (2.6,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.1}};
+% \begin{frame}{Bit-vector VAE}%
+%     \begin{columns}[T]
+%     \begin{column}{.53\textwidth}
+%     \centering\small%
+%     \begin{tabular}{lrr}
+%         \toprule
+%         Method & $D=32$ & $D=128$\\
+%         \midrule
+%     \multicolumn{3}{l}{\emph{Monte Carlo}} \\
+%         SFE & $3.74$ & $3.77$  \\
+%         SFE$+$ & $3.61$ & $3.59$  \\
+%         NVIL & $3.65$ & $3.60$ \\
+%         Gumbel & $3.57$ & $3.49$  \\
+%     \midrule
+%     \multicolumn{3}{l}{\emph{Marginalization}} \\
+%     \color{tVividBlue}{Top-$k$ sparsemax} & $3.62$ & $3.61$  \\
+%     \color{tVividBlue}{SparseMAP} & $3.72$ & $3.67$  \\
+%     \color{tVividBlue}{SparseMAP (w/ budget)} & $3.64$ & $3.66$  \\
+%         \bottomrule
+%     \end{tabular}
+%     \end{column}
+%     \begin{column}{.47\textwidth}
+%     \centering%
+%     \only<1-2>{
+%         \vspace{-0.5cm}
+%         \uncover<2>{\input{distortion-rate}}
+%         }
+%     \only<3>{
+%         \input{spars_32}
+%         }
+%     \only<4>{
+%         \input{spars_128}
+%         }
+%     \end{column}
+%     \end{columns}
+% \end{frame}
 
-            % STRUCTURE
-            \draw[draw=tSlateBlue,fill=tSlateBlue] (1.4,1) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
-            \draw[draw=tGreen,fill=tGreen] (2,1) circle (0.2);
-            \draw[draw=tPink,fill=tPink] (2.6,1) circle (0.2)
-                node[anchor=west, xshift=2mm] {$]$}
-                node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.4}};
+% \begin{frame}
+%     \frametitle{Key Takeaways}
 
-            \draw[draw=tPink,fill=tPink] (1.4,0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
-            \draw[draw=tSlateBlue,fill=tSlateBlue] (2,0.5) circle (0.2) node[anchor=north, yshift=-4mm] {\large \bf $\ldots$};
-            \draw[draw=tGreen,fill=tGreen] (2.6,0.5) circle (0.2)
-                node[anchor=west, xshift=2mm] {$]$}
-                node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.05}};
+%     \centering\fontsize{14pt}{14}\selectfont%
+%     We introduce a new method\\
+%     to train latent variable models.
+%     %
+%     %
+%     \vfill
+%     %
+%     %
+%     \begin{columns}[T]
+%     \small
+%     \begin{column}{.33\textwidth}
+%     \centering
+%     \uncover<2->{
+%     \textbf{\emph{discrete and structured}}\\[.5\baselineskip]
+%         \begin{figure}[ht]
+%         \begin{tikzpicture}
+%             % DISCRETE
+%             \draw[draw=tPink,fill=tPink] (1.4,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.2}};
+%             \draw[draw=tSlateBlue,fill=tSlateBlue] (2,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.6}};
+%             \draw[draw=tGreen,fill=tGreen] (2.6,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.1}};
 
-            \draw[draw=tGreen,fill=tGreen] (1.4,-0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
-            \draw[draw=tSlateBlue,fill=tSlateBlue] (2,-0.5) circle (0.2);
-            \draw[draw=tPink,fill=tPink] (2.6,-0.5) circle (0.2)
-                node[anchor=west, xshift=2mm] {$]$}
-                node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.3}};
-        \end{tikzpicture}
-        \end{figure}}%
-    \end{column}
-    \begin{column}{.33\textwidth}
-    \centering
-    \uncover<3->{
-    \textbf{\emph{deterministic, yet efficient}}\\[\baselineskip]
-    \vspace{-0.5cm}
-    \fontsize{10pt}{10}\selectfont
-    \begin{align*}
-        \mathcal{L}_{x}(\theta) &= \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) \\&+ \cancel{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)} \\&+ \ldots +
-        \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) \\&+ \ldots + \cancel{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}
-    \end{align*}}
-    \end{column}
-    \begin{column}{.33\textwidth}
-    \centering
-    \uncover<4->{
-    \textbf{\emph{adaptive, as needed}}\\[\baselineskip]
-    \input{results_emergent_small}}
-    \end{column}
-    \end{columns}
+%             % STRUCTURE
+%             \draw[draw=tSlateBlue,fill=tSlateBlue] (1.4,1) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+%             \draw[draw=tGreen,fill=tGreen] (2,1) circle (0.2);
+%             \draw[draw=tPink,fill=tPink] (2.6,1) circle (0.2)
+%                 node[anchor=west, xshift=2mm] {$]$}
+%                 node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.4}};
 
-    \vfill
+%             \draw[draw=tPink,fill=tPink] (1.4,0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+%             \draw[draw=tSlateBlue,fill=tSlateBlue] (2,0.5) circle (0.2) node[anchor=north, yshift=-4mm] {\large \bf $\ldots$};
+%             \draw[draw=tGreen,fill=tGreen] (2.6,0.5) circle (0.2)
+%                 node[anchor=west, xshift=2mm] {$]$}
+%                 node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.05}};
 
-    \centering
-\end{frame}
+%             \draw[draw=tGreen,fill=tGreen] (1.4,-0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+%             \draw[draw=tSlateBlue,fill=tSlateBlue] (2,-0.5) circle (0.2);
+%             \draw[draw=tPink,fill=tPink] (2.6,-0.5) circle (0.2)
+%                 node[anchor=west, xshift=2mm] {$]$}
+%                 node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.3}};
+%         \end{tikzpicture}
+%         \end{figure}}%
+%     \end{column}
+%     \begin{column}{.33\textwidth}
+%     \centering
+%     \uncover<3->{
+%     \textbf{\emph{deterministic, yet efficient}}\\[\baselineskip]
+%     \vspace{-0.5cm}
+%     \fontsize{10pt}{10}\selectfont
+%     \begin{align*}
+%         \mathcal{L}_{x}(\theta) &= \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) \\&+ \cancel{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)} \\&+ \ldots +
+%         \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) \\&+ \ldots + \cancel{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}
+%     \end{align*}}
+%     \end{column}
+%     \begin{column}{.33\textwidth}
+%     \centering
+%     \uncover<4->{
+%     \textbf{\emph{sparse, as needed}}\\[\baselineskip]
+%     \input{results_emergent_small}}
+%     \end{column}
+%     \end{columns}
+
+%     \vfill
+
+%     \centering
+% \end{frame}
 
 \section{Proposed Work}
 
 \begin{frame}
-    \frametitle{Translating by editing a draft}
+    \frametitle{Latent variables in NMT}
     \centering
-    \includegraphics[width=0.8\columnwidth]{figures/heetalmodel.pdf}
+    \fontsize{13pt}{15}\selectfont%
+    \begin{itemize}
+        \uncover<1->{\item[] Attention can be seen as learning a soft structure $\rightarrow$ we saw that many attention heads have very specific and simple roles...}
+        \uncover<2->{\item attention between the src and tgt is similar to the alignments we've seen before}
+    \end{itemize}
+
+    \vspace{1cm}
+    \centering
+    \uncover<2->{\includegraphics[width=0.5\columnwidth]{figures/alignments.pdf}}
+
 \end{frame}
+
+% \begin{frame}
+%     \frametitle{Latent Structure in NMT inspired by APE}
+%     \centering
+%     \fontsize{13pt}{15}\selectfont%
+%     \begin{itemize}
+%         \uncover<1->{\item[] Automatic Post-Editing takes a machine translation along with the source sentence}
+%         \uncover<2->{\item[]$\rightarrow$ corrects the translation by looking at both sentences}
+%     \end{itemize}
+
+%     \vspace{0.5cm}
+%     \centering
+%     \uncover<2->{\includegraphics[width=0.5\columnwidth]{figures/ape.pdf}}
+
+%     \begin{itemize}
+%         \uncover<3->{\item[] This task is easier than doing MT from scratch}
+%         \uncover<4->{\item[] Can we do ``APE'' integrated into the MT pipeline?}
+%     \end{itemize}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Idea: create a latent, draft translation}
+    \centering
+
+    \begin{itemize}
+        \uncover<1->{\item[] ... with a memory of phrase alignments}
+    \end{itemize}
+
+    \centering
+    \uncover<2->{\includegraphics[width=0.8\columnwidth]{figures/nmtdrafts.pdf}}
+
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Translating by editing a draft}
+%     \centering
+%     \includegraphics[width=0.8\columnwidth]{figures/heetalmodel.pdf}
+% \end{frame}
 
 \begin{frame}
     \frametitle{Translation through transduction}
@@ -1611,11 +1515,11 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
         
         \begin{tikzpicture}
             % Define nodes
-            \node[obs]                (y)     {$ y $};
-            %\node[semi, left =of y]   (x) {$ x $};
-            \node[latent, above =of y] (t) {$ t $};
-            \node[latent, left =of t] (z) {$ z $};
-            \node[obs,below =of z]   (x) {$ x $};
+            \node[obs]                (y)     {\color{tMidnight} $ y $};
+            %\node[semi, left =of y]   (x) {\color{tMidnight} $ x $};
+            \node[latent, above =of y] (t) {\color{tMidnight} $ t $};
+            \node[latent, left =of t] (z) {\color{tMidnight} $ z $};
+            \node[obs,below =of z]   (x) {\color{tMidnight} $ x $};
             
             % Connect nodes
             \edge{x}{z,t};
@@ -1626,11 +1530,11 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
         ~
         \begin{tikzpicture}
             % Define nodes
-            \node[obs]                (y)     {$ y $};
-            %\node[semi, left =of y]   (x) {$ x $};
-            \node[latent, above =of y] (t) {$ t $};
-            \node[latent, left =of t] (z) {$ z $};
-            \node[obs,below =of z]   (x) {$ x $};
+            \node[obs]                (y)     {\color{tMidnight} $ y $};
+            %\node[semi, left =of y]   (x) {\color{tMidnight} $ x $};
+            \node[latent, above =of y] (t) {\color{tMidnight} $ t $};
+            \node[latent, left =of t] (z) {\color{tMidnight} $ z $};
+            \node[obs,below =of z]   (x) {\color{tMidnight} $ x $};
             
             % Connect nodes
             \edge[dashed]{y}{z};
@@ -1643,36 +1547,44 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 \end{frame}
 
 \begin{frame}
-    \frametitle{Using latent summaries in NMT}
+    \frametitle{Another Idea: using latent summaries in NMT}
 
-    \begin{figure}[t]
-        \centering
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (y)     {$ y $};
-            \node[obs, left =of y]   (xi) {$ X $};
-            \node[latent, above =of xi] (z) {$ z $};
-    
-            % Connect nodes
-            \edge{xi,z}{y};
-            \edge{xi}{z};
-    
-            \plate{data}{(y)}{$N$};
-        \end{tikzpicture}
-        ~
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (y)     {$ y $};
-            \node[obs, right =of y]   (xi) {$ X $};
-            \node[latent, above =of xi] (z) {$ z $};
-    
-            % Connect nodes
-            \edge[dashed]{xi,y}{z};
-            
-            \plate{data}{(y)}{$N$};
-        \end{tikzpicture}
-    \end{figure}
+    \centering
+    \uncover<2->{\includegraphics[width=0.8\columnwidth]{figures/summary.pdf}}
+
 \end{frame}
+
+% \begin{frame}
+%     \frametitle{Using latent summaries in NMT}
+
+%     \begin{figure}[t]
+%         \centering
+%         \begin{tikzpicture}
+%             % Define nodes
+%             \node[obs]                (y)     {\color{tMidnight} $ y $};
+%             \node[obs, left =of y]   (xi) {\color{tMidnight} $ X $};
+%             \node[latent, above =of xi] (z) {\color{tMidnight} $ z $};
+    
+%             % Connect nodes
+%             \edge{xi,z}{y};
+%             \edge{xi}{z};
+    
+%             \plate{data}{(y)}{$N$};
+%         \end{tikzpicture}
+%         ~
+%         \begin{tikzpicture}
+%             % Define nodes
+%             \node[obs]                (y)     {\color{tMidnight} $ y $};
+%             \node[obs, right =of y]   (xi) {\color{tMidnight} $ X $};
+%             \node[latent, above =of xi] (z) {\color{tMidnight} $ z $};
+    
+%             % Connect nodes
+%             \edge[dashed]{xi,y}{z};
+            
+%             \plate{data}{(y)}{$N$};
+%         \end{tikzpicture}
+%     \end{figure}
+% \end{frame}
 
 \begin{frame}
     \frametitle{Multi-domain NMT}
@@ -1681,10 +1593,10 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
         \centering
         \begin{tikzpicture}
             % Define nodes
-            \node[obs]                (x)     {$ x $};
-            \node[obs, below =of x]   (y) {$ y $};
-            \node[latent, right =of y] (z) {$ z $};
-            \node[latent, above =of x, xshift=1.75cm] (c) {$ c $};
+            \node[obs]                (x)     {\color{tMidnight} $ x $};
+            \node[obs, below =of x]   (y) {\color{tMidnight} $ y $};
+            \node[latent, right =of y] (z) {\color{tMidnight} $ z $};
+            \node[latent, above =of x, xshift=1.75cm] (c) {\color{tMidnight} $ c $};
     
             % Connect nodes
             \edge{x,z}{y};
@@ -1696,10 +1608,10 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
         ~
         \begin{tikzpicture}
             % Define nodes
-            \node[obs]                (x)     {$ x $};
-            \node[obs, below =of x]   (y) {$ y $};
-            \node[latent, right =of y] (z) {$ z $};
-            \node[latent, above =of x, xshift=1.75cm] (c) {$ c $};
+            \node[obs]                (x)     {\color{tMidnight} $ x $};
+            \node[obs, below =of x]   (y) {\color{tMidnight} $ y $};
+            \node[latent, right =of y] (z) {\color{tMidnight} $ z $};
+            \node[latent, above =of x, xshift=1.75cm] (c) {\color{tMidnight} $ c $};
     
             % Connect nodes
             \edge[dashed]{y}{z};
@@ -1717,10 +1629,10 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
         \centering
         \begin{tikzpicture}
             % Define nodes
-            \node[obs]                (y)     {$ y $};
-            \node[latent, above =of y] (z) {$ z $};
-            \node[latent, left =of z] (c) {$ c $};
-            \node[obs, left =of y]   (xi) {$ X $};
+            \node[obs]                (y)     {\color{tMidnight} $ y $};
+            \node[latent, above =of y] (z) {\color{tMidnight} $ z $};
+            \node[latent, left =of z] (c) {\color{tMidnight} $ c $};
+            \node[obs, left =of y]   (xi) {\color{tMidnight} $ X $};
     
             % Connect nodes
             \edge{xi,z}{y};
@@ -1732,10 +1644,10 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
         ~
         \begin{tikzpicture}
             % Define nodes
-            \node[obs]                (y)     {$ y $};
-            \node[latent, above =of y] (z) {$ z $};
-            \node[latent, right =of z] (c) {$ c $};
-            \node[obs, right =of y]   (xi) {$ X $};
+            \node[obs]                (y)     {\color{tMidnight} $ y $};
+            \node[latent, above =of y] (z) {\color{tMidnight} $ z $};
+            \node[latent, right =of z] (c) {\color{tMidnight} $ c $};
+            \node[obs, right =of y]   (xi) {\color{tMidnight} $ X $};
             
             % Connect nodes
             \edge[dashed]{y}{z};
@@ -1744,10 +1656,6 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
             \plate{data}{(y)(z)}{$N$};
         \end{tikzpicture}
     \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Summary}
 \end{frame}
 
 \begin{frame}[t,allowframebreaks]

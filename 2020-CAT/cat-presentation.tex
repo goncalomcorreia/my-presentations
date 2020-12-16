@@ -120,6 +120,13 @@ Committee: André Martins, Mário Figueiredo, Vlad Niculae, Wilker Aziz
 \end{frame}
 
 \begin{frame}
+    \frametitle{Latent variables in machine translation}
+    \cornercite{brown1993mathematics}
+    \centering
+    \includegraphics[width=0.5\columnwidth]{figures/alignments.pdf}
+\end{frame}
+
+\begin{frame}
     \frametitle{Towards transparency: latent variables}
     \fontsize{13pt}{15}\selectfont%
     \begin{itemize}
@@ -127,13 +134,6 @@ Committee: André Martins, Mário Figueiredo, Vlad Niculae, Wilker Aziz
         \uncover<2->{\item Big models are opaque, latent variables explain model's decisions}
         \uncover<3->{\item Big models are... Big! Latent variables may lead to smaller models}
     \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Latent variables in machine translation}
-    \cornercite{brown1993mathematics}
-    \centering
-    \includegraphics[width=0.5\columnwidth]{figures/alignments.pdf}
 \end{frame}
 
 \begin{frame}
@@ -642,16 +642,16 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{Interrogation-Detecting Head}
-%     \vspace{-0.5cm}
-%     \begin{center}
-%     \includegraphics[width=0.9\columnwidth]{figures/head_interro_mybg}\\
-%     \fontsize{12pt}{15}\selectfont
-%     Learned {\color{myDarkYellow}$\alpha = 1.05$}.
-%     \end{center}
+\begin{frame}
+    \frametitle{Interrogation-Detecting Head}
+    \vspace{-0.5cm}
+    \begin{center}
+    \includegraphics[width=0.9\columnwidth]{figures/head_interro_mybg}\\
+    \fontsize{12pt}{15}\selectfont
+    Learned {\color{myDarkYellow}$\alpha = 1.05$}.
+    \end{center}
 
-% \end{frame}
+\end{frame}
 
 % \begin{frame}
 %     \frametitle{Subword-Merging Head}
@@ -681,106 +681,106 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
 % \end{frame}
 
-\begin{frame}[fragile]
-    \frametitle{Key Takeaways}
+% \begin{frame}[fragile]
+%     \frametitle{Key Takeaways}
   
-      \centering\fontsize{14pt}{14}\selectfont%
-      Introduce {\color{myDarkYellow} adaptive} sparsity\\
-      for Transformers via $\alpha$-entmax with a {\color{myDarkYellow}gradient learnable $\alpha$}.
-      %
-      %
-      \vfill
-      %
-      %
-      \begin{columns}[T]
-      \small
-      \begin{column}{.33\textwidth}
-      \centering
-      \uncover<2->{
-      \textbf{\emph{adaptive sparsity}}\\[.5\baselineskip]
-      \vspace{0.2cm}
-      \includegraphics[trim=157mm 17mm 0 0, clip, width=.7\textwidth]{figures/comparison_mybg}}%
-      \end{column}
-      \begin{column}{.33\textwidth}
-      \centering
-      \uncover<3->{
-      \textbf{\emph{reduced head redundancy}}\\[\baselineskip]}
-      \vspace{-0.2cm}
-      \begin{tikzpicture}[node distance=1.5ex,font=\scriptsize,scale=0.5, visible on=<3->]
+%       \centering\fontsize{14pt}{14}\selectfont%
+%       Introduce {\color{myDarkYellow} adaptive} sparsity\\
+%       for Transformers via $\alpha$-entmax with a {\color{myDarkYellow}gradient learnable $\alpha$}.
+%       %
+%       %
+%       \vfill
+%       %
+%       %
+%       \begin{columns}[T]
+%       \small
+%       \begin{column}{.33\textwidth}
+%       \centering
+%       \uncover<2->{
+%       \textbf{\emph{adaptive sparsity}}\\[.5\baselineskip]
+%       \vspace{0.2cm}
+%       \includegraphics[trim=157mm 17mm 0 0, clip, width=.7\textwidth]{figures/comparison_mybg}}%
+%       \end{column}
+%       \begin{column}{.33\textwidth}
+%       \centering
+%       \uncover<3->{
+%       \textbf{\emph{reduced head redundancy}}\\[\baselineskip]}
+%       \vspace{-0.2cm}
+%       \begin{tikzpicture}[node distance=1.5ex,font=\scriptsize,scale=0.5, visible on=<3->]
   
-          \definecolor{color0}{rgb}{0.12156862745098,0.466666666666667,0.705882352941177}
-          \definecolor{color1}{rgb}{1,0.498039215686275,0.0549019607843137}
-          \definecolor{color2}{rgb}{0.172549019607843,0.627450980392157,0.172549019607843}
+%           \definecolor{color0}{rgb}{0.12156862745098,0.466666666666667,0.705882352941177}
+%           \definecolor{color1}{rgb}{1,0.498039215686275,0.0549019607843137}
+%           \definecolor{color2}{rgb}{0.172549019607843,0.627450980392157,0.172549019607843}
           
-          \begin{groupplot}[group style={group size=1 by 1}]
-          \nextgroupplot[
-          legend cell align={left},
-          legend style={
-                  nodes={scale=1.1, transform shape}, at={(0.97,0.2)}, anchor=east, draw=white!80.0!black, fill=myfg!30!mybg},
-          tick align=outside,
-          tick pos=left,
-          x grid style={white!69.01960784313725!black},
-          xmin=0.5, xmax=6.5,
-          xtick = {1, 2, 3, 4, 5, 6},
-          xtick style={color=white},
-          y grid style={white!69.01960784313725!black},
-          ymin=0.1, ymax=0.7,
-          ytick = {0.2, 0.4, 0.6},
-          ytick style={color=white}
-          ]
-          \addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
-          table {%
-          1 0.38571667343747
-          2 0.402429158203537
-          3 0.440747738282957
-          4 0.359233941813858
-          5 0.337470844946825
-          6 0.339900884621234
-          };
-          \addlegendentry{softmax}
-          \addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
-          table {%
-          1 0.378367748537659
-          2 0.504354104995477
-          3 0.573529792473815
-          4 0.525266398541884
-          5 0.439669581263257
-          6 0.421346772557364
-          };
-          \addlegendentry{1.5-entmax}
-          \addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
-          table {%
-          1 0.427742934860258
-          2 0.484287995253192
-          3 0.533714455762104
-          4 0.449772918584636
-          5 0.3935698561848
-          6 0.355665944457941
-          };
-          \addlegendentry{$\alpha$-entmax}
-      \end{groupplot}
-      \end{tikzpicture}
-      \end{column}
-      \begin{column}{.33\textwidth}
-      \centering
-      \uncover<4->{
-      \textbf{\emph{clearer head roles}}\\[\baselineskip]
-      \vspace{-0.2cm}
-      \includegraphics[width=.6\textwidth]{figures/bpe4}}
-      \end{column}
-      \end{columns}
+%           \begin{groupplot}[group style={group size=1 by 1}]
+%           \nextgroupplot[
+%           legend cell align={left},
+%           legend style={
+%                   nodes={scale=1.1, transform shape}, at={(0.97,0.2)}, anchor=east, draw=white!80.0!black, fill=myfg!30!mybg},
+%           tick align=outside,
+%           tick pos=left,
+%           x grid style={white!69.01960784313725!black},
+%           xmin=0.5, xmax=6.5,
+%           xtick = {1, 2, 3, 4, 5, 6},
+%           xtick style={color=white},
+%           y grid style={white!69.01960784313725!black},
+%           ymin=0.1, ymax=0.7,
+%           ytick = {0.2, 0.4, 0.6},
+%           ytick style={color=white}
+%           ]
+%           \addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
+%           table {%
+%           1 0.38571667343747
+%           2 0.402429158203537
+%           3 0.440747738282957
+%           4 0.359233941813858
+%           5 0.337470844946825
+%           6 0.339900884621234
+%           };
+%           \addlegendentry{softmax}
+%           \addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
+%           table {%
+%           1 0.378367748537659
+%           2 0.504354104995477
+%           3 0.573529792473815
+%           4 0.525266398541884
+%           5 0.439669581263257
+%           6 0.421346772557364
+%           };
+%           \addlegendentry{1.5-entmax}
+%           \addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
+%           table {%
+%           1 0.427742934860258
+%           2 0.484287995253192
+%           3 0.533714455762104
+%           4 0.449772918584636
+%           5 0.3935698561848
+%           6 0.355665944457941
+%           };
+%           \addlegendentry{$\alpha$-entmax}
+%       \end{groupplot}
+%       \end{tikzpicture}
+%       \end{column}
+%       \begin{column}{.33\textwidth}
+%       \centering
+%       \uncover<4->{
+%       \textbf{\emph{clearer head roles}}\\[\baselineskip]
+%       \vspace{-0.2cm}
+%       \includegraphics[width=.6\textwidth]{figures/bpe4}}
+%       \end{column}
+%       \end{columns}
   
-    %   \vfill
+%     %   \vfill
   
-    %   \centering
-    %   {\scriptsize
-    %   \color{mygr}
-    %   \begin{tabular}{r@{~}l@{\quad}r@{~}l}
-    %   \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax} &
-    %   \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
-    %   \end{tabular}}
+%     %   \centering
+%     %   {\scriptsize
+%     %   \color{mygr}
+%     %   \begin{tabular}{r@{~}l@{\quad}r@{~}l}
+%     %   \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax} &
+%     %   \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
+%     %   \end{tabular}}
   
-  \end{frame}
+%   \end{frame}
 
 \section{Efficient Marginalization of Discrete and Structured Latent Variables via Sparsity}
 
@@ -1469,25 +1469,6 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{Latent Structure in NMT inspired by APE}
-%     \centering
-%     \fontsize{13pt}{15}\selectfont%
-%     \begin{itemize}
-%         \uncover<1->{\item[] Automatic Post-Editing takes a machine translation along with the source sentence}
-%         \uncover<2->{\item[]$\rightarrow$ corrects the translation by looking at both sentences}
-%     \end{itemize}
-
-%     \vspace{0.5cm}
-%     \centering
-%     \uncover<2->{\includegraphics[width=0.5\columnwidth]{figures/ape.pdf}}
-
-%     \begin{itemize}
-%         \uncover<3->{\item[] This task is easier than doing MT from scratch}
-%         \uncover<4->{\item[] Can we do ``APE'' integrated into the MT pipeline?}
-%     \end{itemize}
-% \end{frame}
-
 \begin{frame}
     \frametitle{Idea: create a latent, draft translation}
     \centering
@@ -1501,51 +1482,6 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{Translating by editing a draft}
-%     \centering
-%     \includegraphics[width=0.8\columnwidth]{figures/heetalmodel.pdf}
-% \end{frame}
-
-\begin{frame}
-    \frametitle{Translation through transduction}
-
-    \begin{figure}[t]
-        \centering
-        
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (y)     {\color{tMidnight} $ y $};
-            %\node[semi, left =of y]   (x) {\color{tMidnight} $ x $};
-            \node[latent, above =of y] (t) {\color{tMidnight} $ t $};
-            \node[latent, left =of t] (z) {\color{tMidnight} $ z $};
-            \node[obs,below =of z]   (x) {\color{tMidnight} $ x $};
-            
-            % Connect nodes
-            \edge{x}{z,t};
-            \edge{t,z}{y};
-            
-            \plate{data}{(x)(y)(t)(z)}{$N$};
-        \end{tikzpicture}
-        ~
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (y)     {\color{tMidnight} $ y $};
-            %\node[semi, left =of y]   (x) {\color{tMidnight} $ x $};
-            \node[latent, above =of y] (t) {\color{tMidnight} $ t $};
-            \node[latent, left =of t] (z) {\color{tMidnight} $ z $};
-            \node[obs,below =of z]   (x) {\color{tMidnight} $ x $};
-            
-            % Connect nodes
-            \edge[dashed]{y}{z};
-            \edge[dashed]{y}{t};
-            
-            \plate{data}{(x)(y)(t)(z)}{$N$};
-        \end{tikzpicture}
-    \end{figure}
-    
-\end{frame}
-
 \begin{frame}
     \frametitle{Another Idea: using latent summaries in NMT}
 
@@ -1554,37 +1490,42 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{Using latent summaries in NMT}
+\begin{frame}[t,allowframebreaks]
+\frametitle{References}
+\printbibliography
+\end{frame}
 
-%     \begin{figure}[t]
-%         \centering
-%         \begin{tikzpicture}
-%             % Define nodes
-%             \node[obs]                (y)     {\color{tMidnight} $ y $};
-%             \node[obs, left =of y]   (xi) {\color{tMidnight} $ X $};
-%             \node[latent, above =of xi] (z) {\color{tMidnight} $ z $};
+\begin{frame}
+    \frametitle{Using latent summaries in NMT}
+
+    \begin{figure}[t]
+        \centering
+        \begin{tikzpicture}
+            % Define nodes
+            \node[obs]                (y)     {\color{tMidnight} $ y $};
+            \node[obs, left =of y]   (xi) {\color{tMidnight} $ X $};
+            \node[latent, above =of xi] (z) {\color{tMidnight} $ z $};
     
-%             % Connect nodes
-%             \edge{xi,z}{y};
-%             \edge{xi}{z};
+            % Connect nodes
+            \edge{xi,z}{y};
+            \edge{xi}{z};
     
-%             \plate{data}{(y)}{$N$};
-%         \end{tikzpicture}
-%         ~
-%         \begin{tikzpicture}
-%             % Define nodes
-%             \node[obs]                (y)     {\color{tMidnight} $ y $};
-%             \node[obs, right =of y]   (xi) {\color{tMidnight} $ X $};
-%             \node[latent, above =of xi] (z) {\color{tMidnight} $ z $};
+            \plate{data}{(y)}{$N$};
+        \end{tikzpicture}
+        ~
+        \begin{tikzpicture}
+            % Define nodes
+            \node[obs]                (y)     {\color{tMidnight} $ y $};
+            \node[obs, right =of y]   (xi) {\color{tMidnight} $ X $};
+            \node[latent, above =of xi] (z) {\color{tMidnight} $ z $};
     
-%             % Connect nodes
-%             \edge[dashed]{xi,y}{z};
+            % Connect nodes
+            \edge[dashed]{xi,y}{z};
             
-%             \plate{data}{(y)}{$N$};
-%         \end{tikzpicture}
-%     \end{figure}
-% \end{frame}
+            \plate{data}{(y)}{$N$};
+        \end{tikzpicture}
+    \end{figure}
+\end{frame}
 
 \begin{frame}
     \frametitle{Multi-domain NMT}
@@ -1656,11 +1597,6 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
             \plate{data}{(y)(z)}{$N$};
         \end{tikzpicture}
     \end{figure}
-\end{frame}
-
-\begin{frame}[t,allowframebreaks]
-\frametitle{References}
-\printbibliography
 \end{frame}
 
 \end{document}

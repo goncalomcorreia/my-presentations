@@ -3,6 +3,7 @@
 \SetSymbolFont{stmry}{bold}{U}{stmry}{m}{n}
 \usepackage{nicefrac}
 \usepackage{graphicx}
+\usepackage{pst-blur}
 \usepackage{stackrel}
 \usepackage{booktabs}
 \usepackage{xspace}
@@ -29,12 +30,12 @@
 \pgfsetlayers{background,main,foreground}
 %
 \tikzset{
-    visible on/.style={alt={#1{}{invisible}}},
-    invisible/.style={opacity=0},
-    alt/.code args={<#1>#2#3}{%
+  visible on/.style={alt={#1{}{invisible}}},
+  invisible/.style={opacity=0},
+  alt/.code args={<#1>#2#3}{%
       \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
     },
-  }
+}
 
 %% particular stuff?
 \newcommand*{\ticksize}{2pt}
@@ -52,125 +53,125 @@
 
 
 \tikzset{
-    tinyarrowl/.style={-{Straight Barb[bend]},thick,bend left=75,tPeony},
-    tinyarrowr/.style={-{Straight Barb[bend]},thick,bend right=75,tPeony}}
+tinyarrowl/.style={-{Straight Barb[bend]},thick,bend left=75,tPeony},
+tinyarrowr/.style={-{Straight Barb[bend]},thick,bend right=75,tPeony}}
 \newcommand{\miniparse}[1]{%
-{\footnotesize%
-\begin{tikzpicture}[
-    node distance=14pt,
-    every node/.style={inner sep=0,outer sep=1pt},
-    ]
-\node[tPeony] (a) at (0, 0) {\textbullet};
-\node[tPeony,right of=a] (b) {\textbullet};
-\node[tPeony,right of=b] (c) {\textbullet};
-\foreach \i/\j/\r/\o in {#1}{
-\path (\i.north) edge[tinyarrow\r,opacity=\o] (\j.north);
-}\end{tikzpicture}}}
+  {\footnotesize%
+      \begin{tikzpicture}[
+          node distance=14pt,
+          every node/.style={inner sep=0,outer sep=1pt},
+        ]
+        \node[tPeony] (a) at (0, 0) {\textbullet};
+        \node[tPeony,right of=a] (b) {\textbullet};
+        \node[tPeony,right of=b] (c) {\textbullet};
+        \foreach \i/\j/\r/\o in {#1}{
+            \path (\i.north) edge[tinyarrow\r,opacity=\o] (\j.north);
+          }\end{tikzpicture}}}
 
 % Tikz pic: draw a cog
 \tikzset{cog/.pic={code={
-    \draw[myfg,thick,fill=tTarmac!90]
-  (0:2)
-  \foreach \i [evaluate=\i as \n using {(\i-1)*360/18}] in {1,...,18}{%
-    arc (\n:\n+10:2) {[rounded corners=1.5pt] -- (\n+10+2:2.4)
-    arc (\n+10+2:\n+360/18-2:2.4)} --  (\n+360/18:2)
-  };
-  \draw[myfg,thick,fill=mybg] (0,0) circle[radius=.5];
-}}}
+          \draw[myfg,thick,fill=tTarmac!90]
+          (0:2)
+          \foreach \i [evaluate=\i as \n using {(\i-1)*360/18}] in {1,...,18}{%
+              arc (\n:\n+10:2) {[rounded corners=1.5pt] -- (\n+10+2:2.4)
+                  arc (\n+10+2:\n+360/18-2:2.4)} --  (\n+360/18:2)
+            };
+          \draw[myfg,thick,fill=mybg] (0,0) circle[radius=.5];
+        }}}
 %
 %
 % Tikz: draw an envelope
 \newsavebox\envelope
 \savebox{\envelope}{
 
-\newlength\mylen
-\setlength\mylen{2cm}
-\begin{tikzpicture}[scale=.65]
+  \newlength\mylen
+  \setlength\mylen{2cm}
+  \begin{tikzpicture}[scale=.65]
 
-\coordinate (A) at (0,0);
-\coordinate (B) at (1.41\mylen,-\mylen);
-\clip
-  ([xshift=-0.5\pgflinewidth,yshift=0.5\pgflinewidth]A) --
-  ([xshift=0.5\pgflinewidth,yshift=0.5\pgflinewidth]A-|B) --
-  ([xshift=0.5\pgflinewidth,yshift=-0.5\pgflinewidth]B) --
-  ([xshift=-0.5\pgflinewidth,yshift=-0.5\pgflinewidth]B-|A) --
-  ([xshift=-0.5\pgflinewidth,yshift=0.5\pgflinewidth]A);
-\draw[mybg,fill=tTarmac,line cap=rect]
-  (A) -- (A-|B) -- (B) -- (B-|A) -- (A);
-\draw[mybg]
-  (B-|A) -- (0.705\mylen,-.3\mylen) -- (B);
-\draw[mybg,fill=tTarmac!90,rounded corners=15pt]
-  (A) -- (0.705\mylen,-0.6\mylen) -- (A-|B);
-\node[anchor=north]
-  at ($ (A)!0.5!(B|-A) $ ) {\parbox{\mylen}{}};
-\draw[mybg] (A) -- (B|-A);
-\end{tikzpicture}
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (1.41\mylen,-\mylen);
+    \clip
+    ([xshift=-0.5\pgflinewidth,yshift=0.5\pgflinewidth]A) --
+    ([xshift=0.5\pgflinewidth,yshift=0.5\pgflinewidth]A-|B) --
+    ([xshift=0.5\pgflinewidth,yshift=-0.5\pgflinewidth]B) --
+    ([xshift=-0.5\pgflinewidth,yshift=-0.5\pgflinewidth]B-|A) --
+    ([xshift=-0.5\pgflinewidth,yshift=0.5\pgflinewidth]A);
+    \draw[mybg,fill=tTarmac,line cap=rect]
+    (A) -- (A-|B) -- (B) -- (B-|A) -- (A);
+    \draw[mybg]
+    (B-|A) -- (0.705\mylen,-.3\mylen) -- (B);
+    \draw[mybg,fill=tTarmac!90,rounded corners=15pt]
+    (A) -- (0.705\mylen,-0.6\mylen) -- (A-|B);
+    \node[anchor=north]
+    at ($ (A)!0.5!(B|-A) $ ) {\parbox{\mylen}{}};
+    \draw[mybg] (A) -- (B|-A);
+  \end{tikzpicture}
 }
 %
 % output
 \newsavebox\sentoutput
 \savebox{\sentoutput}{%
-    \begin{tikzpicture}[scale=.75,text=myfg]
- \draw[rounded corners,tTarmac!60,very thick] (-.5, -.5) rectangle (.5, 2.5) {};
+  \begin{tikzpicture}[scale=.75,text=myfg]
+    \draw[rounded corners,tTarmac!60,very thick] (-.5, -.5) rectangle (.5, 2.5) {};
 
- \node[label={[label distance=.25cm]0:positive}] (pos) at (0, 2) {};
- \node[label={[label distance=.25cm]0:neutral}] (neu) at (0, 1) {};
- \node[label={[label distance=.25cm]0:negative}] (neg) at (0, 0) {};
+    \node[label={[label distance=.25cm]0:positive}] (pos) at (0, 2) {};
+    \node[label={[label distance=.25cm]0:neutral}] (neu) at (0, 1) {};
+    \node[label={[label distance=.25cm]0:negative}] (neg) at (0, 0) {};
 
- \draw[fill=tNavy!80!myfg] (pos) circle[radius=9pt];
- \draw[fill=tNavy!20!myfg] (neu) circle[radius=9pt];
- \draw[fill=tNavy!20!myfg] (neg) circle[radius=9pt];
- \end{tikzpicture}
- }
+    \draw[fill=tNavy!80!myfg] (pos) circle[radius=9pt];
+    \draw[fill=tNavy!20!myfg] (neu) circle[radius=9pt];
+    \draw[fill=tNavy!20!myfg] (neg) circle[radius=9pt];
+  \end{tikzpicture}
+}
 %
 % cartoon structure
 \newcommand{\cartoon}[2][1]{%
-\begin{tikzpicture}%
-\node[draw=none, minimum size=#1*1cm, regular polygon, regular polygon sides=5] (p) {};
-%
-\foreach \i/\j in {#2}%
-{
-    \draw[tPeony, ultra thick] (p.corner \i) -- (p.corner \j);
-}
-%
-\foreach \i in {1, ..., 5}%
-{
-    \draw[myfg,fill=mybg,very thick] (p.corner \i) circle[radius=#1*5pt];
-}
-\end{tikzpicture}}
+  \begin{tikzpicture}%
+    \node[draw=none, minimum size=#1*1cm, regular polygon, regular polygon sides=5] (p) {};
+    %
+    \foreach \i/\j in {#2}%
+      {
+        \draw[tPeony, ultra thick] (p.corner \i) -- (p.corner \j);
+      }
+    %
+    \foreach \i in {1, ..., 5}%
+      {
+        \draw[myfg,fill=mybg,very thick] (p.corner \i) circle[radius=#1*5pt];
+      }
+  \end{tikzpicture}}
 \newcommand{\cartoonDense}[1][1]{%
-\begin{tikzpicture}%
-\node[draw=none, minimum size=#1*1cm, regular polygon, regular polygon sides=5] (p) {};
-%
-\draw[tPeony, ultra thick, opacity=.8] (p.corner 1) -- (p.corner 2);
-\draw[tPeony, ultra thick, opacity=.5] (p.corner 1) -- (p.corner 3);
-\draw[tPeony, ultra thick, opacity=.7] (p.corner 1) -- (p.corner 4);
-\draw[tPeony, ultra thick, opacity=.4] (p.corner 1) -- (p.corner 5);
-\draw[tPeony, ultra thick, opacity=.6] (p.corner 2) -- (p.corner 3);
-\draw[tPeony, ultra thick, opacity=.3] (p.corner 2) -- (p.corner 4);
-\draw[tPeony, ultra thick, opacity=.9] (p.corner 2) -- (p.corner 5);
-\draw[tPeony, ultra thick, opacity=.2] (p.corner 3) -- (p.corner 4);
-\draw[tPeony, ultra thick, opacity=.6] (p.corner 3) -- (p.corner 5);
-\draw[tPeony, ultra thick, opacity=.4] (p.corner 4) -- (p.corner 5);
-%
-\foreach \i in {1, ..., 5}%
-{
-    \draw[myfg,fill=mybg,very thick] (p.corner \i) circle[radius=#1*5pt];
-}
-\end{tikzpicture}}
+  \begin{tikzpicture}%
+    \node[draw=none, minimum size=#1*1cm, regular polygon, regular polygon sides=5] (p) {};
+    %
+    \draw[tPeony, ultra thick, opacity=.8] (p.corner 1) -- (p.corner 2);
+    \draw[tPeony, ultra thick, opacity=.5] (p.corner 1) -- (p.corner 3);
+    \draw[tPeony, ultra thick, opacity=.7] (p.corner 1) -- (p.corner 4);
+    \draw[tPeony, ultra thick, opacity=.4] (p.corner 1) -- (p.corner 5);
+    \draw[tPeony, ultra thick, opacity=.6] (p.corner 2) -- (p.corner 3);
+    \draw[tPeony, ultra thick, opacity=.3] (p.corner 2) -- (p.corner 4);
+    \draw[tPeony, ultra thick, opacity=.9] (p.corner 2) -- (p.corner 5);
+    \draw[tPeony, ultra thick, opacity=.2] (p.corner 3) -- (p.corner 4);
+    \draw[tPeony, ultra thick, opacity=.6] (p.corner 3) -- (p.corner 5);
+    \draw[tPeony, ultra thick, opacity=.4] (p.corner 4) -- (p.corner 5);
+    %
+    \foreach \i in {1, ..., 5}%
+      {
+        \draw[myfg,fill=mybg,very thick] (p.corner \i) circle[radius=#1*5pt];
+      }
+  \end{tikzpicture}}
 \newcommand{\cartoonSparse}[1][1]{%
-\begin{tikzpicture}%
-\node[draw=none, minimum size=#1*1cm, regular polygon, regular polygon sides=5] (p) {};
-%
-\draw[tPeony, ultra thick, opacity=1] (p.corner 1) -- (p.corner 4);
-\draw[tPeony, ultra thick, opacity=.5] (p.corner 2) -- (p.corner 5);
-\draw[tPeony, ultra thick, opacity=.5] (p.corner 1) -- (p.corner 5);
-%
-\foreach \i in {1, ..., 5}%
-{
-    \draw[myfg,fill=mybg,very thick] (p.corner \i) circle[radius=#1*5pt];
-}
-\end{tikzpicture}}
+  \begin{tikzpicture}%
+    \node[draw=none, minimum size=#1*1cm, regular polygon, regular polygon sides=5] (p) {};
+    %
+    \draw[tPeony, ultra thick, opacity=1] (p.corner 1) -- (p.corner 4);
+    \draw[tPeony, ultra thick, opacity=.5] (p.corner 2) -- (p.corner 5);
+    \draw[tPeony, ultra thick, opacity=.5] (p.corner 1) -- (p.corner 5);
+    %
+    \foreach \i in {1, ..., 5}%
+      {
+        \draw[myfg,fill=mybg,very thick] (p.corner \i) circle[radius=#1*5pt];
+      }
+  \end{tikzpicture}}
 %
 \newcommand{\setupsimplexbary}[1][3.3]{%
 \coordinate (L1) at (0:0);
@@ -188,52 +189,52 @@
 }
 
 \newcommand{\drawcs}{%
-\node[anchor=south] at (0, \vecheight*4) {$c_1$};
-\node[anchor=south] at (0, \vecheight*3) {$c_2$};
-\node[anchor=south] at (0, \vecheight*1.5) {$\cdots$};
-\node[anchor=south] at (0, \vecheight*0) {$c_N$};}
+  \node[anchor=south] at (0, \vecheight*4) {$c_1$};
+  \node[anchor=south] at (0, \vecheight*3) {$c_2$};
+  \node[anchor=south] at (0, \vecheight*1.5) {$\cdots$};
+  \node[anchor=south] at (0, \vecheight*0) {$c_N$};}
 
 \newcommand{\drawscores}{%
-\node[anchor=south] at (-1-.5*\vecwidth, \vecheight*5+.1) {$\s$};
-\draw[elem,fill=vecfg!60!vecbg] (-1-\vecwidth, \vecheight*4) rectangle (-1, \vecheight*5);
-\draw[elem,fill=vecfg!85!vecbg] (-1-\vecwidth, \vecheight*3) rectangle (-1, \vecheight*4);
-\draw[elem,fill=vecfg!60!vecbg] (-1-\vecwidth, \vecheight*2) rectangle (-1, \vecheight*3);
-\draw[elem,fill=vecfg!75!vecbg] (-1-\vecwidth, \vecheight*1) rectangle (-1, \vecheight*2);
-\draw[elem,fill=vecfg!50!vecbg] (-1-\vecwidth, \vecheight*0) rectangle (-1, \vecheight*1);
+  \node[anchor=south] at (-1-.5*\vecwidth, \vecheight*5+.1) {$\s$};
+  \draw[elem,fill=vecfg!60!vecbg] (-1-\vecwidth, \vecheight*4) rectangle (-1, \vecheight*5);
+  \draw[elem,fill=vecfg!85!vecbg] (-1-\vecwidth, \vecheight*3) rectangle (-1, \vecheight*4);
+  \draw[elem,fill=vecfg!60!vecbg] (-1-\vecwidth, \vecheight*2) rectangle (-1, \vecheight*3);
+  \draw[elem,fill=vecfg!75!vecbg] (-1-\vecwidth, \vecheight*1) rectangle (-1, \vecheight*2);
+  \draw[elem,fill=vecfg!50!vecbg] (-1-\vecwidth, \vecheight*0) rectangle (-1, \vecheight*1);
 }
 
 \newcommand{\drawnumscores}{%
-\node[mygr,anchor=south east] at (-2, \vecheight*4) {\small $2$};
-\node[mygr,anchor=south east] at (-2, \vecheight*3) {\small $4$};
-\node[mygr,anchor=south east] at (-2, \vecheight*2) {\small $-1$};
-\node[mygr,anchor=south east] at (-2, \vecheight*1) {\small $1$};
-\node[mygr,anchor=south east] at (-2, \vecheight*0) {\small $-3$};
+  \node[mygr,anchor=south east] at (-2, \vecheight*4) {\small $2$};
+  \node[mygr,anchor=south east] at (-2, \vecheight*3) {\small $4$};
+  \node[mygr,anchor=south east] at (-2, \vecheight*2) {\small $-1$};
+  \node[mygr,anchor=south east] at (-2, \vecheight*1) {\small $1$};
+  \node[mygr,anchor=south east] at (-2, \vecheight*0) {\small $-3$};
 }
 
 \newcommand{\drawnummax}{%
-\node[mygr,anchor=south west] at (2, \vecheight*4) {\small $0$};
-\node[mygr,anchor=south west] at (2, \vecheight*3) {\small $1$};
-\node[mygr,anchor=south west] at (2, \vecheight*2) {\small $0$};
-\node[mygr,anchor=south west] at (2, \vecheight*1) {\small $0$};
-\node[mygr,anchor=south west] at (2, \vecheight*0) {\small $0$};
+  \node[mygr,anchor=south west] at (2, \vecheight*4) {\small $0$};
+  \node[mygr,anchor=south west] at (2, \vecheight*3) {\small $1$};
+  \node[mygr,anchor=south west] at (2, \vecheight*2) {\small $0$};
+  \node[mygr,anchor=south west] at (2, \vecheight*1) {\small $0$};
+  \node[mygr,anchor=south west] at (2, \vecheight*0) {\small $0$};
 }
 
 
 \newcommand{\drawargmax}{%
-\node[anchor=south] at (1+.5*\vecwidth, \vecheight*5+.1) {$\p$};
-\draw[elem,fill=vecfg! 0!vecbg]  (1, \vecheight*4) rectangle (1+\vecwidth, \vecheight*5);
-\draw[elem,fill=vecfg!70!vecbg]  (1, \vecheight*3) rectangle (1+\vecwidth, \vecheight*4);
-\draw[elem,fill=vecfg! 0!vecbg]  (1, \vecheight*2) rectangle (1+\vecwidth, \vecheight*3);
-\draw[elem,fill=vecfg! 0!vecbg]  (1, \vecheight*1) rectangle (1+\vecwidth, \vecheight*2);
-\draw[elem,fill=vecfg! 0!vecbg]  (1, \vecheight*0) rectangle (1+\vecwidth, \vecheight*1);
+  \node[anchor=south] at (1+.5*\vecwidth, \vecheight*5+.1) {$\p$};
+  \draw[elem,fill=vecfg! 0!vecbg]  (1, \vecheight*4) rectangle (1+\vecwidth, \vecheight*5);
+  \draw[elem,fill=vecfg!70!vecbg]  (1, \vecheight*3) rectangle (1+\vecwidth, \vecheight*4);
+  \draw[elem,fill=vecfg! 0!vecbg]  (1, \vecheight*2) rectangle (1+\vecwidth, \vecheight*3);
+  \draw[elem,fill=vecfg! 0!vecbg]  (1, \vecheight*1) rectangle (1+\vecwidth, \vecheight*2);
+  \draw[elem,fill=vecfg! 0!vecbg]  (1, \vecheight*0) rectangle (1+\vecwidth, \vecheight*1);
 }
 \newcommand{\drawsoftmax}{%
-\node[anchor=south] at (1+.5*\vecwidth, \vecheight*5+.1) {$\p$};
-\draw[elem,fill=vecfg!30!vecbg]  (1, \vecheight*4) rectangle (1+\vecwidth, \vecheight*5);
-\draw[elem,fill=vecfg!50!vecbg]  (1, \vecheight*3) rectangle (1+\vecwidth, \vecheight*4);
-\draw[elem,fill=vecfg!35!vecbg]  (1, \vecheight*2) rectangle (1+\vecwidth, \vecheight*3);
-\draw[elem,fill=vecfg!25!vecbg]  (1, \vecheight*1) rectangle (1+\vecwidth, \vecheight*2);
-\draw[elem,fill=vecfg!15!vecbg]  (1, \vecheight*0) rectangle (1+\vecwidth, \vecheight*1);
+  \node[anchor=south] at (1+.5*\vecwidth, \vecheight*5+.1) {$\p$};
+  \draw[elem,fill=vecfg!30!vecbg]  (1, \vecheight*4) rectangle (1+\vecwidth, \vecheight*5);
+  \draw[elem,fill=vecfg!50!vecbg]  (1, \vecheight*3) rectangle (1+\vecwidth, \vecheight*4);
+  \draw[elem,fill=vecfg!35!vecbg]  (1, \vecheight*2) rectangle (1+\vecwidth, \vecheight*3);
+  \draw[elem,fill=vecfg!25!vecbg]  (1, \vecheight*1) rectangle (1+\vecwidth, \vecheight*2);
+  \draw[elem,fill=vecfg!15!vecbg]  (1, \vecheight*0) rectangle (1+\vecwidth, \vecheight*1);
 }
 
 
@@ -283,10 +284,10 @@
   \expandafter\define@processROW\expandafter{\SEP@char}%
 }
 \newcommand\define@processROW[1]{%
-    \def\@processROW##1#1##2||{%
-      \def\@preSEP{##1}%
-      \def\@postSEP{##2}%
-    }%
+\def\@processROW##1#1##2||{%
+\def\@preSEP{##1}%
+\def\@postSEP{##2}%
+}%
 }
 \newcommand\getargs[1]{%
   \togglefalse{@doneROWreads}%
@@ -300,7 +301,7 @@
     }{}%
     \csedef{arg\roman{ROWcellindex@}}{\expandonce{\@preSEP}}%
   }%
-% \narg GIVES HOW MANY ROWS WERE PROCESSED
+  % \narg GIVES HOW MANY ROWS WERE PROCESSED
   \xdef\narg{\arabic{ROWcellindex@}}%
 }
 \makeatother
@@ -331,28 +332,28 @@
 }
 
 \newcommand\drawdial[2]{%
-\makearglist{#1}{#2}%
-\begin{tikzpicture}
-  \draw[ultra thick] (0,0) circle [radius=0.5];
-  \foreach \angle/\label in \arglist
-  {
-    \draw +(\angle:0.25) -- +(\angle:0.5);
-    \draw (\angle:0.85) node {\label};
-  }
-  \draw[ultra thick] (0,0) -- +(\POINTangle:0.5);
-%
-\end{tikzpicture}%
+  \makearglist{#1}{#2}%
+  \begin{tikzpicture}
+    \draw[ultra thick] (0,0) circle [radius=0.5];
+    \foreach \angle/\label in \arglist
+    {
+      \draw +(\angle:0.25) -- +(\angle:0.5);
+      \draw (\angle:0.85) node {\label};
+    }
+    \draw[ultra thick] (0,0) -- +(\POINTangle:0.5);
+    %
+  \end{tikzpicture}%
 }
 
 \tikzset{
   every overlay node/.style={
-    draw=black,fill=white,rounded corners,anchor=north west,
-  },
+      draw=black,fill=white,rounded corners,anchor=north west,
+    },
 }
 % Usage:
 % \tikzoverlay at (-1cm,-5cm) {content};
 % or
 % \tikzoverlay[text width=5cm] at (-1cm,-5cm) {content};
 \def\tikzoverlay{%
-   \tikz[baseline,overlay]\node[every overlay node];
+  \tikz[baseline,overlay]\node[every overlay node];
 }%

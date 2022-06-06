@@ -45,8 +45,8 @@
 \DeclareMathOperator{\sparsemax}{\mathbf{sparsemax}}
 \definecolor{tBleu}{RGB}{118,169,196}
 \definecolor{tDY}{RGB}{217,192,102}
-\title{Thesis Proposal: Neural Machine Translation with Latent Context}
-\author{Gonçalo Correia}
+\title{Learnable Sparsity and Weak Supervision for Data-efficient, Transparent, and Compact Neural Models}
+\author{Goncalo M. Correia}
 
 \addtobeamertemplate{navigation symbols}{}{%
     \usebeamerfont{footline}%
@@ -66,274 +66,148 @@
 \begin{document}
 
 \begin{frame}
-%\titlepage
-\begin{tikzpicture}[remember picture, overlay]
+    %\titlepage
+    \begin{tikzpicture}[remember picture, overlay]
 
-\node[font={\color{myfg}\usebeamerfont{title}},align=center]
-    at ($(current page.center) + (0, 2.5)$) {\color{myDarkYellow} Thesis Proposal:};
-\node[font={\color{myfg}\usebeamerfont{title}},align=center]
-    at ($(current page.center) + (0, 1.0)$) {\color{myDarkYellow} Neural Machine Translation};
-\node[font={\color{myfg}\usebeamerfont{title}},align=center]
-    at ($(current page.center) + (0, 0)$) {\color{myDarkYellow} with Latent Context};
-\node[anchor=north,font={\color{myfg}\usebeamerfont{author}}]
-    at ($(current page.center) + (0, -1.3)$)
-{
-\renewcommand{\arraystretch}{1.5}
-\begin{tabular}{c}
-\textbf{Gonçalo Correia}
-\end{tabular}
-};
+        \node[font={\color{myfg}\usebeamerfont{title}},align=center]
+        at ($(current page.center) + (0, 2.0)$) {\color{myDarkYellow} Learnable Sparsity and Weak Supervision};
+        \node[font={\color{myfg}\usebeamerfont{title}},align=center]
+        at ($(current page.center) + (0, 1.0)$) {\color{myDarkYellow} for Data-efficient, Transparent, and Compact};
+        \node[font={\color{myfg}\usebeamerfont{title}},align=center]
+        at ($(current page.center) + (0, 0.0)$) {\color{myDarkYellow} Neural Models};
+        \node[anchor=north,font={\color{myfg}\usebeamerfont{author}}]
+        at ($(current page.center) + (0, -1.5)$)
+        {
+            \renewcommand{\arraystretch}{1.5}
+            \begin{tabular}{c}
+                \textbf{Gonçalo M. Correia}
+            \end{tabular}
+        };
 
-\node[anchor=south,font={\color{mygr}\footnotesize}]
-    at (current page.south)
-{
-\raisebox{-0.7mm}[\height][\depth]{}
-Committee: André Martins, Mário Figueiredo, Vlad Niculae, Wilker Aziz
-};
-\end{tikzpicture}
+        \node[anchor=south,font={\color{mygr}\footnotesize}]
+        at ($(current page.south) + (0, 0.5)$)
+        {
+            \raisebox{-0.7mm}[\height][\depth]{}
+            Jury: André Martins, Mário Figueiredo, Ivan Titov, Wilker Aziz, Isabel Trancoso
+        };
+    \end{tikzpicture}
 \end{frame}
 
-\tikzset{%
-    enc/.style={fill=tPurple!80!mybg},
-    attn/.style={fill=tPeony},
-    dec/.style={fill=tBlue!50!mybg},
-    wvec/.style={
-        inner sep=0,
-        rectangle,
-        rounded corners=2pt,
-        minimum width=5pt,
-        minimum height=18pt},
-    word/.style={
-        color=mygr,
-        font=\itshape
-    },
-    netarrow/.style={->, color=mygr},
-    attnedge/.style={tPeony, thick}
-}
+% \tikzset{%
+%     enc/.style={fill=tPurple!70!mybg},
+%     attn/.style={fill=tPeony},
+%     dec/.style={fill=tBlue!90!mybg},
+%     wvec/.style={
+%             inner sep=0,
+%             rectangle,
+%             rounded corners=2pt,
+%             minimum width=5pt,
+%             minimum height=18pt},
+%     word/.style={
+%             color=mygr,
+%             font=\itshape
+%         },
+%     netarrow/.style={->, color=mygr},
+%     attnedge/.style={tPeony, thick}
+% }
 
 % \section{Introduction}
 
 \begin{frame}
-    \frametitle{Neural networks: big, uninterpretable, and powerful black-boxes?}
-    \centering
-    \only<1>{\includegraphics[width=0.7\columnwidth]{figures/beforegpt3}}
-    \only<2>{\includegraphics[width=0.4\columnwidth]{figures/gpt3}}
+    \frametitle{Deep learning successes}
+
+    \begin{itemize}
+        \uncover<2->{\item Subset of machine learning that uses \textbf{neural networks}}
+              \uncover<3->{\item Powerful tool for learning representations of any data}
+              \uncover<4->{\item Remarkable results}
+    \end{itemize}
+    \begin{tikzpicture}[remember picture,overlay]
+        \uncover<5->{\node[xshift=3cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/guardian.png}};}
+        \uncover<6->{\node[xshift=-3cm,yshift=0cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/wired.png}};}
+        \uncover<7->{\node[xshift=2cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/abcscience.png}};}
+        \uncover<8->{\node[xshift=-3cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/forbes1.png}};}
+        \uncover<9->{\node[xshift=-3.5cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/bridge.png}};}
+        \uncover<10->{\node[xshift=3.5cm,yshift=-1cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/cancer.png}};}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Deep learning limitations and drawbacks}
+    \begin{itemize}
+        \uncover<2->{\item Requires a lot of data}
+              \uncover<3->{\item Hard to understand and interpret reasons behind decisions}
+              \uncover<4->{\item Requires a lot of computation}
+    \end{itemize}
+    \begin{tikzpicture}[remember picture,overlay]
+        \uncover<5->{\node[xshift=3cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/climate.png}};}
+        \uncover<6->{\node[xshift=-3cm,yshift=0cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/transparency.png}};}
+        \uncover<7->{\node[xshift=2cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/patientstrust.png}};}
+        \uncover<8->{\node[xshift=-3cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/fakenews.png}};}
+    \end{tikzpicture}
 \end{frame}
 
 \begin{frame}
     \frametitle{Key concepts of this thesis}
-    \uncover<5->{\cornercite{brown1993mathematics}}
-    \begin{columns}
-        \uncover<1->{
-            \hspace{2mm}\vspace{-1cm}
-            
-        \begin{column}{0.5\columnwidth}
-        \vspace{0.5cm}
-        }
-        \begin{itemize}
-            \uncover<1->{\item Transparency}
-            \uncover<2->{\item Sparsity}
-            \uncover<3->{\item Compactness}
-            \uncover<4->{\item Data efficiency}
-        \end{itemize}
-        \end{column}
-    
-        \begin{column}{0.5\columnwidth}
-        \begin{center}
-            \uncover<5->{\includegraphics[width=0.9\columnwidth]{figures/alignments.pdf}}
-        \end{center}
-        \end{column}
-        \end{columns}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[font={\color{myfg}\usebeamerfont{title}},align=center]
+        at ($(current page.center) + (0, 1.0)$) {\only<5->{{\color{tPeony} Learnable Sparsity}}\only<1-4>{Learnable Sparsity} and \only<6->{{\color{tPeony} Weak Supervision}}\only<1-5>{Weak Supervision}};
+        \node[font={\color{myfg}\usebeamerfont{title}},align=center]
+        at ($(current page.center) + (0, 0.0)$) {for \only<2->{{\color{myDarkYellow} Data-efficient}}\only<1>{Data-efficient}, \only<3->{{\color{myDarkYellow} Transparent}}\only<1-2>{Transparent}, and \only<4->{{\color{myDarkYellow} Compact}}\only<1-3>{Compact}};
+        \node[font={\color{myfg}\usebeamerfont{title}},align=center]
+        at ($(current page.center) + (0, -1.0)$) {Neural Models};
+    \end{tikzpicture}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Neural Machine Translation (NMT)}
-    \centering
-    \fontsize{14pt}{15}\selectfont%
+    \vspace*{1mm}
+    \frametitle{Published work of this thesis}
+    \only<2>{\cornerciteme{myape2019}}
+    \only<3>{\cornerciteme{mytransf2019}}
+    \only<4>{\cornerciteme{myneurips2020}}
+    \vspace*{-2.5em}
     \begin{itemize}
-        \uncover<1->{\item Advances in optimization $\rightarrow$ ditch structure in favour of direct decomposition}
-        \uncover<2->{\item Good for high-resource language, fails in low-resource settings}
+        \uncover<2->{\item Automatic Post-Editing using {\color{tPeony} weak supervision} for {\color{myDarkYellow} data-efficiency} (ACL)}
+              \uncover<3->{\item Letting transformer {\color{tPeony} learn sparsity} of its attentions for {\color{myDarkYellow} transparency} (EMNLP)}
+              \uncover<4->{\item General strategy for efficiently training discrete latent variable models, to have {\color{myDarkYellow} compactness} (NeurIPS)}
     \end{itemize}
 \end{frame}
 
-\begin{frame}[t,plain,fragile]%
-    \frametitle{A bit of context... On Seq2Seq}%
-    \cornercite{bahdanau}%
-    \begin{tikzpicture}[remember picture,overlay]
-        \node[anchor=south east] at (current page.south east)
-            {\scriptsize Slide Credit: Vlad Niculae\strut};
-    \end{tikzpicture}
-    \fontsize{13pt}{15}\selectfont%
-    \begin{columns}[T]
-    \begin{column}{.7\textwidth}%
-    \begin{tikzpicture}[node distance=0pt]
-    %
-    \def\bottom{-7}%
-    \def\top{0}%
-    \foreach[count=\i] \j in {United,Nations,elections,end,today}{
-        \node[word,anchor=south] (w\i) at (1.7*\i+2, \bottom) {\strut \alt<1-11>{\j}{}};
-        \uncover<2->{\node[wvec,enc,above=-2pt of w\i] (embed\i) {};}
-        \uncover<3->{
-            \node[wvec,enc,above=6pt of embed\i] (enc\i) {};
-            \path (embed\i) edge[netarrow] (enc\i);
-        }
-        \uncover<4->{\node[inner sep=0, outer sep=0, above=2pt of enc\i] (src\i){};}
-        \uncover<4->{\draw[fill,attnedge] (src\i) circle[radius=1pt];}
-    }
-    \foreach[count=\i] \j in {Eleições,das,Nações,Unidas}
-    {
-        \pgfmathtruncatemacro\attnslideno{2*\i+2}
-        \pgfmathtruncatemacro\outslideno{2*\i+3}
-        \node[word,anchor=north, visible on=<\outslideno->] (y\i) at (1.7*\i+2, \top) {\strut \alt<1-11>{\j}{}};
-        \node[wvec,dec,below=-2pt of y\i, visible on=<\outslideno->] (out\i) {};
-        \node[wvec,dec,below=6pt of out\i, visible on=<\outslideno->] (dec\i) {};
-        \node[wvec,attn,below=6pt of dec\i,visible on=<\attnslideno->] (attn\i) {};
-        \node[inner sep=0, outer sep=0, below=2pt of attn\i] (trg\i) {};
-        \draw[fill,attnedge,visible on=<\attnslideno->] (trg\i) circle[radius=1pt];
-        \path (attn\i) edge[netarrow,visible on=<\outslideno->] (dec\i);
-        \path (dec\i)  edge[netarrow,visible on=<\outslideno->] (out\i);
-    }
-    \node<4->[wvec,dec,left=14pt of dec1] (dec0) {};
-    \node<4-> [anchor=west] at ([xshift=3pt]dec0.south west) {\scriptsize $\bs{s}_0$};
-    \path<5-> (dec0) edge[netarrow] (dec1);
-    % labels
-    \node<2-> [anchor=west] at ([xshift=3pt]embed2.south west) {\scriptsize $\bs{v}_j$};
-    \node<3-> [anchor=west] at ([xshift=3pt]enc2.south west) {\scriptsize $\bs{h}_j$};
-    \node<4-> [anchor=west] at ([xshift=3pt]attn1.south west) {\scriptsize $\bs{c}_1$};
-    \node<5-> [anchor=west] at ([xshift=3pt]dec1.south west) {\scriptsize $\bs{s}_1$};
-    \node<5-> [anchor=west] at ([xshift=3pt]out1.south west) {\scriptsize $\bs{y}_1$};
-    % encoder bi-LSTM arrows
-    \def\sh{3pt}
-    \uncover<3->{
-    \path ([yshift=\sh]enc1.east)  edge[netarrow] ([yshift=\sh]enc2.west);
-    \path ([yshift=\sh]enc2.east)  edge[netarrow] ([yshift=\sh]enc3.west);
-    \path ([yshift=\sh]enc3.east)  edge[netarrow] ([yshift=\sh]enc4.west);
-    \path ([yshift=\sh]enc4.east)  edge[netarrow] ([yshift=\sh]enc5.west);
-    %
-    \path ([yshift=-\sh]enc2.west) edge[netarrow] ([yshift=-\sh]enc1.east);
-    \path ([yshift=-\sh]enc3.west) edge[netarrow] ([yshift=-\sh]enc2.east);
-    \path ([yshift=-\sh]enc4.west) edge[netarrow] ([yshift=-\sh]enc3.east);
-    \path ([yshift=-\sh]enc5.west) edge[netarrow] ([yshift=-\sh]enc4.east);
-    }
-    %
-    % decoder LSTM arrows
-    \uncover<7->{\path (dec1) edge[netarrow] (dec2);}
-    \uncover<9->{\path (dec2) edge[netarrow] (dec3);}
-    \uncover<11->{\path (dec3) edge[netarrow] (dec4);}
-    % autoregressive arrows
-    \uncover<7->{\path (out1) edge[netarrow] (dec2.north west);}
-    \uncover<9->{\path (out2) edge[netarrow] (dec3.north west);}
-    \uncover<11->{\path (out3) edge[netarrow] (dec4.north west);}
-    
-    % Attention to word 1
-    \uncover<4->{
-    \path (src1) edge[attnedge,opacity=.5] (trg1);
-    \path (src2) edge[attnedge,opacity=.2] (trg1);
-    \path (src3) edge[attnedge,opacity=.8] (trg1);
-    \path (src4) edge[attnedge,opacity=.2] (trg1);
-    \path (src5) edge[attnedge,opacity=.2] (trg1);
-    }
-%
-\uncover<6->{
-\path (src1) edge[attnedge,opacity=.6] (trg2);
-\path (src2) edge[attnedge,opacity=.6] (trg2);
-\path (src3) edge[attnedge,opacity=.4] (trg2);
-\path (src4) edge[attnedge,opacity=.2] (trg2);
-\path (src5) edge[attnedge,opacity=.2] (trg2);
-}
-%
-\uncover<8->{
-\path (src1) edge[attnedge,opacity=.4] (trg3);
-\path (src2) edge[attnedge,opacity=.9] (trg3);
-\path (src3) edge[attnedge,opacity=.2] (trg3);
-\path (src4) edge[attnedge,opacity=.2] (trg3);
-\path (src5) edge[attnedge,opacity=.2] (trg3);
-}
-%
-\uncover<10->{
-\path (src1) edge[attnedge,opacity=.9] (trg4);
-\path (src2) edge[attnedge,opacity=.4] (trg4);
-\path (src3) edge[attnedge,opacity=.2] (trg4);
-\path (src4) edge[attnedge,opacity=.2] (trg4);
-\path (src5) edge[attnedge,opacity=.2] (trg4);
-}
-
-\uncover<2->{\node[align=right,anchor=right, left=20pt of enc1] {Encoder};}
-\uncover<4->{\node[align=right,anchor=right, left=20pt of attn1,yshift=-15pt]
-    {Attention};}
-\uncover<5->{\node[align=right,anchor=right, left=20pt of dec1] {Decoder};}
-\end{tikzpicture}
-\\
-\end{column}
-\begin{column}{.29\textwidth}%
-\centering
-\uncover<4->{
-\textbf{\emph{attention weights}}
-\\computed with \emph{softmax}:
-\\[.5\baselineskip]
-\small
-for some decoder state $\bs{s}_t$,
-compute contextually weighted average of input $\bs{c}_t$:
-\begin{align*}
-z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
-\pi_j &= \operatorname{softmax}_j(\bs{z}) \\
-\bs{c}_t &= \sum_j \pi_j \bs{h}_j
-\end{align*}
-}
-\end{column}
-\end{columns}
-\end{frame}
+\section{A Simple and Effective Approach to APE with Transfer Learning}
 
 \begin{frame}
-    \frametitle{A bit of context... on Transformers}
+    \frametitle{A bit of context on transformers}
 
     \fontsize{12pt}{15}\selectfont
     \only<1-5>{\cornercite{transf}}
     \only<6>{\cornercite{devlin2018bert}}
     \begin{columns}
-    \uncover<1->{
+        \uncover<1->{
         \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
             What if... Attention is all you need? \\
             \vspace{0.5cm}
-    }
-    \uncover<2->{
-        {\color{myDarkYellow} Key idea:} Instead of Recurrent Neural Networks (RNNs), let's use attention mechanisms!
-        \vspace{0.25cm}
-    }
-        \begin{itemize}
-            \uncover<3->{\item In place of the RNNs, use self-attention}
-            \uncover<4->{\item Do this with multiple heads (i.e. attention mechanisms in parallel)}
-            \uncover<5->{\item ... and do it through several layers}
-            \uncover<6->{\item Inspiration for big general-purpose models like BERT!}
-        \end{itemize}
-    \end{column}
+            }
+            \uncover<2->{
+                {\color{myDarkYellow} Key idea:} Instead of Recurrent Neural Networks (RNNs), let's use attention mechanisms!
+                \vspace{0.25cm}
+            }
+            \begin{itemize}
+                \uncover<3->{\item In place of the RNNs, use self-attention}
+                      \uncover<4->{\item Do this with multiple heads (i.e. attention mechanisms in parallel)}
+                      \uncover<5->{\item ... and do it through several layers}
+                      \uncover<6->{\item Inspiration for big general-purpose models like BERT!}
+            \end{itemize}
+        \end{column}
 
-    \begin{column}{0.4\columnwidth}
-    \vspace{-1.5cm}
-    \begin{center}
-    \includegraphics[width=0.8\columnwidth]{figures/transformer_mybg}
-    \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
-    \end{center}
-    \end{column}
+        \begin{column}{0.4\columnwidth}
+            \vspace{-1.5cm}
+            \begin{center}
+                \includegraphics[width=0.8\columnwidth]{figures/transformer_mybg}
+                \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
+            \end{center}
+        \end{column}
     \end{columns}
 
 \end{frame}
-
-\begin{frame}
-    \frametitle{Outline}
-    \fontsize{15pt}{15}\selectfont%
-    \only<2>{\cornercite{myape2019}}
-    \only<3>{\cornercite{mytransf2019}}
-    \only<4>{\cornercite{myneurips2020}}
-    \begin{itemize}
-        \uncover<2->{\item Automatic Post-Editing (APE) using BERT (ACL 2019)}
-        \uncover<3->{\item Letting Transformer learn how sparse it wants its attention (EMNLP 2019)}
-        \uncover<4->{\item General strategy for efficient training discrete latent variables (NeurIPS 2020)}
-        \uncover<5->{\item Future work: powerful structured latent variable models for NMT}
-    \end{itemize}
-\end{frame}
-
-\section{A Simple and Effective Approach to Automatic Post-Editing with Transfer Learning}
 
 \begin{frame}
     \frametitle{What is APE?}
@@ -347,27 +221,27 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \fontsize{12pt}{15}\selectfont
     %\cornercite{transf}
     \begin{columns}
-    \uncover<1->{
+        \uncover<1->{
         \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
-    }
-    \uncover<2->{
-        {\color{myDarkYellow} Key idea:} Use BERT to do APE
-        \vspace{0.25cm}
-    }
-        \begin{itemize}
-            \uncover<3->{\item Prior to this work, BERT was mainly used for simple classification tasks}
-            \uncover<4->{\item We introduced an effective method to use BERT in a generation task (APE)}
-            \uncover<5->{\item Smart parameter sharing between encoder and decoder}
-        \end{itemize}
-    \end{column}
+            }
+            \uncover<2->{
+                {\color{myDarkYellow} Key idea:} Use BERT to do APE
+                \vspace{0.25cm}
+            }
+            \begin{itemize}
+                \uncover<3->{\item Prior to this work, BERT was mainly used for simple classification tasks}
+                      \uncover<4->{\item We introduced an effective method to use BERT in a generation task (APE)}
+                      \uncover<5->{\item Smart parameter sharing between encoder and decoder}
+            \end{itemize}
+        \end{column}
 
-    \begin{column}{0.4\columnwidth}
-    \vspace{-1.5cm}
-    \begin{center}
-    \includegraphics[width=0.8\columnwidth]{figures/bertape.pdf}
-    \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
-    \end{center}
-    \end{column}
+        \begin{column}{0.4\columnwidth}
+            \vspace{-1.5cm}
+            \begin{center}
+                \includegraphics[width=0.8\columnwidth]{figures/bertape.pdf}
+                \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
+            \end{center}
+        \end{column}
     \end{columns}
 \end{frame}
 
@@ -420,11 +294,11 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
     \begin{quote}
         {\normalfont
-        \begin{itemize}
-            \only<3>{\item {\color{myDarkYellow} for interpretability}}\only<2>{\item for interpretability} % sparse connections allow to be sure about which model representations were used to make a prediction
-            \only<3>{\item {\color{myDarkYellow} for discovering linguistic structure}}\only<2>{\item for discovering linguistic structure} % we can redesign components based on what we find with sparsity
-            \item<2-> for efficiency
-        \end{itemize}}
+            \begin{itemize}
+                \only<3>{\item {\color{myDarkYellow} for interpretability}}\only<2>{\item for interpretability} % sparse connections allow to be sure about which model representations were used to make a prediction
+                      \only<3>{\item {\color{myDarkYellow} for discovering linguistic structure}}\only<2>{\item for discovering linguistic structure} % we can redesign components based on what we find with sparsity
+                \item<2-> for efficiency
+            \end{itemize}}
     \end{quote}
 \end{frame}
 
@@ -432,60 +306,60 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \frametitle{
         \only<7->{{\color{myDarkYellow}Adaptively}} \only<5->{{\color{colorEntmax}Sparse}} \uncover<1->{Transformers}}
 
-\only<1-4>{
-    \fontsize{12pt}{15}\selectfont
-    \cornercite{transf}
-    \begin{columns}
-    \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
-    In each attention head:
-    \begin{equation*}
-    \bar{\matr{V}}  = \softmax\left(\frac{\matr{Q}\matr{K}^\top}{\sqrt{d_k}}\right)\matr{V}.
-    \end{equation*}
-    \uncover<2-4>{Attention in three places:
+    \only<1-4>{
+        \fontsize{12pt}{15}\selectfont
+        \cornercite{transf}
+        \begin{columns}
+            \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
+                In each attention head:
+                \begin{equation*}
+                    \bar{\matr{V}}  = \softmax\left(\frac{\matr{Q}\matr{K}^\top}{\sqrt{d_k}}\right)\matr{V}.
+                \end{equation*}
+                \uncover<2-4>{Attention in three places:
+                \begin{itemize}
+                    \item Self-attention in the encoder\tikz[remember picture]{\node[coordinate] (n1) {};}}
+                          \uncover<3-4>{\item Self-attention in the decoder\tikz[remember picture]{\node[coordinate] (n2) {};}}
+                          \uncover<4>{\item Contextual attention\tikz[remember picture]{\node[coordinate] (n3) {};}}
+                \end{itemize}
+
+                % \vspace{-0.7cm}
+                % \begin{align*}
+                %     \uncover<2-4>{6 \text{ layers } \times 8 \text{ attention heads} &= 48}
+                %     \\\uncover<3-4>{&+48}\\\only<4>{&+48=144\text{ attention heads}}
+                % \end{align*}
+
+            \end{column}
+            \begin{column}{0.4\columnwidth}
+                \vspace{-1.5cm}
+                \begin{center}
+                    \includegraphics[width=0.9\columnwidth]{figures/transformer_mybg}
+                    \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
+                \end{center}
+            \end{column}
+        \end{columns}
+
+        \begin{tikzpicture}[remember picture,overlay]   %% use here too
+            \uncover<2>{\path[draw=magenta,ultra thick,->](
+                [xshift=2mm,yshift=1mm]n1.north) to [out=6cm,in=0,distance=-1.5cm] ([xshift=-5.13cm,yshift=2.0cm]t1.north);}
+            \uncover<3>{\path[draw=magenta,ultra thick,->](
+                [xshift=2mm,yshift=1mm]n2.north) to [out=6cm,in=0,distance=-3cm] ([xshift=-2.67cm,yshift=2.0cm]t1.north);}
+            \uncover<4>{\path[draw=magenta,ultra thick,->](
+                [xshift=2mm,yshift=1mm]n3.north) to [out=-6cm,in=0,distance=-2.5cm] ([xshift=-2.67cm,yshift=3.55cm]t1.north);}
+        \end{tikzpicture}
+    }
+
     \begin{itemize}
-    \item Self-attention in the encoder\tikz[remember picture]{\node[coordinate] (n1) {};}}
-    \uncover<3-4>{\item Self-attention in the decoder\tikz[remember picture]{\node[coordinate] (n2) {};}}
-    \uncover<4>{\item Contextual attention\tikz[remember picture]{\node[coordinate] (n3) {};}}
+        \item[]\uncover<6->{
+            {\color{colorEntmax} Key idea:} replace softmax in attention heads by a sparse normalizing function! \quad\emoji{palms}
+        }
+
+        \bigskip
+
+        \item[]\uncover<7->{
+            {\color{myDarkYellow} Another key idea:}
+            use a normalizing function that is adaptively sparse via a learnable $\alpha$! \quad\emoji{palms}\enspace\emoji{palms}\enspace\emoji{palms}
+        }
     \end{itemize}
-
-    % \vspace{-0.7cm}
-    % \begin{align*}
-    %     \uncover<2-4>{6 \text{ layers } \times 8 \text{ attention heads} &= 48}
-    %     \\\uncover<3-4>{&+48}\\\only<4>{&+48=144\text{ attention heads}}
-    % \end{align*}
-
-    \end{column}
-    \begin{column}{0.4\columnwidth}
-    \vspace{-1.5cm}
-    \begin{center}
-    \includegraphics[width=0.9\columnwidth]{figures/transformer_mybg}
-    \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
-    \end{center}
-    \end{column}
-    \end{columns}
-
-    \begin{tikzpicture}[remember picture,overlay]   %% use here too
-        \uncover<2>{\path[draw=magenta,ultra thick,->](
-            [xshift=2mm,yshift=1mm]n1.north) to [out=6cm,in=0,distance=-1.5cm] ([xshift=-5.13cm,yshift=2.0cm]t1.north);}
-        \uncover<3>{\path[draw=magenta,ultra thick,->](
-            [xshift=2mm,yshift=1mm]n2.north) to [out=6cm,in=0,distance=-3cm] ([xshift=-2.67cm,yshift=2.0cm]t1.north);}
-        \uncover<4>{\path[draw=magenta,ultra thick,->](
-            [xshift=2mm,yshift=1mm]n3.north) to [out=-6cm,in=0,distance=-2.5cm] ([xshift=-2.67cm,yshift=3.55cm]t1.north);}
-    \end{tikzpicture}
-}
-
-\begin{itemize}
-\item[]\uncover<6->{
-    {\color{colorEntmax} Key idea:} replace softmax in attention heads by a sparse normalizing function! \quad\emoji{palms}
-}
-
-\bigskip
-
-\item[]\uncover<7->{
-    {\color{myDarkYellow} Another key idea:}
-    use a normalizing function that is adaptively sparse via a learnable $\alpha$! \quad\emoji{palms}\enspace\emoji{palms}\enspace\emoji{palms}
-}
-\end{itemize}
 
 \end{frame}
 
@@ -493,16 +367,16 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \frametitle{What is softmax?}%
     \centering \fontsize{12pt}{15}\selectfont
     Softmax exponentiates and normalizes:
-    
+
     \begin{center}
-    $\displaystyle
-    \softmax(\xx_i) \defeq \frac{\exp \left(\xx_i\right)}{\sum_j \exp \left(\xx_j\right)}$
+        $\displaystyle
+            \softmax(\xx_i) \defeq \frac{\exp \left(\xx_i\right)}{\sum_j \exp \left(\xx_j\right)}$
     \end{center}
-    
+
     \bigskip
 
     \uncover<2->{
-    {\color{myDarkYellow} It's fully dense: $\softmax(\vectsymb{z}) > \vect{0}$}}
+        {\color{myDarkYellow} It's fully dense: $\softmax(\vectsymb{z}) > \vect{0}$}}
 
 \end{frame}
 
@@ -536,7 +410,7 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \vspace{-1cm}
     \fontsize{12pt}{15}\selectfont
     \begin{itemize}
-    \item[] Parametrized by {\color{tPeony}$\alpha \ge 0$}:
+        \item[] Parametrized by {\color{tPeony}$\alpha \ge 0$}:
     \end{itemize}
     \bigskip
     % \begin{center}
@@ -552,8 +426,8 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     % \bigskip
     \begin{itemize}
         \uncover<2->{\item {\bf Argmax} corresponds to {\color{tPeony}$\alpha \rightarrow \infty$}}
-        \uncover<3->{\item {\bf Softmax} amounts to {\color{tPeony}$\alpha \rightarrow 1$}}
-        \uncover<4->{\item {\bf Sparsemax} amounts to {\color{tPeony}$\alpha = 2$}.}
+              \uncover<3->{\item {\bf Softmax} amounts to {\color{tPeony}$\alpha \rightarrow 1$}}
+              \uncover<4->{\item {\bf Sparsemax} amounts to {\color{tPeony}$\alpha = 2$}.}
     \end{itemize}
     \bigskip
     \begin{itemize}
@@ -572,7 +446,7 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
     \begin{itemize}
         \uncover<2->{\item[] {\color{myDarkYellow} Key contribution}: \\\bigskip\quad a closed-form expression for $\pfrac{\aentmax(\x)}{\alpha}$ \quad\emoji{oface}}
-    \end{itemize} 
+    \end{itemize}
 
 \end{frame}
 
@@ -585,55 +459,55 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
         \definecolor{color0}{rgb}{0.12156862745098,0.466666666666667,0.705882352941177}
         \definecolor{color1}{rgb}{1,0.498039215686275,0.0549019607843137}
         \definecolor{color2}{rgb}{0.172549019607843,0.627450980392157,0.172549019607843}
-        
+
         \begin{groupplot}[group style={group size=1 by 1}]
-        \nextgroupplot[
-        legend cell align={left},
-        legend style={
-                nodes={scale=1.1, transform shape}, at={(0.97,0.2)}, anchor=east, draw=white!80.0!black, fill=myfg!30!mybg, fill opacity=0.6, draw opacity=1,text opacity=1},
-        tick align=outside,
-        tick pos=left,
-        x grid style={white!69.01960784313725!black},
-        xmin=0.5, xmax=6.5,
-        xtick = {1, 2, 3, 4, 5, 6},
-        xtick style={color=white},
-        y grid style={white!69.01960784313725!black},
-        ymin=0.1, ymax=0.7,
-        ytick = {0.2, 0.4, 0.6},
-        ylabel={Jensen-Shannon Divergence},
-        ytick style={color=white}
-        ]
-        \addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
-        table {%
-        1 0.38571667343747
-        2 0.402429158203537
-        3 0.440747738282957
-        4 0.359233941813858
-        5 0.337470844946825
-        6 0.339900884621234
-        };
-        \addlegendentry{softmax}
-        \addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
-        table {%
-        1 0.378367748537659
-        2 0.504354104995477
-        3 0.573529792473815
-        4 0.525266398541884
-        5 0.439669581263257
-        6 0.421346772557364
-        };
-        \addlegendentry{1.5-entmax}
-        \addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
-        table {%
-        1 0.427742934860258
-        2 0.484287995253192
-        3 0.533714455762104
-        4 0.449772918584636
-        5 0.3935698561848
-        6 0.355665944457941
-        };
-        \addlegendentry{$\alpha$-entmax}
-    \end{groupplot}
+            \nextgroupplot[
+                legend cell align={left},
+                legend style={
+                        nodes={scale=1.1, transform shape}, at={(0.97,0.2)}, anchor=east, draw=white!80.0!black, fill=myfg!30!mybg, fill opacity=0.6, draw opacity=1,text opacity=1},
+                tick align=outside,
+                tick pos=left,
+                x grid style={white!69.01960784313725!black},
+                xmin=0.5, xmax=6.5,
+                xtick = {1, 2, 3, 4, 5, 6},
+                xtick style={color=white},
+                y grid style={white!69.01960784313725!black},
+                ymin=0.1, ymax=0.7,
+                ytick = {0.2, 0.4, 0.6},
+                ylabel={Jensen-Shannon Divergence},
+                ytick style={color=white}
+            ]
+            \addplot [thick, color0, mark=square*, mark size=3, mark options={solid}]
+            table {%
+                    1 0.38571667343747
+                    2 0.402429158203537
+                    3 0.440747738282957
+                    4 0.359233941813858
+                    5 0.337470844946825
+                    6 0.339900884621234
+                };
+            \addlegendentry{softmax}
+            \addplot [thick, color1, mark=*, mark size=3, mark options={solid}]
+            table {%
+                    1 0.378367748537659
+                    2 0.504354104995477
+                    3 0.573529792473815
+                    4 0.525266398541884
+                    5 0.439669581263257
+                    6 0.421346772557364
+                };
+            \addlegendentry{1.5-entmax}
+            \addplot [thick, color2, mark=asterisk, mark size=3, mark options={solid}]
+            table {%
+                    1 0.427742934860258
+                    2 0.484287995253192
+                    3 0.533714455762104
+                    4 0.449772918584636
+                    5 0.3935698561848
+                    6 0.355665944457941
+                };
+            \addlegendentry{$\alpha$-entmax}
+        \end{groupplot}
     \end{tikzpicture}
 
 \end{frame}
@@ -642,9 +516,9 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \frametitle{Previous Position Head}
     \vspace{-0.5cm}
     \begin{center}
-    \includegraphics[width=0.9\columnwidth]{figures/head_prev_mybg}\\
-    \fontsize{12pt}{15}\selectfont
-    This head role was also found in \citet{specialized}! Learned {\color{myDarkYellow}$\alpha = 1.91$}.
+        \includegraphics[width=0.9\columnwidth]{figures/head_prev_mybg}\\
+        \fontsize{12pt}{15}\selectfont
+        This head role was also found in \citet{specialized}! Learned {\color{myDarkYellow}$\alpha = 1.91$}.
     \end{center}
 
 \end{frame}
@@ -653,9 +527,9 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \frametitle{Interrogation-Detecting Head}
     \vspace{-0.5cm}
     \begin{center}
-    \includegraphics[width=0.9\columnwidth]{figures/head_interro_mybg}\\
-    \fontsize{12pt}{15}\selectfont
-    Learned {\color{myDarkYellow}$\alpha = 1.05$}.
+        \includegraphics[width=0.9\columnwidth]{figures/head_interro_mybg}\\
+        \fontsize{12pt}{15}\selectfont
+        Learned {\color{myDarkYellow}$\alpha = 1.05$}.
     \end{center}
 
 \end{frame}
@@ -690,7 +564,7 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
 % \begin{frame}[fragile]
 %     \frametitle{Key Takeaways}
-  
+
 %       \centering\fontsize{14pt}{14}\selectfont%
 %       Introduce {\color{myDarkYellow} adaptive} sparsity\\
 %       for Transformers via $\alpha$-entmax with a {\color{myDarkYellow}gradient learnable $\alpha$}.
@@ -714,11 +588,11 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 %       \textbf{\emph{reduced head redundancy}}\\[\baselineskip]}
 %       \vspace{-0.2cm}
 %       \begin{tikzpicture}[node distance=1.5ex,font=\scriptsize,scale=0.5, visible on=<3->]
-  
+
 %           \definecolor{color0}{rgb}{0.12156862745098,0.466666666666667,0.705882352941177}
 %           \definecolor{color1}{rgb}{1,0.498039215686275,0.0549019607843137}
 %           \definecolor{color2}{rgb}{0.172549019607843,0.627450980392157,0.172549019607843}
-          
+
 %           \begin{groupplot}[group style={group size=1 by 1}]
 %           \nextgroupplot[
 %           legend cell align={left},
@@ -776,9 +650,9 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 %       \includegraphics[width=.6\textwidth]{figures/bpe4}}
 %       \end{column}
 %       \end{columns}
-  
+
 %     %   \vfill
-  
+
 %     %   \centering
 %     %   {\scriptsize
 %     %   \color{mygr}
@@ -786,10 +660,10 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 %     %   \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax} &
 %     %   \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
 %     %   \end{tabular}}
-  
+
 %   \end{frame}
 
-\section{Efficient Marginalization of Discrete and Structured Latent Variables via Sparsity}
+\section{Efficient Marg. of Discrete Latent Variables via Sparsity}
 
 \begin{frame}
     \frametitle{Latent Variable Models}
@@ -797,50 +671,50 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \begin{itemize}
         \uncover<1->{\item[] Latent variable $z$ can be }\uncover<2->{{\color{tGreen} continuous}}\uncover<3->{, {\color{tPeony} discrete}}\uncover<4->{, or {\color{tVividBlue} structured}}
     \end{itemize}
-    
+
     \only<1-2>{\uncover<2>{
-    \begin{figure}[hb]
-        \centering
-        \begin{subfigure}[b]{0.24\columnwidth}
+        \begin{figure}[hb]
             \centering
-            \includegraphics[width=\columnwidth]{figures/face1.png}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[b]{0.24\columnwidth}
-            \centering
-            \includegraphics[width=\columnwidth]{figures/face2.png}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[b]{0.24\columnwidth}
-            \centering
-            \includegraphics[width=\columnwidth]{figures/face3.png}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[b]{0.24\columnwidth}
-            \centering
-            \includegraphics[width=\columnwidth]{figures/face4.png}
-        \end{subfigure}
-        \caption{Source: \cite{faces}}
-        \label{fig:rotation}
-    \end{figure}
+            \begin{subfigure}[b]{0.24\columnwidth}
+                \centering
+                \includegraphics[width=\columnwidth]{figures/face1.png}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[b]{0.24\columnwidth}
+                \centering
+                \includegraphics[width=\columnwidth]{figures/face2.png}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[b]{0.24\columnwidth}
+                \centering
+                \includegraphics[width=\columnwidth]{figures/face3.png}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[b]{0.24\columnwidth}
+                \centering
+                \includegraphics[width=\columnwidth]{figures/face4.png}
+            \end{subfigure}
+            \caption{Source: \cite{faces}}
+            \label{fig:rotation}
+        \end{figure}
     }}
 
     \only<3>{
-    \begin{figure}[hb]
-        \centering
+        \begin{figure}[hb]
+            \centering
             \includegraphics[width=0.5\columnwidth]{figures/eyes.png}
             \caption{Source: \href{https://valleyeyecareaz.com/how-is-your-eye-color-determined/}{valleyeyecareaz.com}}
-        \label{fig:eyes}
-    \end{figure}
+            \label{fig:eyes}
+        \end{figure}
     }
 
     \only<4>{
-    \begin{figure}[hb]
-        \centering
+        \begin{figure}[hb]
+            \centering
             \includegraphics[width=0.6\columnwidth]{figures/celeba_bg.pdf}
             \caption{Source: \cite{liu2015faceattributes}}
-        \label{fig:faces}
-    \end{figure}
+            \label{fig:faces}
+        \end{figure}
     }
 
 \end{frame}
@@ -850,54 +724,54 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \fontsize{12pt}{15}\selectfont
 
     \begin{columns}
-    \hspace{2mm}\vspace{-1cm}\begin{column}{0.7\columnwidth}\vspace{-1cm}
-    \begin{itemize}
-        \uncover<1->{\item[] Latent variable $z$ can be }\uncover<2->{{\color{tPeony} discrete}}\uncover<3->{ or {\color{tVividBlue} structured}}
-    \end{itemize}
+        \hspace{2mm}\vspace{-1cm}\begin{column}{0.7\columnwidth}\vspace{-1cm}
+            \begin{itemize}
+                \uncover<1->{\item[] Latent variable $z$ can be }\uncover<2->{{\color{tPeony} discrete}}\uncover<3->{ or {\color{tVividBlue} structured}}
+            \end{itemize}
 
-    \begin{itemize}
-        \uncover<4->{\item[] $\pi(z | x, \theta)$: distribution over possible $z$}
-    \end{itemize}
+            \begin{itemize}
+                \uncover<4->{\item[] $\pi(z | x, \theta)$: distribution over possible $z$}
+            \end{itemize}
 
-    % besides this, there's also
-    \begin{itemize}
-        \uncover<7->{\item[] $\ell(x, z; \theta)$: downstream loss: ELBO, Log-Likelihood, (...)}
-    \end{itemize}
+            % besides this, there's also
+            \begin{itemize}
+                \uncover<7->{\item[] $\ell(x, z; \theta)$: downstream loss: ELBO, Log-Likelihood, (...)}
+            \end{itemize}
 
-    \end{column}
+        \end{column}
 
-    \begin{column}{0.25\columnwidth}
+        \begin{column}{0.25\columnwidth}
             \vspace{-0.5cm}
             \begin{center}
                 \begin{figure}[ht]
-                \begin{tikzpicture}
-                    % DISCRETE
-                    \uncover<2->{\draw[draw=tPink,fill=tPink] (1.4,2) circle (0.2) node[anchor=south, yshift=2mm] {{\visible<5->{\color{tPeony} \small 0.2}}};}
-                    \uncover<2->{\draw[draw=tSlateBlue,fill=tSlateBlue] (2,2) circle (0.2) node[anchor=south, yshift=2mm] {{\visible<5->{\color{tPeony} \small 0.6}}};}
-                    \uncover<2->{\draw[draw=tGreen,fill=tGreen] (2.6,2) circle (0.2) node[anchor=south, yshift=2mm] {{\visible<5->{\color{tPeony} \small 0.1}}};}
+                    \begin{tikzpicture}
+                        % DISCRETE
+                        \uncover<2->{\draw[draw=tPink,fill=tPink] (1.4,2) circle (0.2) node[anchor=south, yshift=2mm] {{\visible<5->{\color{tPeony} \small 0.2}}};}
+                        \uncover<2->{\draw[draw=tSlateBlue,fill=tSlateBlue] (2,2) circle (0.2) node[anchor=south, yshift=2mm] {{\visible<5->{\color{tPeony} \small 0.6}}};}
+                        \uncover<2->{\draw[draw=tGreen,fill=tGreen] (2.6,2) circle (0.2) node[anchor=south, yshift=2mm] {{\visible<5->{\color{tPeony} \small 0.1}}};}
 
-                    % STRUCTURE
-                    \uncover<3->{\draw[draw=tSlateBlue,fill=tSlateBlue] (1.4,1) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};}
-                    \uncover<3->{\draw[draw=tGreen,fill=tGreen] (2,1) circle (0.2);}
-                    \uncover<3->{\draw[draw=tPink,fill=tPink] (2.6,1) circle (0.2)
-                        node[anchor=west, xshift=2mm] {$]$}
-                        node[anchor=west, xshift=5mm] {{\visible<6->{\color{tVividBlue} \small 0.4}}};}
+                        % STRUCTURE
+                        \uncover<3->{\draw[draw=tSlateBlue,fill=tSlateBlue] (1.4,1) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};}
+                        \uncover<3->{\draw[draw=tGreen,fill=tGreen] (2,1) circle (0.2);}
+                        \uncover<3->{\draw[draw=tPink,fill=tPink] (2.6,1) circle (0.2)
+                            node[anchor=west, xshift=2mm] {$]$}
+                            node[anchor=west, xshift=5mm] {{\visible<6->{\color{tVividBlue} \small 0.4}}};}
 
-                    \uncover<3->{\draw[draw=tPink,fill=tPink] (1.4,0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};}
-                    \uncover<3->{\draw[draw=tSlateBlue,fill=tSlateBlue] (2,0.5) circle (0.2) node[anchor=north, yshift=-4mm] {\large \bf $\ldots$};}
-                    \uncover<3->{\draw[draw=tGreen,fill=tGreen] (2.6,0.5) circle (0.2)
-                        node[anchor=west, xshift=2mm] {$]$}
-                        node[anchor=west, xshift=5mm] {{\visible<6->{\color{tVividBlue} \small 0.05}}};}
+                        \uncover<3->{\draw[draw=tPink,fill=tPink] (1.4,0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};}
+                        \uncover<3->{\draw[draw=tSlateBlue,fill=tSlateBlue] (2,0.5) circle (0.2) node[anchor=north, yshift=-4mm] {\large \bf $\ldots$};}
+                        \uncover<3->{\draw[draw=tGreen,fill=tGreen] (2.6,0.5) circle (0.2)
+                            node[anchor=west, xshift=2mm] {$]$}
+                            node[anchor=west, xshift=5mm] {{\visible<6->{\color{tVividBlue} \small 0.05}}};}
 
-                    \uncover<3->{\draw[draw=tGreen,fill=tGreen] (1.4,-0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};}
-                    \uncover<3->{\draw[draw=tSlateBlue,fill=tSlateBlue] (2,-0.5) circle (0.2);}
-                    \uncover<3->{\draw[draw=tPink,fill=tPink] (2.6,-0.5) circle (0.2)
-                        node[anchor=west, xshift=2mm] {$]$}
-                        node[anchor=west, xshift=5mm] {{\visible<6->{\color{tVividBlue} \small 0.3}}};}
-                \end{tikzpicture}
+                        \uncover<3->{\draw[draw=tGreen,fill=tGreen] (1.4,-0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};}
+                        \uncover<3->{\draw[draw=tSlateBlue,fill=tSlateBlue] (2,-0.5) circle (0.2);}
+                        \uncover<3->{\draw[draw=tPink,fill=tPink] (2.6,-0.5) circle (0.2)
+                            node[anchor=west, xshift=2mm] {$]$}
+                            node[anchor=west, xshift=5mm] {{\visible<6->{\color{tVividBlue} \small 0.3}}};}
+                    \end{tikzpicture}
                 \end{figure}
             \end{center}
-    \end{column}
+        \end{column}
     \end{columns}
 
     \vspace{-0.5cm}
@@ -908,16 +782,16 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
     \begin{equation*}\label{eq:fit1}
         \uncover<9->{\mathcal{L}_{x}(\theta) =
-        \sum_{z \in \mathcal Z}
-        \pi(z | x, \theta)
-        ~\ell(x, z; \theta)}
+            \sum_{z \in \mathcal Z}
+            \pi(z | x, \theta)
+            ~\ell(x, z; \theta)}
     \end{equation*}
 
     \begin{itemize}
         \uncover<10->
         {\item[] If $\mathcal Z$ is
-        \only<10>{{\color{tPeony} large}, this sum can get very expensive due to $\ell(x, z; \theta)$!\quad\emoji{oface}}
-        \only<11->{{\color{tVividBlue} combinatorial}, this can be intractable to compute!\quad\emoji{oface}\enspace\emoji{oface}\enspace\emoji{oface}}}
+            \only<10>{{\color{tPeony} large}, this sum can get very expensive due to $\ell(x, z; \theta)$!\quad\emoji{oface}}
+            \only<11->{{\color{tVividBlue} combinatorial}, this can be intractable to compute!\quad\emoji{oface}\enspace\emoji{oface}\enspace\emoji{oface}}}
     \end{itemize}
 
 \end{frame}
@@ -934,7 +808,7 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
     \begin{itemize}
         \uncover<2->{\item[] One option: SFE (aka REINFORCE) $\rightarrow$ unbiased but high variance}
-        \uncover<3->{\item[] Another option: Gumbel-Softmax $\rightarrow$ continuous relaxation, biased estimation}
+            \uncover<3->{\item[] Another option: Gumbel-Softmax $\rightarrow$ continuous relaxation, biased estimation}
     \end{itemize}
 
     \bigskip
@@ -945,7 +819,7 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 
     \begin{itemize}
         \uncover<5->{\item[] no need for sampling $\rightarrow$ no variance}
-        \uncover<6->{\item[] no relaxation into the continuous space}
+            \uncover<6->{\item[] no relaxation into the continuous space}
     \end{itemize}
 \end{frame}
 
@@ -957,9 +831,9 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \end{itemize}
 
     \begin{align*}\label{eq:fit2}
-        \uncover<2->{\mathcal{L}_{x}(\theta) &=
-        \sum_{z \in \mathcal Z}
-        \pi(z | x, \theta)~\ell(x, z; \theta) \\&=
+        \uncover<2->{\mathcal{L}_{x}(\theta) & =
+            \sum_{z \in \mathcal Z}
+        \pi(z | x, \theta)~\ell(x, z; \theta)                                                          \\&=
         \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) + \pi(z_2 | x, \theta)~\ell(x, z_2; \theta) + \ldots \\&+ \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) + \ldots + \pi(z_N | x, \theta)~\ell(x, z_N; \theta)
         }
     \end{align*}
@@ -986,11 +860,11 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
     \end{itemize}
 
     \begin{align*}
-        \uncover<3->{\mathcal{L}_{x}(\theta) &=
-        \sum_{z \in \mathcal Z}
-        \pi(z | x, \theta)~\ell(x, z; \theta) \\&=
+        \uncover<3->{\mathcal{L}_{x}(\theta) & =
+            \sum_{z \in \mathcal Z}
+        \pi(z | x, \theta)~\ell(x, z; \theta)                                                                                                                                                           \\&=
         \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) + \alt<3>{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)}{\cancel{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)}} + \ldots \\&+
-        \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) + \ldots + \alt<3>{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}{\cancel{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}}
+            \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) + \ldots + \alt<3>{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}{\cancel{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}}
         }
     \end{align*}
 
@@ -1170,20 +1044,20 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 %     \end{column}
 %     \end{columns}
 % \end{frame}
-    
+
 \begin{frame}
     \frametitle{Results}
     \fontsize{14pt}{15}\selectfont
     \begin{itemize}
         \uncover<1->{\item[] We test our methods for models with discrete latent variables,}
-        \begin{itemize}
-            \uncover<2->{\item Semi-Supervised VAE}
-            \uncover<3->{\item Emergent communication}
-        \end{itemize}
-        \uncover<4->{\item[] but also in models with an exponentially large set of $\mathcal Z$,}
-        \begin{itemize}
-            \uncover<5->{\item Bit-vector VAE}
-        \end{itemize}
+            \begin{itemize}
+                \uncover<2->{\item Semi-Supervised VAE}
+                      \uncover<3->{\item Emergent communication}
+            \end{itemize}
+            \uncover<4->{\item[] but also in models with an exponentially large set of $\mathcal Z$,}
+            \begin{itemize}
+                \uncover<5->{\item Bit-vector VAE}
+            \end{itemize}
     \end{itemize}
 
     \begin{itemize}
@@ -1223,7 +1097,7 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 %     \coordinate (argmax)    at (barycentric cs:L1=0,L2=0,L3=1);
 %     \coordinate (softmax)   at (barycentric cs:L1=.3,L2=.2,L3=.5);
 %     \coordinate (sparsemax) at (barycentric cs:L1=.3,L2=0,L3=.7);
-    
+
 %     \onslide<3->{
 %     \draw[point,fill=colorArgmax] (argmax) circle[radius=5pt];
 %     }
@@ -1459,160 +1333,11 @@ z_j &= \bs{s}_t^\top \bs{W}^{(a)}\bs{h}_j \\
 %     \centering
 % \end{frame}
 
-\section{Proposed Work}
-
-\begin{frame}
-    \frametitle{Proposed work: key concepts of this thesis}
-    \begin{columns}
-        \begin{column}{0.55\columnwidth}
-        \fontsize{12pt}{15}\selectfont%
-        \vspace{-0.5cm}
-        \begin{itemize}
-            \item Transparency
-            \item Sparsity
-            \item Compactness
-            \item Data efficiency
-        \end{itemize}
-        \bigskip
-        \begin{itemize}
-            \uncover<2->{\item Inspired by, and data efficient like APE}
-            \uncover<3->{\item Transparent like sparse transformers}
-            \uncover<4->{\item Compact thanks to latent variables}
-            \uncover<5->{\item Using sparsity as a training method}
-        \end{itemize}
-        \end{column}
-
-        \begin{column}{0.45\columnwidth}
-        \begin{center}
-            \includegraphics[width=0.95\columnwidth]{figures/alignments.pdf}
-        \end{center}
-        \end{column}
-    \end{columns}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Idea: create a latent, draft translation}
-
-    \centering
-    \uncover<2->{\includegraphics[width=0.8\columnwidth]{figures/nmtdrafts.pdf}}
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Another Idea: using latent summaries in NMT}
-
-    \centering
-    \uncover<2->{\includegraphics[width=0.8\columnwidth]{figures/summary.pdf}}
-
-\end{frame}
+\section{Conclusions}
 
 \begin{frame}[t,allowframebreaks]
-\frametitle{References}
-\printbibliography
-\end{frame}
-
-\begin{frame}
-    \frametitle{Using latent summaries in NMT}
-
-    \begin{figure}[t]
-        \centering
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (y)     {\color{tMidnight} $ y $};
-            \node[obs, left =of y]   (xi) {\color{tMidnight} $ X $};
-            \node[latent, above =of xi] (z) {\color{tMidnight} $ z $};
-    
-            % Connect nodes
-            \edge{xi,z}{y};
-            \edge{xi}{z};
-    
-            \plate{data}{(y)}{$N$};
-        \end{tikzpicture}
-        ~
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (y)     {\color{tMidnight} $ y $};
-            \node[obs, right =of y]   (xi) {\color{tMidnight} $ X $};
-            \node[latent, above =of xi] (z) {\color{tMidnight} $ z $};
-    
-            % Connect nodes
-            \edge[dashed]{xi,y}{z};
-            
-            \plate{data}{(y)}{$N$};
-        \end{tikzpicture}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Multi-domain NMT}
-
-    \begin{figure}[t]
-        \centering
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (x)     {\color{tMidnight} $ x $};
-            \node[obs, below =of x]   (y) {\color{tMidnight} $ y $};
-            \node[latent, right =of y] (z) {\color{tMidnight} $ z $};
-            \node[latent, above =of x, xshift=1.75cm] (c) {\color{tMidnight} $ c $};
-    
-            % Connect nodes
-            \edge{x,z}{y};
-            \edge{c}{z};
-            \edge{x}{c};
-    
-            \plate{data}{(y)(x)(z)}{$N$};
-        \end{tikzpicture}
-        ~
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (x)     {\color{tMidnight} $ x $};
-            \node[obs, below =of x]   (y) {\color{tMidnight} $ y $};
-            \node[latent, right =of y] (z) {\color{tMidnight} $ z $};
-            \node[latent, above =of x, xshift=1.75cm] (c) {\color{tMidnight} $ c $};
-    
-            % Connect nodes
-            \edge[dashed]{y}{z};
-            \edge[dashed]{x,y}{c};
-            
-            \plate{data}{(x)(y)(z)}{$N$};
-        \end{tikzpicture}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Document-level NMT}
-
-    \begin{figure}[t]
-        \centering
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (y)     {\color{tMidnight} $ y $};
-            \node[latent, above =of y] (z) {\color{tMidnight} $ z $};
-            \node[latent, left =of z] (c) {\color{tMidnight} $ c $};
-            \node[obs, left =of y]   (xi) {\color{tMidnight} $ X $};
-    
-            % Connect nodes
-            \edge{xi,z}{y};
-            \edge{c}{z};
-            \edge{xi}{c};
-    
-            \plate{data}{(y)(z)}{$N$};
-        \end{tikzpicture}
-        ~
-        \begin{tikzpicture}
-            % Define nodes
-            \node[obs]                (y)     {\color{tMidnight} $ y $};
-            \node[latent, above =of y] (z) {\color{tMidnight} $ z $};
-            \node[latent, right =of z] (c) {\color{tMidnight} $ c $};
-            \node[obs, right =of y]   (xi) {\color{tMidnight} $ X $};
-            
-            % Connect nodes
-            \edge[dashed]{y}{z};
-            \edge[dashed]{y,xi}{c};
-            
-            \plate{data}{(y)(z)}{$N$};
-        \end{tikzpicture}
-    \end{figure}
+    \frametitle{References}
+    \printbibliography
 \end{frame}
 
 \end{document}

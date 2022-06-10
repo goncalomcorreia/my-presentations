@@ -142,7 +142,6 @@
         \uncover<5->{\node[xshift=3cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/climate.png}};}
         \uncover<6->{\node[xshift=-3cm,yshift=0cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/transparency.png}};}
         \uncover<7->{\node[xshift=2cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/patientstrust.png}};}
-        \uncover<8->{\node[xshift=-3cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/fakenews.png}};}
     \end{tikzpicture}
 \end{frame}
 
@@ -178,8 +177,8 @@
     \frametitle{A bit of context on transformers}
 
     \fontsize{12pt}{15}\selectfont
-    \only<1-5>{\cornercite{transf}}
-    \only<6->{\cornercite{devlin2018bert}}
+    \only<1-4>{\cornercite{transf}}
+    \only<5->{\cornercite{devlin2018bert}}
     \begin{columns}
         \uncover<1->{
         \hspace{2mm}\vspace{-1cm}\begin{column}{0.6\columnwidth}
@@ -217,7 +216,7 @@
         \end{column}
 
         \begin{tikzpicture}[remember picture, overlay]
-            \uncover<7->{\node[xshift=3cm,yshift=0cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/wired.png}};}
+            \uncover<6->{\node[xshift=3cm,yshift=0cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/wired.png}};}
         \end{tikzpicture}
     \end{columns}
 
@@ -298,7 +297,8 @@
 
 \begin{frame}
     \frametitle{Conclusions and impact}
-    \cornercite{lee2020POSTECHETRISubmissionWMT2020, kodama2020GeneratingResponsesthat}
+    \only<4>{\cornercite{lee2020POSTECHETRISubmissionWMT2020}}
+    \only<5>{\cornercite{kodama2020GeneratingResponsesthat}}
     \centering
     \fontsize{12pt}{15}\selectfont
     \begin{itemize}
@@ -402,7 +402,7 @@
 
     \begin{center}
         $\displaystyle
-            \softmax(\xx_i) \defeq \frac{\exp \left(\xx_i\right)}{\sum_j \exp \left(\xx_j\right)}$
+            \left[\softmax(\xx)\right]_i \defeq \frac{\exp \left(\xx_i\right)}{\sum_j \exp \left(\xx_j\right)}$
     \end{center}
 
     \bigskip
@@ -434,11 +434,10 @@
     \begin{itemize}
         \uncover<2->{\item {\bf Argmax} corresponds to {\color{tPeony}$\alpha \rightarrow \infty$}}
               \uncover<3->{\item {\bf Softmax} amounts to {\color{tPeony}$\alpha \rightarrow 1$}}
-              \uncover<4->{\item {\bf Sparsemax} amounts to {\color{tPeony}$\alpha = 2$}.}
     \end{itemize}
     \bigskip
     \begin{itemize}
-        \uncover<5->{\item[] {\color{myDarkYellow} Key result:} {\bf can be sparse for $\alpha > 1$}, propensity for sparsity increases with $\alpha$.}
+        \uncover<4->{\item[] {\color{myDarkYellow} Key result:} {\bf can be sparse for $\alpha > 1$}, propensity for sparsity increases with $\alpha$.}
     \end{itemize}
 
 \end{frame}
@@ -647,22 +646,12 @@
         \end{column}
     \end{columns}
 
-    %   \vfill
-
-    %   \centering
-    %   {\scriptsize
-    %   \color{mygr}
-    %   \begin{tabular}{r@{~}l@{\quad}r@{~}l}
-    %   \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}}& \href{https://github.com/deep-spin/entmax}{\tt github.com/deep-spin/entmax} &
-    %   \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}& \href{https://goncalomcorreia.github.io}{\tt goncalomcorreia.github.io}
-    %   \end{tabular}}
-
 \end{frame}
 
 \section{Efficient Marg. of Discrete Latent Variables via Sparsity}
 
 \begin{frame}
-    \frametitle{Latent Variable Models}
+    \frametitle{Latent variable models}
 
     \begin{itemize}
         \uncover<1->{\item[] Latent variable $z$ can be }\uncover<2->{{\color{tGreen} continuous}}\uncover<3->{, {\color{tPeony} discrete}}\uncover<4->{, or {\color{tVividBlue} structured}}
@@ -716,7 +705,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Training Discrete or Structured Latent Variable Models}
+    \frametitle{Training discrete or structured latent variable models}
     \fontsize{12pt}{15}\selectfont
 
     \begin{columns}
@@ -793,30 +782,58 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Current Solutions}
+    \frametitle{Current solutions}
+    \framesubtitle{Using emergent communication as example}
     \fontsize{12pt}{15}\selectfont
 
-    \begin{itemize}
-        \item[] If $\mathcal Z$ is large, exact gradient computation is prohibitive
-    \end{itemize}
+    \begin{columns}
+        \begin{column}{0.5\columnwidth}
 
-    \bigskip
+            \begin{itemize}
+                \uncover<2->{\item SFE $\rightarrow$ unbiased but high variance}
+                      \uncover<4->{\item Gumbel-Softmax $\rightarrow$ continuous relaxation, biased estimation}
+            \end{itemize}
 
-    \begin{itemize}
-        \uncover<2->{\item[] One option: SFE (aka REINFORCE) $\rightarrow$ unbiased but high variance}
-            \uncover<3->{\item[] Another option: Gumbel-Softmax $\rightarrow$ continuous relaxation, biased estimation}
-    \end{itemize}
+            \bigskip
 
-    \bigskip
+            \begin{itemize}
+                \uncover<5->{\item[] New option: {\color{tPeony} use sparsity}!\quad\emoji{palms}}
+            \end{itemize}
 
-    \begin{itemize}
-        \uncover<4->{\item[] New option: {\color{tPeony} use sparsity}!\quad\emoji{palms}}
-    \end{itemize}
+            \begin{itemize}
+                \uncover<7->{\item[] no need for sampling $\rightarrow$ no variance}
+                    \uncover<8->{\item[] no continuous relaxation}
+            \end{itemize}
 
-    \begin{itemize}
-        \uncover<5->{\item[] no need for sampling $\rightarrow$ no variance}
-            \uncover<6->{\item[] no relaxation into the continuous space}
-    \end{itemize}
+        \end{column}
+        \vspace{-5cm}\begin{column}{0.45\columnwidth}
+            \small%
+            \only<1-5>{
+                \begin{tabular}{lr@{~}lr}
+                    \toprule
+                    Method                                  & \multicolumn{2}{c}{success (\%)} & Dec. calls                             \\
+                    \midrule
+                    {\emph{Monte Carlo}}                    &                                  &                                &       \\
+                    \uncover<2->{SFE                        & $33.05$                          & {\tiny\color{gray}$\pm 2.84$}  & $1$}  \\
+                    \uncover<3->{SFE$+$                     & $44.32$                          & {\tiny\color{gray}$\pm 2.72$}  & $2$}  \\
+                    \uncover<3->{NVIL                       & $37.04$                          & {\tiny\color{gray}$\pm 1.61$}  & $1$}  \\
+                    \uncover<4->{Gumbel                     & $23.51$                          & {\tiny\color{gray}$\pm 16.19$} & $1$}  \\
+                    \uncover<4->{ST Gumbel                  & $27.42$                          & {\tiny\color{gray}$\pm 13.36$} & $1$}  \\
+                    \midrule
+                    \emph{Marginalization}                  &                                  &                                &       \\
+                    Dense                                   & $93.37$                          & {\tiny\color{gray}$\pm 0.42$}  & $256$ \\
+                    \uncover<5->{\textcolor{tPeony}{Sparse} &
+                    $93.35$                                 & {\tiny\color{gray}$\pm 0.50$}    &
+                    $3.13${\tiny\color{gray}$\pm 0.48$}}                                                                                \\
+                    \bottomrule
+                \end{tabular}
+            }
+            \only<6-8>{
+                \input{results_emergent_small}
+            }
+        \end{column}
+    \end{columns}
+
 \end{frame}
 
 \begin{frame}
@@ -890,7 +907,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Key Takeaways}
+    \frametitle{Key takeaways}
 
     \centering\fontsize{14pt}{14}\selectfont%
     We introduce a new method\\
@@ -960,12 +977,97 @@
 
 \section{Conclusions}
 
-\begin{frame}[t,allowframebreaks]
+\begin{frame}
+    \frametitle{Conclusions}
+    \centering\fontsize{14pt}{14}\selectfont%
+    Using {\color{tPeony} learned sparsity} and {\color{tPeony} weak supervision}\\
+    we took steps to take neural models closer to version 2.0\\
+    %
+    %
+    \vfill
+    %
+    %
+    \begin{columns}[T]
+        \small
+        \begin{column}{.33\textwidth}
+            \centering
+            \uncover<2->{
+                \textbf{\emph{data-efficiency}}\\[.5\baselineskip]
+                \vspace{1cm}
+                \begin{center}
+                    \resizebox{0.8\columnwidth}{!}{\begin{tabular}{lr}
+                            \toprule
+                            model (data size)
+                             & BLEU$\uparrow$               \\
+                            \midrule
+                            dual-source transformer {\color{tPurple}(8M)}
+                             & 71.72                        \\
+                            dual-source transformer {\color{tBlue}(23K)}
+                             & 59.78                        \\
+                            ours {\color{tBlue}(23K)}
+                             & {\color{myDarkYellow} 70.66} \\
+                            \bottomrule
+                        \end{tabular}}
+                \end{center}}%
+        \end{column}
+        \begin{column}{.33\textwidth}
+            \centering
+            \uncover<3->{
+                \textbf{\emph{transparency}}\\[\baselineskip]
+                \vspace{0.2cm}
+                \includegraphics[trim=157mm 17mm 0 0, clip, width=.7\textwidth]{figures/comparison_mybg}}%
+        \end{column}
+        \begin{column}{.33\textwidth}
+            \centering
+            \uncover<4->{
+                \textbf{\emph{better compactness}}\\[\baselineskip]
+                \begin{figure}[ht]
+                    \begin{tikzpicture}
+                        % DISCRETE
+                        \draw[draw=tPink,fill=tPink] (1.4,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.2}};
+                        \draw[draw=tSlateBlue,fill=tSlateBlue] (2,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.6}};
+                        \draw[draw=tGreen,fill=tGreen] (2.6,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.1}};
+
+                        % STRUCTURE
+                        \draw[draw=tSlateBlue,fill=tSlateBlue] (1.4,1) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+                        \draw[draw=tGreen,fill=tGreen] (2,1) circle (0.2);
+                        \draw[draw=tPink,fill=tPink] (2.6,1) circle (0.2)
+                        node[anchor=west, xshift=2mm] {$]$}
+                        node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.4}};
+
+                        \draw[draw=tPink,fill=tPink] (1.4,0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+                        \draw[draw=tSlateBlue,fill=tSlateBlue] (2,0.5) circle (0.2) node[anchor=north, yshift=-4mm] {\large \bf $\ldots$};
+                        \draw[draw=tGreen,fill=tGreen] (2.6,0.5) circle (0.2)
+                        node[anchor=west, xshift=2mm] {$]$}
+                        node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.05}};
+
+                        \draw[draw=tGreen,fill=tGreen] (1.4,-0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
+                        \draw[draw=tSlateBlue,fill=tSlateBlue] (2,-0.5) circle (0.2);
+                        \draw[draw=tPink,fill=tPink] (2.6,-0.5) circle (0.2)
+                        node[anchor=west, xshift=2mm] {$]$}
+                        node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.3}};
+                    \end{tikzpicture}
+                \end{figure}}%
+        \end{column}
+    \end{columns}
+
+    \vfill
+    \centering
+    {\scriptsize
+        \color{mygr}
+        \begin{tabular}{r@{~}l@{\quad}r@{~}l}
+            \raisebox{-0.7mm}[\height][\depth]{\emoji{githubfg}} & \href{https://github.com/deep-spin}{\tt github.com/deep-spin} &
+            \raisebox{-0.4mm}[\height][\depth]{\emoji{home}}     & \href{https://goncalomcorreia.com}{\tt goncalomcorreia.com}
+        \end{tabular}}
+\end{frame}
+
+\begin{frame}[t,allowframebreaks,noframenumbering]
     \frametitle{References}
     \printbibliography
 \end{frame}
 
-\begin{frame}\frametitle{Parameter sharing analysis}
+\begin{frame}[noframenumbering]
+    \frametitle{Parameter sharing analysis}
     \begin{table}[htbp]
         \centering
         \begin{tabular}{lcc}
@@ -997,7 +1099,8 @@
     \end{table}
 \end{frame}
 
-\begin{frame}{$\Omega$-Regularized Argmax}
+\begin{frame}[noframenumbering]
+    \frametitle{$\Omega$-Regularized Argmax}
     \cornercite{Niculae2017}
     \fontsize{12pt}{15}\selectfont
     \vspace{-0.5cm}
@@ -1022,7 +1125,7 @@
     \uncover<4>{\cornercite[south east]{sparsemax}}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[noframenumbering]
     \frametitle{Subword-Merging Head}
     \vspace{-0.7cm}
     \begin{columns}[T]
@@ -1050,7 +1153,7 @@
 
 \end{frame}
 
-\begin{frame}
+\begin{frame}[noframenumbering]
     \frametitle{Semi-Supervised VAE}%\cornerciteme{sparsemarg}
 
     \newcommand*\parcolor{myfg}
@@ -1100,7 +1203,7 @@
     \end{tikzpicture}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[noframenumbering]
     \frametitle{Semi-Supervised VAE}
     \begin{columns}[T]
         \begin{column}{.53\textwidth}
@@ -1138,7 +1241,7 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[noframenumbering]
     \frametitle{Emergent communication}
 
     \newcommand*\parcolor{myfg}
@@ -1187,7 +1290,9 @@
     \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Emergent Communication}\cornercite{Lazaridou2017,sparsemarg}%
+\begin{frame}[noframenumbering]
+    \frametitle{Emergent Communication}
+    \cornercite{Lazaridou2017,myneurips2020}%
     \framesubtitle{
         \textcolor{mygr}{... but make it harder: $|\mathcal{Z}|=256$, $|\mathcal{V}|=16$}
     }
@@ -1222,7 +1327,7 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}%
+\begin{frame}[noframenumbering]
     \begin{columns}%
         \begin{column}{.45\textwidth}\centering%
             \vbox to .9\textheight{%
@@ -1338,7 +1443,7 @@
         }}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[noframenumbering]
     \frametitle{Bit-vector VAE}
     \newcommand*\parcolor{myfg}
     \newcommand*\clfcolor{myfg}
@@ -1384,7 +1489,8 @@
     \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Bit-vector VAE}%
+\begin{frame}[noframenumbering]
+    \frametitle{Bit-vector VAE}
     \begin{columns}[T]
         \begin{column}{.53\textwidth}
             \centering\small%

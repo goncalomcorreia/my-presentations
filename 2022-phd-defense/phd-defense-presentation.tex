@@ -121,13 +121,18 @@
               \uncover<3->{\item Powerful tool for learning representations of any data}
               \uncover<4->{\item Remarkable results}
     \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Deep learning successes}
     \begin{tikzpicture}[remember picture,overlay]
-        \uncover<5->{\node[xshift=3cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/guardian.png}};}
-        \uncover<6->{\node[xshift=-3cm,yshift=0cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/wired.png}};}
-        \uncover<7->{\node[xshift=2cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/abcscience.png}};}
-        \uncover<8->{\node[xshift=-3cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/forbes1.png}};}
-        \uncover<9->{\node[xshift=-3.5cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/bridge.png}};}
-        \uncover<10->{\node[xshift=3.5cm,yshift=-1cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/cancer.png}};}
+        \uncover<2->{\node[xshift=3cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/guardian.png}};}
+        \uncover<3->{\node[xshift=-3cm,yshift=0cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/wired.png}};}
+        \uncover<4->{\node[xshift=2cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/abcscience.png}};}
+        \uncover<5->{\node[xshift=-3cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/forbes1.png}};}
+        \uncover<6->{\node[xshift=-3.5cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/bridge.png}};}
+        \uncover<7->{\node[xshift=3.5cm,yshift=-1cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/cancer.png}};}
     \end{tikzpicture}
 \end{frame}
 
@@ -138,10 +143,14 @@
               \uncover<3->{\item Hard to understand and interpret reasons behind decisions}
               \uncover<4->{\item Requires a lot of computation}
     \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Deep learning limitations and drawbacks}
     \begin{tikzpicture}[remember picture,overlay]
-        \uncover<5->{\node[xshift=3cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/climate.png}};}
-        \uncover<6->{\node[xshift=-3cm,yshift=0cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/transparency.png}};}
-        \uncover<7->{\node[xshift=2cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/patientstrust.png}};}
+        \uncover<2->{\node[xshift=3cm,yshift=1cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/climate.png}};}
+        \uncover<3->{\node[xshift=-3cm,yshift=0cm] at (current page.center) {\includegraphics[width=0.4\columnwidth]{figures/transparency.png}};}
+        \uncover<4->{\node[xshift=2cm,yshift=-2cm] at (current page.center) {\includegraphics[width=0.5\columnwidth]{figures/patientstrust.png}};}
     \end{tikzpicture}
 \end{frame}
 
@@ -155,20 +164,6 @@
         \node[font={\color{myfg}\usebeamerfont{title}},align=center]
         at ($(current page.center) + (0, -1.0)$) {Neural Models};
     \end{tikzpicture}
-\end{frame}
-
-\begin{frame}
-    \vspace*{1mm}
-    \frametitle{Published work of this thesis}
-    \only<2>{\cornerciteme{myape2019}}
-    \only<3>{\cornerciteme{mytransf2019}}
-    \only<4>{\cornerciteme{myneurips2020}}
-    \vspace*{-2.5em}
-    \begin{itemize}
-        \uncover<2->{\item Automatic Post-Editing using {\color{tPeony} weak supervision} for {\color{myDarkYellow} data-efficiency} (ACL)}
-              \uncover<3->{\item Letting transformer {\color{tPeony} learn sparsity} of its attentions for {\color{myDarkYellow} transparency} (EMNLP)}
-              \uncover<4->{\item General strategy for efficiently training discrete latent variable models, to have {\color{myDarkYellow} compactness} (NeurIPS)}
-    \end{itemize}
 \end{frame}
 
 \section{A Simple and Effective Approach to APE with Transfer Learning}
@@ -258,7 +253,7 @@
         \begin{column}{0.4\columnwidth}
             \vspace{-1.5cm}
             \begin{center}
-                \includegraphics[width=0.8\columnwidth]{figures/bertape.pdf}
+                \includegraphics[width=0.8\columnwidth]{figures/bert-ape-2x.png}
                 \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
             \end{center}
         \end{column}
@@ -296,16 +291,12 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Conclusions and impact}
-    \only<4>{\cornercite{lee2020POSTECHETRISubmissionWMT2020}}
-    \only<5>{\cornercite{kodama2020GeneratingResponsesthat}}
-    \centering
-    \fontsize{12pt}{15}\selectfont
+    \frametitle{Key takeaways}
+    \uncover<4>{\cornercite{lee2020POSTECHETRISubmissionWMT2020}}
     \begin{itemize}
         \uncover<2->{\item One of pioneers in using pre-trained transformer encoders for a generation task}
               \uncover<3->{\item Massive improvement in low-resource scenario ({\color{myDarkYellow} data-efficiency})}
               \uncover<4->{\item Steered SOTA of APE towards using {\color{tPeony} weak supervision} through pre-trained models}
-              \uncover<5->{\item Inspired other works that use scarse data (\textit{e.g.}, dialogue with metadata)}
     \end{itemize}
 \end{frame}
 
@@ -541,28 +532,14 @@
 \end{frame}
 
 \begin{frame}[fragile]
-    \frametitle{Conclusions and impact}
-    \uncover<5->{\cornercite{treviso2021PredictingAttentionSparsity, zhang2021SparseAttentionLinear, raganato2020FixedEncoderSelfAttention}}
-
+    \frametitle{Key takeaways}
     \fontsize{12pt}{14}\selectfont%
-
     \vspace*{-1cm}
-    \only<1-4>{
-        \begin{center}
-            Introduce {\color{myDarkYellow} adaptive} sparsity\\
-            for Transformers via $\alpha$-entmax with a {\color{myDarkYellow}gradient learnable $\alpha$}.
-        \end{center}
-    }
-    \only<5->{
-        \begin{itemize}
-            \uncover<5->{
-            \item[] Subsequent work has:
-            \item focused on taking computational advantage of sparsity
-            \item proposed other sparse activations (\textit{e.g.}, ReLU)
-            \item incorporated fixed attention patterns that we found.
-                  }
-        \end{itemize}
-    }
+    \begin{center}
+        Introduce {\color{tPeony} adaptive sparsity} \\
+        for Transformers via $\alpha$-entmax with a gradient learnable $\alpha$,\\
+        improving {\color{myDarkYellow} transparency}.
+    \end{center}
     %
     %
     \vfill
@@ -782,108 +759,56 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Current solutions}
+    \only<-5>{\frametitle{Current solutions}}\only<6->{\frametitle{{\color{tPeony} Our solution}}}
     \framesubtitle{Using emergent communication as example}
+    \uncover<10>{\cornercite[north east]{sparsemax, sparsemap}}
     \fontsize{12pt}{15}\selectfont
-
+    \vspace{-0.2cm}
     \begin{columns}
-        \begin{column}{0.5\columnwidth}
-
-            \begin{itemize}
-                \uncover<2->{\item SFE $\rightarrow$ unbiased but high variance}
-                      \uncover<4->{\item Gumbel-Softmax $\rightarrow$ continuous relaxation, biased estimation}
-            \end{itemize}
-
-            \bigskip
-
-            \begin{itemize}
-                \uncover<5->{\item[] New option: {\color{tPeony} use sparsity}!\quad\emoji{palms}}
-            \end{itemize}
-
-            \begin{itemize}
-                \uncover<7->{\item[] no need for sampling $\rightarrow$ no variance}
-                    \uncover<8->{\item[] no continuous relaxation}
-            \end{itemize}
+        \begin{column}{0.4\columnwidth}
+            \centering
+            \only<1-2>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_dense.png}}
+            \only<3-4>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_sfe.png}}
+            \only<5>{\includegraphics[width=0.9\columnwidth]{figures/envelopes_gumbel.png}}
+            \only<6>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_dense.png}}
+            \only<7-11>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_sparse.png}}
 
         \end{column}
-        \vspace{-5cm}\begin{column}{0.45\columnwidth}
+        \begin{column}{0.55\columnwidth}
+            \vspace{-0.5cm}
             \small%
-            \only<1-5>{
-                \begin{tabular}{lr@{~}lr}
-                    \toprule
-                    Method                                  & \multicolumn{2}{c}{success (\%)} & Dec. calls                             \\
-                    \midrule
-                    {\emph{Monte Carlo}}                    &                                  &                                &       \\
-                    \uncover<2->{SFE                        & $33.05$                          & {\tiny\color{gray}$\pm 2.84$}  & $1$}  \\
-                    \uncover<3->{SFE$+$                     & $44.32$                          & {\tiny\color{gray}$\pm 2.72$}  & $2$}  \\
-                    \uncover<3->{NVIL                       & $37.04$                          & {\tiny\color{gray}$\pm 1.61$}  & $1$}  \\
-                    \uncover<4->{Gumbel                     & $23.51$                          & {\tiny\color{gray}$\pm 16.19$} & $1$}  \\
-                    \uncover<4->{ST Gumbel                  & $27.42$                          & {\tiny\color{gray}$\pm 13.36$} & $1$}  \\
-                    \midrule
-                    \emph{Marginalization}                  &                                  &                                &       \\
-                    Dense                                   & $93.37$                          & {\tiny\color{gray}$\pm 0.42$}  & $256$ \\
-                    \uncover<5->{\textcolor{tPeony}{Sparse} &
-                    $93.35$                                 & {\tiny\color{gray}$\pm 0.50$}    &
-                    $3.13${\tiny\color{gray}$\pm 0.48$}}                                                                                \\
-                    \bottomrule
-                \end{tabular}
+            \only<1-10>{
+                \begin{center}
+                    \begin{tabular}{lr@{~}lr}
+                        \toprule
+                        Method                                  & \multicolumn{2}{c}{success (\%)} & \# messages                             \\
+                        \midrule
+                        {\emph{Monte Carlo}}                    &                                  &                                &        \\
+                        \uncover<3->{SFE                        & $33.05$                          & {\tiny\color{gray}$\pm 2.84$}  & $1$}   \\
+                        \uncover<4->{SFE$+$                     & $44.32$                          & {\tiny\color{gray}$\pm 2.72$}  & $2$}   \\
+                        \uncover<5->{Gumbel                     & $23.51$                          & {\tiny\color{gray}$\pm 16.19$} & $1$}   \\
+                        \midrule
+                        \emph{Marginalization}                  &                                  &                                &        \\
+                        \uncover<2->{Dense                      & $93.37$                          & {\tiny\color{gray}$\pm 0.42$}  & $256$} \\
+                        \uncover<6->{\textcolor{tPeony}{Sparse} &
+                        \uncover<8->{$93.35$                    & {\tiny\color{gray}$\pm 0.50$}}   &
+                        \uncover<9->{$3.13${\tiny\color{gray}$\pm 0.48$}} }                                                                  \\
+                        \bottomrule
+                    \end{tabular}
+                \end{center}
             }
-            \only<6-8>{
-                \input{results_emergent_small}
+            \only<11>{
+                \begin{center}
+                    \input{results_emergent_small}
+                \end{center}
             }
         \end{column}
     \end{columns}
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Taking a step back...}
-    \fontsize{12pt}{15}\selectfont
+    \vspace{0.2cm}
     \begin{itemize}
-        \item[] Does the expectation over possible $z$ need to be expensive?
+        \uncover<10->{\item[] We use {\color{tPeony} sparsemax}, {\color{tVividBlue} top-$k$ sparsemax} and {\color{tVividBlue} SparseMAP} to allow efficient marginalization}
     \end{itemize}
 
-    \begin{align*}\label{eq:fit2}
-        \uncover<2->{\mathcal{L}_{x}(\theta) & =
-            \sum_{z \in \mathcal Z}
-        \pi(z | x, \theta)~\ell(x, z; \theta)                                                          \\&=
-        \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) + \pi(z_2 | x, \theta)~\ell(x, z_2; \theta) + \ldots \\&+ \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) + \ldots + \pi(z_N | x, \theta)~\ell(x, z_N; \theta)
-        }
-    \end{align*}
-
-    % \begin{itemize}
-    %     \uncover<3->{\item[] If components of $\pi(z | x, \theta)$ were exactly $0$, we could skip lots of computations!}
-    % \end{itemize}
-
-    \begin{itemize}
-        \uncover<3->{\item[] Usually we normalize $\pi$ with $\text{softmax} \propto \exp(s) \Rightarrow \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)>0$}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Sparse normalizers}
-    \fontsize{12pt}{10}\selectfont
-    \cornercite[north east]{sparsemax, sparsemap}
-    \begin{itemize}
-        \item[] We use {\color{tPeony} sparsemax}, {\color{tVividBlue} top-$k$ sparsemax} and {\color{tVividBlue} SparseMAP} to allow efficient marginalization
-    \end{itemize}
-
-    \begin{itemize}
-        \uncover<2->{\item[] These functions are able to assign {\bf probabilities of exactly zero}!}
-    \end{itemize}
-
-    \begin{align*}
-        \uncover<3->{\mathcal{L}_{x}(\theta) & =
-            \sum_{z \in \mathcal Z}
-        \pi(z | x, \theta)~\ell(x, z; \theta)                                                                                                                                                           \\&=
-        \pi(z_1 | x, \theta)~\ell(x, z_1; \theta) + \alt<3>{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)}{\cancel{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)}} + \ldots \\&+
-            \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) + \ldots + \alt<3>{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}{\cancel{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}}
-        }
-    \end{align*}
-
-    \begin{itemize}
-        \uncover<4->{\item[] No need for computing $\ell(x, z; \theta)$ for all $z \in \mathcal Z$!}
-    \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -911,7 +836,8 @@
 
     \centering\fontsize{14pt}{14}\selectfont%
     We introduce a new method\\
-    to train latent variable models.
+    to train {\color{myDarkYellow} compact} latent variable models,\\
+    using {\color{tPeony} learned sparsity}.
     %
     %
     \vfill
@@ -955,12 +881,8 @@
             \centering
             \uncover<3->{
                 \textbf{\emph{deterministic, yet efficient}}\\[\baselineskip]
-                \vspace{-0.5cm}
-                \fontsize{10pt}{10}\selectfont
-                \begin{align*}
-                    \mathcal{L}_{x}(\theta) & = \pi(z_1 | x, \theta)~\ell(x, z_1; \theta)                       \\&+ \cancel{\underbrace{\pi(z_2 | x, \theta)}_{=0}~\ell(x, z_2; \theta)} \\&+ \ldots +
-                    \pi(z_{\mathrlap{i}\hphantom{1}} | x, \theta)~\ell(x, z_{\mathrlap{i}\hphantom{1}}; \theta) \\&+ \ldots + \cancel{\underbrace{\pi(z_N | x, \theta)}_{=0}~\ell(x, z_N; \theta)}
-                \end{align*}}
+                \includegraphics[width=0.8\columnwidth]{figures/envelopes_sparse.png}
+            }
         \end{column}
         \begin{column}{.33\textwidth}
             \centering
@@ -969,10 +891,6 @@
                 \input{results_emergent_small}}
         \end{column}
     \end{columns}
-
-    \vfill
-
-    \centering
 \end{frame}
 
 \section{Conclusions}
@@ -1020,34 +938,9 @@
         \begin{column}{.33\textwidth}
             \centering
             \uncover<4->{
-                \textbf{\emph{better compactness}}\\[\baselineskip]
-                \begin{figure}[ht]
-                    \begin{tikzpicture}
-                        % DISCRETE
-                        \draw[draw=tPink,fill=tPink] (1.4,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.2}};
-                        \draw[draw=tSlateBlue,fill=tSlateBlue] (2,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.6}};
-                        \draw[draw=tGreen,fill=tGreen] (2.6,2) circle (0.2) node[anchor=south, yshift=2mm] {{\color{tPeony} \small 0.1}};
-
-                        % STRUCTURE
-                        \draw[draw=tSlateBlue,fill=tSlateBlue] (1.4,1) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
-                        \draw[draw=tGreen,fill=tGreen] (2,1) circle (0.2);
-                        \draw[draw=tPink,fill=tPink] (2.6,1) circle (0.2)
-                        node[anchor=west, xshift=2mm] {$]$}
-                        node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.4}};
-
-                        \draw[draw=tPink,fill=tPink] (1.4,0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
-                        \draw[draw=tSlateBlue,fill=tSlateBlue] (2,0.5) circle (0.2) node[anchor=north, yshift=-4mm] {\large \bf $\ldots$};
-                        \draw[draw=tGreen,fill=tGreen] (2.6,0.5) circle (0.2)
-                        node[anchor=west, xshift=2mm] {$]$}
-                        node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.05}};
-
-                        \draw[draw=tGreen,fill=tGreen] (1.4,-0.5) circle (0.2) node[anchor=east, xshift=-2mm] {$[$};
-                        \draw[draw=tSlateBlue,fill=tSlateBlue] (2,-0.5) circle (0.2);
-                        \draw[draw=tPink,fill=tPink] (2.6,-0.5) circle (0.2)
-                        node[anchor=west, xshift=2mm] {$]$}
-                        node[anchor=west, xshift=5mm] {{\color{tVividBlue} \small 0.3}};
-                    \end{tikzpicture}
-                \end{figure}}%
+                \textbf{\emph{better \& efficient compactness}}\\[\baselineskip]
+                \includegraphics[width=0.8\columnwidth]{figures/envelopes_sparse.png}
+            }
         \end{column}
     \end{columns}
 

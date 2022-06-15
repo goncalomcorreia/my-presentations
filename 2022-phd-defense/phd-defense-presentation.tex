@@ -65,7 +65,7 @@
 
 \begin{document}
 
-\begin{frame}
+\begin{frame}[noframenumbering, plain]
     %\titlepage
     \begin{tikzpicture}[remember picture, overlay]
 
@@ -169,7 +169,7 @@
 \section{A Simple and Effective Approach to APE with Transfer Learning}
 
 \begin{frame}
-    \frametitle{A bit of context on transformers}
+    \frametitle{A bit of context on Transformers}
 
     \fontsize{12pt}{15}\selectfont
     \only<1-4>{\cornercite{transf}}
@@ -219,14 +219,15 @@
 
 \begin{frame}
     \frametitle{What is APE?}
-    \centering
     \fontsize{12pt}{15}\selectfont
-
-    \vspace*{-5mm}
-    \includegraphics[width=0.7\columnwidth]{figures/ape.pdf}
-    \vspace*{5mm}
+    \centering
+    \begin{tikzpicture}[remember picture, overlay]
+        \uncover<2->{\node[xshift=0cm,yshift=1.7cm] at (current page.center) {\includegraphics[width=0.7\columnwidth]{figures/mt.pdf}};}
+        \uncover<3->{\node[xshift=0cm,yshift=-1.3cm] at (current page.center) {\includegraphics[width=0.7\columnwidth]{figures/ape.pdf}};}
+    \end{tikzpicture}
+    \vspace{5cm}
     \begin{itemize}
-        \uncover<2->{\item[] {\color{myDarkYellow} Challenge:} APE data is very scarce! Need to create artificial data.}
+        \uncover<4->{\item[] {\color{myDarkYellow} Challenge:} APE data is very scarce! Need to create artificial data.}
     \end{itemize}
 \end{frame}
 
@@ -240,7 +241,7 @@
         \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
             }
             \uncover<2->{
-                {\color{myDarkYellow} Key idea:} Use BERT to do APE
+                {\color{myDarkYellow} Key idea:} Use BERT to do APE \quad\emoji{palms}
                 \vspace{0.25cm}
             }
             \begin{itemize}
@@ -271,18 +272,18 @@
             \resizebox{0.8\columnwidth}{!}{\begin{tabular}{lrr}
                     \toprule
                     model (data size)
-                     & TER$\downarrow$              & BLEU$\uparrow$                 \\
+                     & TER$\downarrow$        & BLEU$\uparrow$                                  \\
                     \midrule
                     mt baseline
-                     & 24.48                        & 62.49                          \\
+                     & 24.48                  & 62.49                                           \\
                     \uncover<2->{dual-source transformer (8M)
-                     & 18.10                        & 71.72                        } \\
+                     & {\color{tGreen} 18.10} & {\color{tGreen} 71.72}                        } \\
                     \uncover<3->{dual-source transformer (23K)
-                     & 27.73                        & 59.78                        } \\
+                     & {\color{tRed} 27.73}   & {\color{tRed} 59.78}                        }   \\
                     \uncover<4->{ours (23K)
-                     & {\color{myDarkYellow} 19.03} & {\color{myDarkYellow} 70.66} } \\
+                     & {\color{tGreen} 19.03} & {\color{tGreen} 70.66} }                        \\
                     \uncover<5->{ours (8M)
-                     & {\color{myDarkYellow} 17.26} & {\color{myDarkYellow} 73.42} } \\
+                     & {\color{tGreen} 17.26} & {\color{tGreen} 73.42} }                        \\
                     \bottomrule
                 \end{tabular}}
         \end{center}
@@ -294,7 +295,7 @@
     \frametitle{Key takeaways}
     \uncover<4>{\cornercite{lee2020POSTECHETRISubmissionWMT2020}}
     \begin{itemize}
-        \uncover<2->{\item One of pioneers in using pre-trained transformer encoders for a generation task}
+        \uncover<2->{\item One of pioneers in using pre-trained Transformer encoders for a generation task}
               \uncover<3->{\item Massive improvement in low-resource scenario ({\color{myDarkYellow} data-efficiency})}
               \uncover<4->{\item Steered SOTA of APE towards using {\color{tPeony} weak supervision} through pre-trained models}
     \end{itemize}
@@ -362,11 +363,11 @@
         \end{columns}
 
         \begin{tikzpicture}[remember picture,overlay]   %% use here too
-            \uncover<2>{\path[draw=magenta,ultra thick,->](
+            \uncover<2>{\path[draw=tPeony,ultra thick,->](
                 [xshift=2mm,yshift=1mm]n1.north) to [out=6cm,in=0,distance=-1.5cm] ([xshift=-5.13cm,yshift=2.0cm]t1.north);}
-            \uncover<3>{\path[draw=magenta,ultra thick,->](
+            \uncover<3>{\path[draw=tPeony,ultra thick,->](
                 [xshift=2mm,yshift=1mm]n2.north) to [out=6cm,in=0,distance=-3cm] ([xshift=-2.67cm,yshift=2.0cm]t1.north);}
-            \uncover<4>{\path[draw=magenta,ultra thick,->](
+            \uncover<4>{\path[draw=tPeony,ultra thick,->](
                 [xshift=2mm,yshift=1mm]n3.north) to [out=-6cm,in=0,distance=-2.5cm] ([xshift=-2.67cm,yshift=3.55cm]t1.north);}
         \end{tikzpicture}
     }
@@ -386,7 +387,7 @@
 
 \end{frame}
 
-\begin{frame}[plain,t,fragile]%
+\begin{frame}%
     \frametitle{What is softmax?}%
     \centering \fontsize{12pt}{15}\selectfont
     Softmax exponentiates and normalizes:
@@ -629,66 +630,12 @@
 
 \begin{frame}
     \frametitle{Latent variable models}
-
-    \begin{itemize}
-        \uncover<1->{\item[] Latent variable $z$ can be }\uncover<2->{{\color{tGreen} continuous}}\uncover<3->{, {\color{tPeony} discrete}}\uncover<4->{, or {\color{tVividBlue} structured}}
-    \end{itemize}
-
-    \only<1-2>{\uncover<2>{
-        \begin{figure}[hb]
-            \centering
-            \begin{subfigure}[b]{0.24\columnwidth}
-                \centering
-                \includegraphics[width=\columnwidth]{figures/face1.png}
-            \end{subfigure}
-            \hfill
-            \begin{subfigure}[b]{0.24\columnwidth}
-                \centering
-                \includegraphics[width=\columnwidth]{figures/face2.png}
-            \end{subfigure}
-            \hfill
-            \begin{subfigure}[b]{0.24\columnwidth}
-                \centering
-                \includegraphics[width=\columnwidth]{figures/face3.png}
-            \end{subfigure}
-            \hfill
-            \begin{subfigure}[b]{0.24\columnwidth}
-                \centering
-                \includegraphics[width=\columnwidth]{figures/face4.png}
-            \end{subfigure}
-            \caption{Source: \cite{faces}}
-            \label{fig:rotation}
-        \end{figure}
-    }}
-
-    \only<3>{
-        \begin{figure}[hb]
-            \centering
-            \includegraphics[width=0.5\columnwidth]{figures/eyes.png}
-            \caption{Source: \href{https://valleyeyecareaz.com/how-is-your-eye-color-determined/}{valleyeyecareaz.com}}
-            \label{fig:eyes}
-        \end{figure}
-    }
-
-    \only<4>{
-        \begin{figure}[hb]
-            \centering
-            \includegraphics[width=0.6\columnwidth]{figures/celeba_bg.pdf}
-            \caption{Source: \cite{liu2015faceattributes}}
-            \label{fig:faces}
-        \end{figure}
-    }
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Training discrete or structured latent variable models}
     \fontsize{12pt}{15}\selectfont
 
     \begin{columns}
-        \hspace{2mm}\vspace{-1cm}\begin{column}{0.7\columnwidth}\vspace{-1cm}
+        \hspace{-0.5cm}\vspace{-1cm}\begin{column}{0.75\columnwidth}\vspace{-1cm}
             \begin{itemize}
-                \uncover<1->{\item[] Latent variable $z$ can be }\uncover<2->{{\color{tPeony} discrete}}\uncover<3->{ or {\color{tVividBlue} structured}}
+                \uncover<1->{\item[] We focus on latent variables $z$ that are }\uncover<2->{{\color{tPeony} discrete}}\uncover<3->{ or {\color{tBlue} structured}}
             \end{itemize}
 
             \begin{itemize}
@@ -702,7 +649,7 @@
 
         \end{column}
 
-        \begin{column}{0.25\columnwidth}
+        \begin{column}{0.2\columnwidth}
             \vspace{-0.5cm}
             \begin{center}
                 \begin{figure}[ht]
@@ -761,7 +708,7 @@
 \begin{frame}
     \only<-5>{\frametitle{Current solutions}}\only<6->{\frametitle{{\color{tPeony} Our solution}}}
     \framesubtitle{Using emergent communication as example}
-    \uncover<10>{\cornercite[north east]{sparsemax, sparsemap}}
+    \uncover<11>{\cornercite[north east]{sparsemax, sparsemap}}
     \fontsize{12pt}{15}\selectfont
     \vspace{-0.2cm}
     \begin{columns}
@@ -777,7 +724,7 @@
         \begin{column}{0.55\columnwidth}
             \vspace{-0.5cm}
             \small%
-            \only<1-10>{
+            \only<1-9>{
                 \begin{center}
                     \begin{tabular}{lr@{~}lr}
                         \toprule
@@ -797,7 +744,7 @@
                     \end{tabular}
                 \end{center}
             }
-            \only<11>{
+            \only<10->{
                 \begin{center}
                     \input{results_emergent_small}
                 \end{center}
@@ -806,7 +753,7 @@
     \end{columns}
     \vspace{0.2cm}
     \begin{itemize}
-        \uncover<10->{\item[] We use {\color{tPeony} sparsemax}, {\color{tVividBlue} top-$k$ sparsemax} and {\color{tVividBlue} SparseMAP} to allow efficient marginalization}
+        \uncover<11->{\item[] We use {\color{tPeony} sparsemax}, {\color{tVividBlue} top-$k$ sparsemax} and {\color{tVividBlue} SparseMAP} to allow efficient marginalization}
     \end{itemize}
 
 \end{frame}
@@ -910,20 +857,20 @@
         \begin{column}{.33\textwidth}
             \centering
             \uncover<2->{
-                \textbf{\emph{data-efficiency}}\\[.5\baselineskip]
+                {\color{myDarkYellow} \textbf{\emph{data-efficiency}}}\\[.5\baselineskip]
                 \vspace{1cm}
                 \begin{center}
                     \resizebox{0.8\columnwidth}{!}{\begin{tabular}{lr}
                             \toprule
                             model (data size)
-                             & BLEU$\uparrow$               \\
+                             & BLEU$\uparrow$         \\
                             \midrule
-                            dual-source transformer {\color{tPurple}(8M)}
-                             & 71.72                        \\
-                            dual-source transformer {\color{tBlue}(23K)}
-                             & 59.78                        \\
-                            ours {\color{tBlue}(23K)}
-                             & {\color{myDarkYellow} 70.66} \\
+                            dual-source transformer (8M)
+                             & 71.72                  \\
+                            dual-source transformer (23K)
+                             & {\color{tRed} 59.78}   \\
+                            ours (23K)
+                             & {\color{tGreen} 70.66} \\
                             \bottomrule
                         \end{tabular}}
                 \end{center}}%
@@ -931,14 +878,14 @@
         \begin{column}{.33\textwidth}
             \centering
             \uncover<3->{
-                \textbf{\emph{transparency}}\\[\baselineskip]
+                {\color{myDarkYellow} \textbf{\emph{transparency}}}\\[\baselineskip]
                 \vspace{0.2cm}
                 \includegraphics[trim=157mm 17mm 0 0, clip, width=.7\textwidth]{figures/comparison_mybg}}%
         \end{column}
         \begin{column}{.33\textwidth}
             \centering
             \uncover<4->{
-                \textbf{\emph{better \& efficient compactness}}\\[\baselineskip]
+                \textbf{\emph{better \& efficient {\color{myDarkYellow} compactness}}}\\[\baselineskip]
                 \includegraphics[width=0.8\columnwidth]{figures/envelopes_sparse.png}
             }
         \end{column}
@@ -954,12 +901,12 @@
         \end{tabular}}
 \end{frame}
 
-\begin{frame}[t,allowframebreaks,noframenumbering]
+\begin{frame}[t,allowframebreaks,noframenumbering, plain]
     \frametitle{References}
     \printbibliography
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \frametitle{Parameter sharing analysis}
     \begin{table}[htbp]
         \centering
@@ -992,7 +939,7 @@
     \end{table}
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \frametitle{$\Omega$-Regularized Argmax}
     \cornercite{Niculae2017}
     \fontsize{12pt}{15}\selectfont
@@ -1018,7 +965,7 @@
     \uncover<4>{\cornercite[south east]{sparsemax}}
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \frametitle{Subword-Merging Head}
     \vspace{-0.7cm}
     \begin{columns}[T]
@@ -1046,7 +993,7 @@
 
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \frametitle{Semi-Supervised VAE}%\cornerciteme{sparsemarg}
 
     \newcommand*\parcolor{myfg}
@@ -1096,7 +1043,7 @@
     \end{tikzpicture}
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \frametitle{Semi-Supervised VAE}
     \begin{columns}[T]
         \begin{column}{.53\textwidth}
@@ -1134,7 +1081,7 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \frametitle{Emergent communication}
 
     \newcommand*\parcolor{myfg}
@@ -1183,7 +1130,7 @@
     \end{tikzpicture}
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \frametitle{Emergent Communication}
     \cornercite{Lazaridou2017,myneurips2020}%
     \framesubtitle{
@@ -1220,7 +1167,7 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \begin{columns}%
         \begin{column}{.45\textwidth}\centering%
             \vbox to .9\textheight{%
@@ -1336,7 +1283,7 @@
         }}
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \frametitle{Bit-vector VAE}
     \newcommand*\parcolor{myfg}
     \newcommand*\clfcolor{myfg}
@@ -1382,7 +1329,7 @@
     \end{tikzpicture}
 \end{frame}
 
-\begin{frame}[noframenumbering]
+\begin{frame}[noframenumbering, plain]
     \frametitle{Bit-vector VAE}
     \begin{columns}[T]
         \begin{column}{.53\textwidth}

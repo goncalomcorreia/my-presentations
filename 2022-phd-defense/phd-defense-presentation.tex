@@ -166,6 +166,40 @@
     \end{tikzpicture}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Published work}
+    \fontsize{12pt}{15}\selectfont
+
+    \vspace{-0.3cm}
+    \begin{itemize}
+        \uncover<2->{\item A Simple and Effective Approach to APE with Transfer Learning
+              \begin{itemize}
+                  \item {\color{tPeony} weak supervision}
+                  \item {\color{myDarkYellow} data-efficiency}
+                  \item Poster at ACL 2019
+              \end{itemize}
+              }
+
+              \vspace{0.3cm}
+              \uncover<3->{\item Adaptively Sparse Transformers
+              \begin{itemize}
+                  \item {\color{tPeony} adaptive sparsity}
+                  \item {\color{myDarkYellow} transparency}
+                  \item Oral talk at EMNLP 2019
+              \end{itemize}
+              }
+
+              \vspace{0.3cm}
+              \uncover<4->{\item Efficient Marginalization of Discrete Latent Variables with Sparsity
+              \begin{itemize}
+                  \item {\color{tPeony} learnable sparsity}
+                  \item {\color{myDarkYellow} compactness}
+                  \item Spotlight paper at NeurIPS 2020
+              \end{itemize}
+              }
+    \end{itemize}
+\end{frame}
+
 \section{A Simple and Effective Approach to APE with Transfer Learning}
 
 \begin{frame}
@@ -265,30 +299,25 @@
     \frametitle{Key results}
     \uncover<2-3>{\cornercite{junczys2018ms}}
     \centering
-    \vspace*{-2cm}
-    \begin{table}[ht]
-        \begin{center}
-            \small
-            \resizebox{0.8\columnwidth}{!}{\begin{tabular}{lrr}
-                    \toprule
-                    model (data size)
-                     & TER$\downarrow$        & BLEU$\uparrow$                                  \\
-                    \midrule
-                    mt baseline
-                     & 24.48                  & 62.49                                           \\
-                    \uncover<2->{dual-source transformer (8M)
-                     & {\color{tGreen} 18.10} & {\color{tGreen} 71.72}                        } \\
-                    \uncover<3->{dual-source transformer (23K)
-                     & {\color{tRed} 27.73}   & {\color{tRed} 59.78}                        }   \\
-                    \uncover<4->{ours (23K)
-                     & {\color{tGreen} 19.03} & {\color{tGreen} 70.66} }                        \\
-                    \uncover<5->{ours (8M)
-                     & {\color{tGreen} 17.26} & {\color{tGreen} 73.42} }                        \\
-                    \bottomrule
-                \end{tabular}}
-        \end{center}
-    \end{table}
 
+    \vspace{-1.5cm}
+    \begin{tabular}{lrr}
+        \toprule
+        model (data size)
+         & TER$\downarrow$        & BLEU$\uparrow$                                  \\
+        \midrule
+        mt baseline
+         & 24.48                  & 62.49\phantom{i}                                \\
+        \uncover<2->{dual-source transformer (8M)
+         & {\color{tGreen} 18.10} & {\color{tGreen} 71.72}                        } \\
+        \uncover<3->{dual-source transformer (23K)
+         & {\color{tRed} 27.73}   & {\color{tRed} 59.78}                        }   \\
+        \uncover<4->{ours (23K)
+         & {\color{tGreen} 19.03} & {\color{tGreen} 70.66} }                        \\
+        \uncover<5->{ours (8M)
+         & {\color{tGreen} 17.26} & {\color{tGreen} 73.42} }                        \\
+        \bottomrule
+    \end{tabular}
 \end{frame}
 
 \begin{frame}
@@ -305,25 +334,37 @@
 
 \begin{frame}
     \frametitle{Getting to know attention heads better}
-
-    \begin{itemize}
-        \uncover<1->{\item[] Attention heads may aid visualization but they are completely {\color{myDarkYellow} dense}.}
-    \end{itemize}
-
-    \bigskip
-
-    \begin{itemize}
-        \item[]<2-> Our solution is to bet on {\color{tPeony} sparsity}:
-    \end{itemize}
-
-    \begin{quote}
-        {\normalfont
+    \fontsize{12pt}{15}\selectfont
+    \begin{columns}
+        \begin{column}{0.6\columnwidth}
             \begin{itemize}
-                \only<3>{\item {\color{myDarkYellow} for interpretability}}\only<2>{\item for interpretability} % sparse connections allow to be sure about which model representations were used to make a prediction
-                      \only<3>{\item {\color{myDarkYellow} for discovering linguistic structure}}\only<2>{\item for discovering linguistic structure} % we can redesign components based on what we find with sparsity
-                \item<2-> for efficiency
-            \end{itemize}}
-    \end{quote}
+                \uncover<1->{\item[] Attention heads may aid visualization but they are completely {\color{myDarkYellow} dense}.}
+            \end{itemize}
+
+            \bigskip
+
+            \begin{itemize}
+                \item[]<2-> Our solution is to bet on {\color{tPeony} sparsity}:
+            \end{itemize}
+
+            \begin{quote}
+                {\normalfont
+                    \begin{itemize}
+                        \only<3>{\item {\color{myDarkYellow} for interpretability}}\only<2>{\item for interpretability} % sparse connections allow to be sure about which model representations were used to make a prediction
+                              \only<3>{\item {\color{myDarkYellow} for discovering linguistic structure}}\only<2>{\item for discovering linguistic structure} % we can redesign components based on what we find with sparsity
+                        \item<2-> for efficiency
+                    \end{itemize}}
+            \end{quote}
+        \end{column}
+
+        \begin{column}{0.39\columnwidth}
+
+            \vspace{-1.5cm}
+            \begin{center}
+                \includegraphics[width=0.8\columnwidth]{figures/multiple_heads.pdf}
+            \end{center}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
@@ -345,16 +386,9 @@
                           \uncover<3-4>{\item Self-attention in the decoder\tikz[remember picture]{\node[coordinate] (n2) {};}}
                           \uncover<4>{\item Contextual attention\tikz[remember picture]{\node[coordinate] (n3) {};}}
                 \end{itemize}
-
-                % \vspace{-0.7cm}
-                % \begin{align*}
-                %     \uncover<2-4>{6 \text{ layers } \times 8 \text{ attention heads} &= 48}
-                %     \\\uncover<3-4>{&+48}\\\only<4>{&+48=144\text{ attention heads}}
-                % \end{align*}
-
             \end{column}
             \begin{column}{0.4\columnwidth}
-                \vspace{-1.5cm}
+                \vspace{-2cm}
                 \begin{center}
                     \includegraphics[width=0.9\columnwidth]{figures/transformer_mybg}
                     \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
@@ -440,16 +474,77 @@
 \end{frame}
 
 \begin{frame}
+    \frametitle{Transformers}
+
+    \fontsize{12pt}{15}\selectfont
+    \cornercite{transf}
+    \begin{columns}
+        \hspace{2mm}\vspace{-1cm}\begin{column}{0.55\columnwidth}
+            \uncover<2-4>{Attention in three places:
+            \begin{itemize}
+                \item Self-attention in the encoder\tikz[remember picture]{\node[coordinate] (n1) {};}}
+                      \uncover<3-4>{\item Self-attention in the decoder\tikz[remember picture]{\node[coordinate] (n2) {};}}
+                      \uncover<4>{\item Contextual attention\tikz[remember picture]{\node[coordinate] (n3) {};}}
+            \end{itemize}
+
+            \vspace{-0.7cm}
+            \begin{align*}
+                \uncover<2-4>{6 \text{ layers } \times 8 \text{ attention heads} & = 48}
+                \\\uncover<3-4>{&+48}\\\only<4>{&+48=144}
+            \end{align*}
+
+        \end{column}
+        \begin{column}{0.4\columnwidth}
+            \vspace{-2cm}
+            \begin{center}
+                \includegraphics[width=0.9\columnwidth]{figures/transformer_mybg}
+                \tikz[baseline,remember picture]{\node[anchor=base] (t1){};}
+            \end{center}
+        \end{column}
+    \end{columns}
+
+    \begin{tikzpicture}[remember picture,overlay]   %% use here too
+        \uncover<2>{\path[draw=tPeony,ultra thick,->](
+            [xshift=2mm,yshift=1mm]n1.north) to [out=6cm,in=0,distance=-1.5cm] ([xshift=-5.13cm,yshift=2.0cm]t1.north);}
+        \uncover<3>{\path[draw=tPeony,ultra thick,->](
+            [xshift=2mm,yshift=1mm]n2.north) to [out=6cm,in=0,distance=-3cm] ([xshift=-2.67cm,yshift=2.0cm]t1.north);}
+        \uncover<4>{\path[draw=tPeony,ultra thick,->](
+            [xshift=2mm,yshift=1mm]n3.north) to [out=-6cm,in=0,distance=-2.5cm] ([xshift=-2.67cm,yshift=3.55cm]t1.north);}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
     \frametitle{Learning $\alpha$}
 
     \begin{itemize}
         \uncover<2->{\item[] {\color{myDarkYellow} Key contribution}: \\\bigskip\quad a closed-form expression for $\pfrac{\aentmax(\x)}{\alpha}$ \quad\emoji{oface}}
     \end{itemize}
 
+    \bigskip
+
+    \begin{itemize}
+
+        \uncover<3->{\item[] Not trivial! Requires implicit differentiation}
+
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Trajectories of $\alpha$  during training}
+
+    \centering\fontsize{10pt}{15}\selectfont\vspace{-0.5cm}
+    \only<1>{\input{learning_alpha}}\only<2>{\input{learning_alpha_selected}}
+
+    \bigskip
+
+    \fontsize{12pt}{15}\selectfont\uncover<2->{
+        Some heads choose to start dense before becoming sparse.}
+
 \end{frame}
 
 \begin{frame}[fragile]
-    \frametitle{Head diversity per layer}
+    \frametitle{Head Diversity per Layer}
 
     \centering\fontsize{10pt}{15}\selectfont
     \begin{tikzpicture}[scale=0.9]
@@ -507,6 +602,10 @@
             \addlegendentry{$\alpha$-entmax}
         \end{groupplot}
     \end{tikzpicture}
+    % \input{js_divs}
+
+    \centering\fontsize{12pt}{15}\selectfont
+    \uncover<2>{Specialized heads are important as seen in \citet{specialized}!}
 
 \end{frame}
 
@@ -553,7 +652,7 @@
             \uncover<2->{
                 \textbf{\emph{adaptive sparsity}}\\[.5\baselineskip]
                 \vspace{0.2cm}
-                \includegraphics[trim=157mm 17mm 0 0, clip, width=.7\textwidth]{figures/comparison_mybg}}%
+                \includegraphics[width=.7\textwidth]{figures/adaptive_sparsity}}%
         \end{column}
         \begin{column}{.33\textwidth}
             \centering
@@ -706,54 +805,59 @@
 \end{frame}
 
 \begin{frame}
-    \only<-5>{\frametitle{Current solutions}}\only<6->{\frametitle{{\color{tPeony} Our solution}}}
+    \only<-8>{\frametitle{Current solutions}}\only<9->{\frametitle{{\color{tPeony} Our solution}}}
     \framesubtitle{Using emergent communication as example}
-    \uncover<11>{\cornercite[north east]{sparsemax, sparsemap}}
+    \uncover<14>{\cornercite[north east]{sparsemax, sparsemap}}
     \fontsize{12pt}{15}\selectfont
-    \vspace{-0.2cm}
     \begin{columns}
         \begin{column}{0.4\columnwidth}
             \centering
-            \only<1-2>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_dense.png}}
-            \only<3-4>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_sfe.png}}
-            \only<5>{\includegraphics[width=0.9\columnwidth]{figures/envelopes_gumbel.png}}
-            \only<6>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_dense.png}}
-            \only<7-11>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_sparse.png}}
+
+            \only<4->{\vspace{-0.8cm}}
+            \only<1>{\includegraphics[width=0.8\columnwidth]{figures/robots-messages-3.pdf}}
+            \only<2>{\includegraphics[width=0.8\columnwidth]{figures/robots-messages-2.pdf}}
+            \only<3>{\includegraphics[width=0.8\columnwidth]{figures/robots-messages-1.pdf}}
+            \only<4-5>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_dense.png}}
+            \only<6-7>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_sfe.png}}
+            \only<8>{\includegraphics[width=0.9\columnwidth]{figures/envelopes_gumbel.png}}
+            \only<9>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_dense.png}}
+            \only<10-14>{\includegraphics[width=0.8\columnwidth]{figures/envelopes_sparse.png}}
 
         \end{column}
         \begin{column}{0.55\columnwidth}
-            \vspace{-0.5cm}
+
+            \vspace{-0.8cm}
             \small%
-            \only<1-9>{
+            \only<1-12>{
                 \begin{center}
                     \begin{tabular}{lr@{~}lr}
                         \toprule
                         Method                                  & \multicolumn{2}{c}{success (\%)} & \# messages                             \\
                         \midrule
                         {\emph{Monte Carlo}}                    &                                  &                                &        \\
-                        \uncover<3->{SFE                        & $33.05$                          & {\tiny\color{gray}$\pm 2.84$}  & $1$}   \\
-                        \uncover<4->{SFE$+$                     & $44.32$                          & {\tiny\color{gray}$\pm 2.72$}  & $2$}   \\
-                        \uncover<5->{Gumbel                     & $23.51$                          & {\tiny\color{gray}$\pm 16.19$} & $1$}   \\
+                        \uncover<6->{SFE                        & $33.05$                          & {\tiny\color{gray}$\pm 2.84$}  & $1$}   \\
+                        \uncover<7->{SFE$+$                     & $44.32$                          & {\tiny\color{gray}$\pm 2.72$}  & $2$}   \\
+                        \uncover<8->{Gumbel                     & $23.51$                          & {\tiny\color{gray}$\pm 16.19$} & $1$}   \\
                         \midrule
                         \emph{Marginalization}                  &                                  &                                &        \\
-                        \uncover<2->{Dense                      & $93.37$                          & {\tiny\color{gray}$\pm 0.42$}  & $256$} \\
-                        \uncover<6->{\textcolor{tPeony}{Sparse} &
-                        \uncover<8->{$93.35$                    & {\tiny\color{gray}$\pm 0.50$}}   &
-                        \uncover<9->{$3.13${\tiny\color{gray}$\pm 0.48$}} }                                                                  \\
+                        \uncover<5->{Dense                      & $93.37$                          & {\tiny\color{gray}$\pm 0.42$}  & $256$} \\
+                        \uncover<9->{\textcolor{tPeony}{Sparse} &
+                        \uncover<11->{$93.35$                   & {\tiny\color{gray}$\pm 0.50$}}   &
+                        \uncover<12->{$3.13${\tiny\color{gray}$\pm 0.48$}} }                                                                 \\
                         \bottomrule
                     \end{tabular}
                 \end{center}
             }
-            \only<10->{
+            \only<13->{
                 \begin{center}
-                    \input{results_emergent_small}
+                    \input{results_emergent}
                 \end{center}
             }
         \end{column}
     \end{columns}
     \vspace{0.2cm}
     \begin{itemize}
-        \uncover<11->{\item[] We use {\color{tPeony} sparsemax}, {\color{tVividBlue} top-$k$ sparsemax} and {\color{tVividBlue} SparseMAP} to allow efficient marginalization}
+        \uncover<14->{\item[] We use {\color{tPeony} sparsemax}, {\color{tVividBlue} top-$k$ sparsemax} and {\color{tVividBlue} SparseMAP} to allow efficient marginalization}
     \end{itemize}
 
 \end{frame}
@@ -784,7 +888,7 @@
     \centering\fontsize{14pt}{14}\selectfont%
     We introduce a new method\\
     to train {\color{myDarkYellow} compact} latent variable models,\\
-    using {\color{tPeony} learned sparsity}.
+    using {\color{tPeony} sparsity}.
     %
     %
     \vfill
@@ -840,7 +944,18 @@
     \end{columns}
 \end{frame}
 
-\section{Conclusions}
+\section{Future Work and Conclusions}
+
+\begin{frame}
+    \frametitle{Future directions}
+    \centering
+    \fontsize{12pt}{15}\selectfont
+    \begin{itemize}
+        \uncover<2->{\item Semi-supervised learning: {\color{myDarkYellow} data-efficiency} and {\color{myDarkYellow} compactness}}
+              \uncover<3->{\item Learning $\pi(z|x)$ without learning $\ell(x, z)$: {\color{myDarkYellow} compactness}}
+              \uncover<4->{\item Latent draft translations: {\color{myDarkYellow} transparency} and {\color{myDarkYellow} compactness}}
+    \end{itemize}
+\end{frame}
 
 \begin{frame}
     \frametitle{Conclusions}
@@ -940,6 +1055,21 @@
 \end{frame}
 
 \begin{frame}[noframenumbering, plain]
+    \frametitle{Related Work: Other Sparse Transformers}
+    \cornercite{Child2019,Sukhbaatar2019}
+
+    \vspace{-1.5cm}
+    \begin{center}
+        \includegraphics[width=0.7\columnwidth]{figures/comparison_mybg}
+
+        \bigskip
+
+        Our model allows {\color{myDarkYellow} non-contiguous} attention for each head.
+    \end{center}
+
+\end{frame}
+
+\begin{frame}[noframenumbering, plain]
     \frametitle{$\Omega$-Regularized Argmax}
     \cornercite{Niculae2017}
     \fontsize{12pt}{15}\selectfont
@@ -963,6 +1093,59 @@
         \item[] \uncover<5->{Is there something in-between?}
     \end{itemize}
     \uncover<4>{\cornercite[south east]{sparsemax}}
+\end{frame}
+
+\begin{frame}[noframenumbering, plain]
+    \frametitle{BLEU Scores}
+
+    \begin{table}[ht]
+        \begin{center}
+            \small
+            \resizebox{0.8\columnwidth}{!}{\begin{tabular}{lrrrr}
+                    \toprule
+                    activation
+                     & \langp{de}{en}               & \langp{ja}{en}
+                     & \langp{ro}{en}               & \only<1>{\langp{en}{de}}\only<2->{{\color{tPeony} \langp{en}{de}}} \\
+                    \midrule
+                    $\softmaxlight$
+                     & 29.79
+                     & 21.57
+                     & 32.70
+                     & 26.02                                                                                             \\
+                    $\aentmax[1.5]$
+                     & 29.83
+                     & {\color{myDarkYellow} 22.13}
+                     & {\color{myDarkYellow} 33.10}
+                     & 25.89                                                                                             \\
+                    $\aentmax[\alpha]$
+                     & {\color{myDarkYellow} 29.90}
+                     & 21.74
+                     & 32.89
+                     & {\color{myDarkYellow} 26.93}                                                                      \\
+                    \bottomrule
+                \end{tabular}}
+        \end{center}
+    \end{table}
+
+    \bigskip
+
+    \begin{itemize}
+        \uncover<3>{\item[] For analysis for other language pairs, see Appendix A.}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[noframenumbering, plain]
+    \frametitle{Learned $\alpha$}
+
+    \centering\fontsize{10pt}{15}\selectfont
+    \input{hist_alphas}
+
+    \bigskip
+
+    \fontsize{12pt}{15}\selectfont
+    Bimodal for the encoder, mostly unimodal for the decoder.
+
 \end{frame}
 
 \begin{frame}[noframenumbering, plain]
@@ -1168,6 +1351,36 @@
 \end{frame}
 
 \begin{frame}[noframenumbering, plain]
+    \frametitle{Limitations}
+    {\small
+        \begin{itemize}
+            \item Mostly (and eventually) very sparse. \\ \quad
+                  But fully dense worst case.
+            \item For the same reason, sparsemax cannot handle structured $z$.
+        \end{itemize}}
+
+    \uncover<2->{
+        \vspace{-0.5cm}
+        \fontsize{12pt}{15}\selectfont
+        \center{One solution: \textcolor{tPeony}{top-k sparsemax}}
+        \vspace{-0.3cm}
+        \begin{equation*}
+            k\operatorname{-sparsemax}(s)
+            = \displaystyle\argmin_{\p \in \triangle, \|\p\|_0 \leq k} \| \p - s \|_2^2
+        \end{equation*}
+    }
+    \uncover<3->{%
+        \small
+        \begin{itemize}
+            \item Non-convex but easy: sparsemax over the k highest scores \citep{kyrillidis2013sparse}.
+            \item Top-k oracle available for some structured problems.
+            \item Certificate: if at least one of the top-k $z$ gets $p(z)=0$,
+                  \textcolor{tPeony}{\textbf{k-sparsemax = sparsemax}}!
+                  \\ \quad thus, biased early on, but it goes away.
+        \end{itemize}}
+\end{frame}
+
+\begin{frame}[noframenumbering, plain]%
     \begin{columns}%
         \begin{column}{.45\textwidth}\centering%
             \vbox to .9\textheight{%
